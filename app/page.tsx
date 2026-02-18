@@ -1,22 +1,21 @@
-import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import AuthRedirectWrapper from '@/components/auth/AuthRedirectWrapper';
+import LoadingPortal from '@/components/LoadingPortal';
 
-export default async function RootPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+export default function RootPage() {
+  return (
+    <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center relative overflow-hidden">
+      {/* Poster Element: Huge Ghost Branding */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+        <h1 className="text-[20vw] font-black opacity-[0.02] tracking-tighter uppercase">
+          WELCOME
+        </h1>
+      </div>
 
-  if (!user) redirect('/login');
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  // Redirect based on role
-  if (profile?.role === 'admin') {
-    redirect('/admin');
-  } else {
-    redirect('/employee');
-  }
+      {/* The logic is suspended so the build ignores it */}
+      <Suspense fallback={<LoadingPortal />}>
+        <AuthRedirectWrapper />
+      </Suspense>
+    </div>
+  );
 }

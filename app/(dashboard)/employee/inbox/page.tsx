@@ -1,27 +1,32 @@
 import { Suspense } from 'react';
-import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
-import SwapInbox from '@/components/employee/SwapInbox';
+
+
 import HomeSkeleton from '@/components/HomeSkeleton';
+import InboxWrapper from '@/components/employee/InboxWrapper';
 
 export default async function InboxPage() {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    // Calling cookies() here satisfies the requirement for dynamic rendering 
 
-    if (!user) redirect('/login');
 
     return (
-        <div className="animate-in fade-in slide-in-from-bottom-3 duration-500">
-            <header className="px-6 pt-8 mb-4">
-                <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em]">Notifications</p>
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight">Shift Inbox</h1>
-            </header>
+        <div className="animate-in fade-in slide-in-from-bottom-3 duration-500 relative min-h-screen">
+            {/* Poster Element: Massive Ghost Header */}
+            <div className="absolute top-4 left-6 pointer-events-none select-none overflow-hidden">
+                <h1 className="text-[15vw] font-black opacity-[0.03] leading-[0.8] tracking-tighter uppercase whitespace-nowrap">
+                    INBOX
+                </h1>
+            </div>
 
-            <main className="px-2">
+
+
+            <main className="px-4 relative z-10 max-w-2xl">
                 <Suspense fallback={<HomeSkeleton />}>
-                    <SwapInbox userId={user.id} />
+                    <InboxWrapper />
                 </Suspense>
             </main>
+
+            {/* Subtle Aesthetic Grid Line */}
+            <div className="fixed left-6 top-0 w-[1px] h-full bg-black/[0.02] pointer-events-none" />
         </div>
     );
 }

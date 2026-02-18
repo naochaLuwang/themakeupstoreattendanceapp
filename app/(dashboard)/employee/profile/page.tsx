@@ -1,44 +1,39 @@
-import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
-import { User, Clock, LogOut, ChevronRight } from 'lucide-react';
+import { Suspense } from 'react';
+import ProfileWrapper from '@/components/employee/ProfileWrapper';
+import HomeSkeleton from '@/components/HomeSkeleton';
 
-export default async function ProfilePage() {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) redirect('/login');
-
-    const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-
+export default function ProfilePage() {
     return (
-        <div className="px-6 pt-10 space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-            <div className="flex items-center gap-4 px-2">
-                <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center text-white text-xl font-black uppercase">
-                    {profile?.full_name?.[0]}
-                </div>
-                <div>
-                    <h3 className="text-xl font-black text-slate-900">{profile?.full_name}</h3>
-                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">
-                        {profile?.role} • Staff
+        <div className="relative min-h-screen bg-[#FAFAFA] animate-in fade-in duration-700">
+            {/* Poster Element: Massive Ghost Branding */}
+            <div className="absolute top-4 left-6 pointer-events-none select-none overflow-hidden">
+                <h1 className="text-[15vw] font-black opacity-[0.03] leading-[0.8] tracking-tighter uppercase whitespace-nowrap">
+                    ACCOUNT
+                </h1>
+            </div>
+
+            {/* Static Header */}
+            <header className="p-8 pt-16 relative z-10 border-b border-black/[0.03]">
+                <div className="flex items-center gap-2 mb-2">
+                    <span className="w-2 h-[2px] bg-black" />
+                    <p className="text-[10px] font-black text-black uppercase tracking-[0.4em]">
+                        Personnel_Profile
                     </p>
                 </div>
-            </div>
+                <h1 className="text-5xl font-black text-slate-900 tracking-tighter leading-none">
+                    Settings.
+                </h1>
+            </header>
 
-            <div className="bg-white rounded-[2rem] border border-slate-100 overflow-hidden shadow-sm">
-                <div className="w-full flex items-center justify-between px-6 py-5 hover:bg-slate-50 border-b border-slate-50">
-                    <div className="flex items-center gap-4 text-slate-700">
-                        <User size={18} />
-                        <span className="text-sm font-bold text-slate-900">Personal Info</span>
-                    </div>
-                    <ChevronRight size={16} className="text-slate-300" />
-                </div>
+            {/* Dynamic Content Boundary */}
+            <main className="relative z-10">
+                <Suspense fallback={<HomeSkeleton />}>
+                    <ProfileWrapper />
+                </Suspense>
+            </main>
 
-                <form action="/signout" method="post">
-                    <button className="w-full flex items-center gap-4 px-6 py-6 text-rose-500 hover:bg-rose-50 transition-colors">
-                        <LogOut size={18} />
-                        <span className="text-sm font-black uppercase tracking-widest">Sign Out</span>
-                    </button>
-                </form>
-            </div>
+            {/* Aesthetic Grid Line */}
+            <div className="fixed left-8 top-0 w-[1px] h-full bg-black/[0.03] pointer-events-none" />
         </div>
     );
 }

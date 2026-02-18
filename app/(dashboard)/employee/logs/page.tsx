@@ -1,19 +1,42 @@
-import { createClient } from '@/lib/supabase/server';
-import ActivityLogView from '@/components/employee/ActivityLogViews';
-import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import LogsWrapper from '@/components/employee/LogsWrapper';
+import HomeSkeleton from '@/components/HomeSkeleton';
 
-export default async function LogsPage() {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) redirect('/login');
-
+export default function LogsPage() {
     return (
-        <div className="animate-in fade-in duration-500">
-            <header className="p-6 pb-0">
-                <h1 className="text-2xl font-black text-slate-900 uppercase">Work Logs</h1>
-                <p className="text-xs font-bold text-slate-400">History of your clock-ins</p>
+        <div className="relative min-h-screen bg-[#FAFAFA] animate-in fade-in duration-700">
+            {/* Poster Element: Massive Ghost Branding */}
+            <div className="absolute top-4 left-6 pointer-events-none select-none overflow-hidden">
+                <h1 className="text-[15vw] font-black opacity-[0.03] leading-[0.8] tracking-tighter uppercase whitespace-nowrap">
+                    HISTORY
+                </h1>
+            </div>
+
+            {/* Static Header */}
+            <header className="p-8 pt-16 relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                    <span className="w-2 h-[2px] bg-black" />
+                    <p className="text-[10px] font-black text-black uppercase tracking-[0.4em]">
+                        Activity_Terminal
+                    </p>
+                </div>
+                <h1 className="text-5xl font-black text-slate-900 tracking-tighter leading-none">
+                    Work<br />Logs.
+                </h1>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-4">
+                    Verified Clock-In History
+                </p>
             </header>
-            <ActivityLogView userId={user.id} />
+
+            {/* Dynamic Content Boundary */}
+            <main className="px-4 relative z-10">
+                <Suspense fallback={<HomeSkeleton />}>
+                    <LogsWrapper />
+                </Suspense>
+            </main>
+
+            {/* Aesthetic Grid Line */}
+            <div className="fixed left-8 top-0 w-[1px] h-full bg-black/[0.03] pointer-events-none" />
         </div>
     );
 }
