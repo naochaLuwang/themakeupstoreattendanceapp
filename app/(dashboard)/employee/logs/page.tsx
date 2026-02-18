@@ -13,7 +13,7 @@ export default function LogsPage() {
             </div>
 
             {/* Static Header */}
-            <header className="p-8 pt-16 relative z-10">
+            {/* <header className="p-8 pt-16 relative z-10">
                 <div className="flex items-center gap-2 mb-2">
                     <span className="w-2 h-[2px] bg-black" />
                     <p className="text-[10px] font-black text-black uppercase tracking-[0.4em]">
@@ -26,10 +26,10 @@ export default function LogsPage() {
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-4">
                     Verified Clock-In History
                 </p>
-            </header>
+            </header> */}
 
             {/* Dynamic Content Boundary */}
-            <main className="px-4 relative z-10">
+            <main className="px-4 pt-16 relative z-10">
                 <Suspense fallback={<HomeSkeleton />}>
                     <LogsWrapper />
                 </Suspense>

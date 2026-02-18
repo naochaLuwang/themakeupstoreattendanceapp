@@ -13,7 +13,7 @@ export default function LeavePage() {
             </div>
 
             {/* Static Header */}
-            <header className="p-8 pt-16 relative z-10">
+            {/* <header className="p-8 pt-16 relative z-10">
                 <div className="flex items-center gap-2 mb-2">
                     <span className="w-2 h-[2px] bg-indigo-600" />
                     <p className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.4em]">
@@ -26,17 +26,17 @@ export default function LeavePage() {
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-4">
                     Schedule & Absence Management
                 </p>
-            </header>
+            </header> */}
 
             {/* Dynamic Content Boundary */}
-            <main className="px-4 relative z-10">
+            <main className="px-4 pt-12 relative z-10">
                 <Suspense fallback={<HomeSkeleton />}>
                     <LeaveWrapper />
                 </Suspense>
             </main>
 
             {/* Aesthetic Grid Line - Positioned to align with the text edge */}
-            <div className="fixed left-8 top-0 w-[1px] h-full bg-black/[0.03] pointer-events-none" />
+            {/* <div className="fixed left-8 top-0 w-[1px] h-full bg-black/[0.03] pointer-events-none" /> */}
         </div>
     );
 }

@@ -12,6 +12,8 @@ export default function AdminNav() {
         { href: '/admin/schedule', label: 'Planner', icon: <Calendar size={18} /> },
         { href: '/admin/leaves', label: 'Leaves', icon: <Palmtree size={18} /> },
         { href: '/admin/overrides', label: 'Alerts', icon: <AlertOctagon size={18} /> },
+        { href: '/admin/roaster', label: 'Calendar', icon: <Calendar size={18} /> },
+
     ];
 
     return (

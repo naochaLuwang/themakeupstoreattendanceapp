@@ -53,7 +53,7 @@ export default async function ProfileWrapper() {
                     <ChevronRight size={16} className="text-slate-300" />
                 </div>
 
-                <form action="/auth/signout" method="post">
+                <form action="/signout" method="post">
                     <button className="w-full flex items-center gap-5 px-8 py-8 text-rose-500 hover:bg-rose-50/50 transition-all group">
                         <div className="w-10 h-10 rounded-2xl bg-rose-50 flex items-center justify-center group-hover:bg-rose-500 group-hover:text-white transition-all">
                             <LogOut size={18} />

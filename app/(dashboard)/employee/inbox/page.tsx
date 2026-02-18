@@ -19,14 +19,14 @@ export default async function InboxPage() {
 
 
 
-            <main className="px-4 relative z-10 max-w-2xl">
+            <main className="px-4 pt-12 relative z-10 max-w-2xl">
                 <Suspense fallback={<HomeSkeleton />}>
                     <InboxWrapper />
                 </Suspense>
             </main>
 
             {/* Subtle Aesthetic Grid Line */}
-            <div className="fixed left-6 top-0 w-[1px] h-full bg-black/[0.02] pointer-events-none" />
+            {/* <div className="fixed left-6 top-0 w-[1px] h-full bg-black/[0.02] pointer-events-none" /> */}
         </div>
     );
 }
