@@ -545,7 +545,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
     };
 
     return (
-        <div className="max-w-auto mx-auto space-y-8 font-sans pb-24">
+        <div className="max-w-auto mx-auto space-y-8 font-sans pb-20">
             <AnimatePresence>
                 {toast && (
                     <motion.div initial={{ y: -50, opacity: 0 }} animate={{ y: 20, opacity: 1 }} exit={{ y: -50, opacity: 0 }}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline | Daciana Archive</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: white;
+            text-align: center;
+            color: #1a1a1a;
+        }
+
+        .content {
+            max-width: 300px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-family: serif;
+            font-style: italic;
+            font-weight: normal;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #a1a1a1;
+            line-height: 2;
+        }
+
+        .retry-btn {
+            margin-top: 30px;
+            display: inline-block;
+            padding: 15px 30px;
+            border: 1px solid #000;
+            text-decoration: none;
+            color: black;
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <h1>Connection Lost.</h1>
+        <p>The Archive requires an internet connection to sync the latest collections.</p>
+        <div class="retry-btn" onclick="window.location.reload()">Retry Connection</div>
+    </div>
+</body>
+
+</html>

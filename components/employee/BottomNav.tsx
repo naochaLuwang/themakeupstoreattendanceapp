@@ -1,14 +1,23 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Home, History, Inbox, CalendarDays, User } from 'lucide-react';
 
 export default function BottomNav({ userId, initialCount }: { userId: string, initialCount: number }) {
     const pathname = usePathname();
+    const router = useRouter(); // Added for manual navigation if needed
     const supabase = createClient();
     const [pendingCount, setPendingCount] = useState(initialCount);
+
+    // --- HAPTIC FEEDBACK HELPER ---
+    const triggerHaptic = () => {
+        if (typeof window !== 'undefined' && window.navigator.vibrate) {
+            // Short 10ms pulse for a "click" feel
+            window.navigator.vibrate(10);
+        }
+    };
 
     useEffect(() => {
         const channel = supabase.channel('nav-inbox')
@@ -42,7 +51,12 @@ export default function BottomNav({ userId, initialCount }: { userId: string, in
                 {navLinks.map((link) => {
                     const isActive = pathname === link.href;
                     return (
-                        <Link key={link.href} href={link.href} className="flex flex-col items-center justify-center flex-1 h-full relative">
+                        <Link
+                            key={link.href}
+                            href={link.href}
+                            onClick={() => triggerHaptic()} // Trigger haptic on click
+                            className="flex flex-col items-center justify-center flex-1 h-full relative"
+                        >
                             <div className={`transition-all duration-300 relative ${isActive ? 'text-slate-900 translate-y-[-2px]' : 'text-slate-300'}`}>
                                 {link.icon}
                                 {link.badge ? (
@@ -58,7 +72,8 @@ export default function BottomNav({ userId, initialCount }: { userId: string, in
                     );
                 })}
             </div>
-            <div className="h-[env(safe-area-inset-bottom)]" />
+            {/* Safe area for iPhones with notches */}
+            <div className="h-[env(safe-area-inset-bottom,16px)] bg-white/80" />
         </nav>
     );
 }
