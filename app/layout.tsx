@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: "%s | THE MAKEUP STORE WANGKHEI",
   },
   description: "Attendance tracking app for THE MAKEUP STORE WANGKHEI employees.",
-  manifest: "/manifest.webmanifest",
+  // manifest: "/manifest.webmanifest",
   other: {
     "mobile-web-app-capable": "yes",
   },

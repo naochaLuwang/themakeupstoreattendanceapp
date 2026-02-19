@@ -3,6 +3,20 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 // 1. Rename this function to 'proxy'
 export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // --- PWA ESCAPE HATCH ---
+  // If it's a PWA system file, let it through immediately without checking Auth
+  if (
+    pathname === '/manifest.webmanifest' ||
+    pathname === '/sw.js' ||
+    pathname.startsWith('/icons/') ||
+    pathname.startsWith('/workbox-') ||
+    pathname.startsWith('/fallback-')
+  ) {
+    return NextResponse.next();
+  }
+
   let response = NextResponse.next({
     request: { headers: request.headers },
   })
@@ -25,18 +39,24 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   // Redirect logic
-  if (!user && !request.nextUrl.pathname.startsWith('/login')) {
+  if (!user && !pathname.startsWith('/login')) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  if (user && request.nextUrl.pathname.startsWith('/login')) {
+  if (user && pathname.startsWith('/login')) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 
   return response
 }
-
 // 2. Keep your config as is
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  matcher: [
+    /*
+     * Match all request paths except:
+     * 1. Next.js internals and static files
+     * 2. PWA generated files (sw, manifest, fallback)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico|manifest.webmanifest|manifest.json|sw.js|workbox-.*|fallback-.*|icons).*)',
+  ],
 }

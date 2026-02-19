@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
         name: 'MUS Attendance',
         short_name: 'MUS Attendance',
         description: 'Track attendance for Makeup Store employees.',
-        start_url: '/',
+        start_url: '/login',
         display: 'standalone',
         background_color: '#ffffff',
         theme_color: '#000000',
