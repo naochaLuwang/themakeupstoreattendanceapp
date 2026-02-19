@@ -57,6 +57,7 @@
 'use client';
 import { Suspense } from 'react';
 import LoginForm from '@/components/LoginForm';
+import InstallPWA from '@/components/InstallPWA';
 
 export default function LoginPage() {
     return (
@@ -125,6 +126,7 @@ export default function LoginPage() {
                 </Suspense>
             </div>
 
+            <InstallPWA />
             {/* Background Grid Accent - Reduced columns for mobile visibility */}
             <div className="absolute inset-0 grid grid-cols-4 md:grid-cols-6 pointer-events-none opacity-[0.01]">
                 <div className="border-r border-black h-full" />
