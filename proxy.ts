@@ -8,11 +8,11 @@ export async function proxy(request: NextRequest) {
   // --- PWA ESCAPE HATCH ---
   // If it's a PWA system file, let it through immediately without checking Auth
   if (
-    pathname === '/manifest.webmanifest' ||
-    pathname === '/sw.js' ||
-    pathname.startsWith('/icons/') ||
-    pathname.startsWith('/workbox-') ||
-    pathname.startsWith('/fallback-')
+    pathname.endsWith('.png') ||
+    pathname.endsWith('.ico') ||
+    pathname.endsWith('.webmanifest') ||
+    pathname.startsWith('/sw.js') ||
+    pathname.startsWith('/workbox-')
   ) {
     return NextResponse.next();
   }
