@@ -73,7 +73,7 @@ export default function BottomNav({ userId, initialCount }: { userId: string, in
                 })}
             </div>
             {/* Safe area for iPhones with notches */}
-            <div className="h-[env(safe-area-inset-bottom,16px)] bg-white/80" />
+            <div className="h-[env(safe-area-inset-bottom,16px)] bg-white" />
         </nav>
     );
 }

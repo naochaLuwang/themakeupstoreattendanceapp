@@ -1,3 +1,4 @@
+import InstallPWA from "@/components/InstallPWA";
 import "./globals.css";
 import NextTopLoader from 'nextjs-toploader';
 
@@ -16,7 +17,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           speed={200}
           shadow="0 0 10px #0f172a,0 0 5px #0f172a"
         />
-        {children}
+        <main>
+          {children}
+        </main>
+        <InstallPWA />
       </body>
     </html>
   );
