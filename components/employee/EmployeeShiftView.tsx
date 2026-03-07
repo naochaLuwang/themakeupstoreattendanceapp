@@ -1,5 +1,3 @@
-
-
 // 'use client';
 // import { useState, useEffect, useRef } from 'react';
 // import { createClient } from '@/lib/supabase/client';
@@ -38,6 +36,46 @@
 //         setTimeout(() => setToast(null), 3000);
 //     };
 
+//     // --- AUTO CHECKOUT LOGIC ---
+//     const AUTO_CHECKOUT_THRESHOLD = 2 * 60 * 60 * 1000; // 2 Hours in ms
+
+//     const checkAndForceCheckout = async (record: any) => {
+//         if (!record.shifts?.end_time) return false;
+
+//         const now = new Date();
+//         const checkInDate = record.check_in.split('T')[0];
+
+//         // We combine the date of check-in with the shift's end time.
+//         // Appending 'Z' tells JS this is UTC, matching Supabase's storage.
+//         const shiftEndStr = `${checkInDate}T${record.shifts.end_time}Z`;
+//         const shiftEndTime = new Date(shiftEndStr);
+
+//         // Debugging logs - Check these in your browser console
+//         console.log("Auto-Checkout Check:", {
+//             currentTime: now.toISOString(),
+//             shiftEnd: shiftEndTime.toISOString(),
+//             thresholdTime: new Date(shiftEndTime.getTime() + AUTO_CHECKOUT_THRESHOLD).toISOString()
+//         });
+
+//         if (now.getTime() > shiftEndTime.getTime() + AUTO_CHECKOUT_THRESHOLD) {
+//             const { error } = await supabase
+//                 .from('attendance')
+//                 .update({
+//                     check_out: shiftEndTime.toISOString(),
+//                     is_auto_checkout: true
+//                 })
+//                 .eq('id', record.id);
+
+//             if (!error) {
+//                 if (timerRef.current) clearInterval(timerRef.current);
+//                 setAttendanceStatus('completed');
+//                 showToast("System: Auto-checkout applied", "success");
+//                 return true;
+//             }
+//         }
+//         return false;
+//     };
+
 //     const startTimer = (startTimeISO: string) => {
 //         if (timerRef.current) clearInterval(timerRef.current);
 //         const updateCounter = () => {
@@ -59,15 +97,12 @@
 //         return { time: `${hours12}:${minutes.toString().padStart(2, '0')}`, period };
 //     };
 
-//     // 1. Unified Fetch Data (Now including Leave Requests)
 //     const fetchEverything = async () => {
 //         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 //         const firstDayIdx = new Date(currentYear, currentMonth, 1).getDay();
-
 //         const monthStart = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-01`;
 //         const monthEnd = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
 
-//         // Fetch Shifts, Profiles, and Swap Requests
 //         const [shiftsRes, profilesRes, swapsRes, leavesRes] = await Promise.all([
 //             supabase.from('shifts').select('*').eq('employee_id', userId).gte('start_time', `${monthStart}T00:00:00Z`).lte('start_time', `${monthEnd}T23:59:59Z`),
 //             supabase.from('profiles').select('id, full_name').neq('id', userId),
@@ -78,14 +113,12 @@
 
 //         const shifts = shiftsRes.data || [];
 //         const leaves = leavesRes.data || [];
-
 //         const blanks = Array.from({ length: firstDayIdx }, () => ({ day: null }));
 //         const days = Array.from({ length: daysInMonth }, (_, i) => {
 //             const dayNum = i + 1;
 //             const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
 //             const currentDate = new Date(dateStr);
 
-//             // Logic: Check if current day falls within any approved leave range
 //             const leaveOnThisDay = leaves.find(l => {
 //                 const start = new Date(l.start_date);
 //                 const end = new Date(l.end_date);
@@ -120,21 +153,60 @@
 //         return () => { supabase.removeChannel(channel); };
 //     }, [userId, currentMonth, currentYear]);
 
+//     const init = async () => {
+//         const { data: profile } = await supabase.from('profiles').select('*, stores(*)').eq('id', userId).single();
+//         if (profile?.stores) setStoreInfo(profile.stores);
+
+//         const today = new Date();
+//         today.setHours(0, 0, 0, 0);
+
+//         // Fetch current active attendance record including shift end time for auto-checkout check
+//         const { data: record } = await supabase
+//             .from('attendance')
+//             .select('*, shifts(end_time)')
+//             .eq('employee_id', userId)
+//             .is('check_out', null)
+//             .order('check_in', { ascending: false })
+//             .limit(1)
+//             .maybeSingle();
+
+//         if (record) {
+//             const wasAutoChecked = await checkAndForceCheckout(record);
+//             if (!wasAutoChecked) {
+//                 setAttendanceStatus('active');
+//                 startTimer(record.check_in);
+//             }
+//         } else {
+//             const { data: todayDone } = await supabase
+//                 .from('attendance')
+//                 .select('id')
+//                 .eq('employee_id', userId)
+//                 .gte('check_in', today.toISOString())
+//                 .not('check_out', 'is', null)
+//                 .limit(1);
+
+//             if (todayDone && todayDone.length > 0) setAttendanceStatus('completed');
+//             else setAttendanceStatus('idle');
+//         }
+//     };
+
 //     useEffect(() => {
-//         const init = async () => {
-//             const { data: profile } = await supabase.from('profiles').select('*, stores(*)').eq('id', userId).single();
-//             if (profile?.stores) setStoreInfo(profile.stores);
-
-//             const today = new Date();
-//             today.setHours(0, 0, 0, 0);
-//             const { data: record } = await supabase.from('attendance').select('*').eq('employee_id', userId).gte('check_in', today.toISOString()).order('check_in', { ascending: false }).limit(1).maybeSingle();
-
-//             if (record) {
-//                 if (record.check_out) setAttendanceStatus('completed');
-//                 else { setAttendanceStatus('active'); startTimer(record.check_in); }
-//             } else setAttendanceStatus('idle');
-//         };
 //         init();
+
+//         // RESYNC ON FOCUS: Handles users reopening the PWA from the background
+//         const handleVisibilityChange = () => {
+//             if (document.visibilityState === 'visible') {
+//                 console.log("App focused: Refreshing state...");
+//                 init();
+//             }
+//         };
+
+//         window.addEventListener('visibilitychange', handleVisibilityChange);
+
+//         return () => {
+//             window.removeEventListener('visibilitychange', handleVisibilityChange);
+//             if (timerRef.current) clearInterval(timerRef.current);
+//         };
 //     }, [userId]);
 
 //     const activeDayData = schedule.find(d => d.day === selectedDay);
@@ -152,14 +224,27 @@
 //                 is_within_geofence: true, shift_id: activeDayData?.id, store_id: storeInfo?.id
 //             }]);
 //             if (!error) { setAttendanceStatus('active'); startTimer(checkInTime); }
-//             else setAttendanceStatus('idle');
+//             else {
+//                 setAttendanceStatus('idle');
+//                 showToast("Clock-in failed. Try again.");
+//             }
+//         }, (err) => {
+//             setAttendanceStatus('idle');
+//             showToast("Location access required to clock in.");
 //         });
 //     };
 
 //     const handleClockOut = async () => {
 //         setAttendanceStatus('loading');
 //         const { error } = await supabase.from('attendance').update({ check_out: new Date().toISOString() }).eq('employee_id', userId).is('check_out', null);
-//         if (!error) { if (timerRef.current) clearInterval(timerRef.current); setAttendanceStatus('completed'); }
+//         if (!error) {
+//             if (timerRef.current) clearInterval(timerRef.current);
+//             setAttendanceStatus('completed');
+//             showToast("Shift completed", "success");
+//         } else {
+//             setAttendanceStatus('active');
+//             showToast("Clock-out failed.");
+//         }
 //     };
 
 //     const getTheme = (d: any) => {
@@ -338,7 +423,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     ChevronLeft, ChevronRight, CheckCircle2, Clock, X, User,
     Navigation, Loader2, LogOut, History, AlertCircle,
-    MapPin, LifeBuoy, ArrowLeftRight, Bell, Check, Ban, CalendarDays
+    MapPin, LifeBuoy, ArrowLeftRight, Bell, Check, Ban,
+    CalendarDays, RefreshCcw, ArrowRight
 } from 'lucide-react';
 
 export default function EmployeeShiftView({ userId }: { userId: string }) {
@@ -349,11 +435,15 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
     const [storeInfo, setStoreInfo] = useState<any>(null);
     const [toast, setToast] = useState<{ msg: string; type: 'error' | 'success' } | null>(null);
 
-    // Swap & Inbox States
+    // Swap & Request States
     const [isSwapModalOpen, setIsSwapModalOpen] = useState(false);
+    const [isWeekOffModalOpen, setIsWeekOffModalOpen] = useState(false);
     const [colleagues, setColleagues] = useState<any[]>([]);
     const [selectedColleague, setSelectedColleague] = useState<string | null>(null);
-    const [incomingRequests, setIncomingRequests] = useState<any[]>([]);
+
+    // Week Off Change State
+    const [woSourceDay, setWoSourceDay] = useState<any>(null);
+    const [woTargetDay, setWoTargetDay] = useState<any>(null);
 
     // Attendance & Timer
     const [elapsedTime, setElapsedTime] = useState('00:00:00');
@@ -367,37 +457,6 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
     const showToast = (msg: string, type: 'error' | 'success' = 'error') => {
         setToast({ msg, type });
         setTimeout(() => setToast(null), 3000);
-    };
-
-    // --- AUTO CHECKOUT LOGIC ---
-    const AUTO_CHECKOUT_THRESHOLD = 2 * 60 * 60 * 1000; // 2 Hours in ms
-
-    const checkAndForceCheckout = async (record: any) => {
-        if (!record.shifts?.end_time) return false;
-
-        const now = new Date();
-        const checkInDate = record.check_in.split('T')[0];
-        // Combine the date they clocked in with the scheduled shift end time
-        const shiftEndTime = new Date(`${checkInDate}T${record.shifts.end_time}`);
-
-        // If current time > (shift end + 2 hours)
-        if (now.getTime() > shiftEndTime.getTime() + AUTO_CHECKOUT_THRESHOLD) {
-            const { error } = await supabase
-                .from('attendance')
-                .update({
-                    check_out: shiftEndTime.toISOString(),
-                    is_auto_checkout: true
-                })
-                .eq('id', record.id);
-
-            if (!error) {
-                if (timerRef.current) clearInterval(timerRef.current);
-                setAttendanceStatus('completed');
-                showToast("System: Auto-checkout applied (Stale Session)", "success");
-                return true;
-            }
-        }
-        return false;
     };
 
     const startTimer = (startTimeISO: string) => {
@@ -427,10 +486,9 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
         const monthStart = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-01`;
         const monthEnd = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
 
-        const [shiftsRes, profilesRes, swapsRes, leavesRes] = await Promise.all([
+        const [shiftsRes, profilesRes, leavesRes] = await Promise.all([
             supabase.from('shifts').select('*').eq('employee_id', userId).gte('start_time', `${monthStart}T00:00:00Z`).lte('start_time', `${monthEnd}T23:59:59Z`),
             supabase.from('profiles').select('id, full_name').neq('id', userId),
-            supabase.from('swap_requests').select('*, profiles!requestor_id(full_name)').eq('receiver_id', userId).eq('status', 'pending'),
             supabase.from('leave_requests').select('*').eq('employee_id', userId).eq('status', 'approved')
                 .or(`start_date.lte.${monthEnd},end_date.gte.${monthStart}`)
         ]);
@@ -465,57 +523,24 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
 
         setSchedule([...blanks, ...days]);
         setColleagues(profilesRes.data || []);
-        setIncomingRequests(swapsRes.data || []);
     };
 
     useEffect(() => {
         fetchEverything();
-        const channel = supabase.channel('global_sync')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'shifts' }, fetchEverything)
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'leave_requests' }, fetchEverything)
-            .subscribe();
-        return () => { supabase.removeChannel(channel); };
     }, [userId, currentMonth, currentYear]);
 
+    const init = async () => {
+        const { data: profile } = await supabase.from('profiles').select('*, stores(*)').eq('id', userId).single();
+        if (profile?.stores) setStoreInfo(profile.stores);
+
+        const { data: record } = await supabase.from('attendance').select('*').eq('employee_id', userId).is('check_out', null).maybeSingle();
+        if (record) {
+            setAttendanceStatus('active');
+            startTimer(record.check_in);
+        }
+    };
+
     useEffect(() => {
-        const init = async () => {
-            const { data: profile } = await supabase.from('profiles').select('*, stores(*)').eq('id', userId).single();
-            if (profile?.stores) setStoreInfo(profile.stores);
-
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            // Fetch current active attendance record including shift end time
-            const { data: record } = await supabase
-                .from('attendance')
-                .select('*, shifts(end_time)')
-                .eq('employee_id', userId)
-                .is('check_out', null)
-                .order('check_in', { ascending: false })
-                .limit(1)
-                .maybeSingle();
-
-            if (record) {
-                // Perform Auto-Checkout Check immediately
-                const wasAutoChecked = await checkAndForceCheckout(record);
-                if (!wasAutoChecked) {
-                    setAttendanceStatus('active');
-                    startTimer(record.check_in);
-                }
-            } else {
-                // If no active session, check if today is completed
-                const { data: todayDone } = await supabase
-                    .from('attendance')
-                    .select('id')
-                    .eq('employee_id', userId)
-                    .gte('check_in', today.toISOString())
-                    .not('check_out', 'is', null)
-                    .limit(1);
-
-                if (todayDone && todayDone.length > 0) setAttendanceStatus('completed');
-                else setAttendanceStatus('idle');
-            }
-        };
         init();
         return () => { if (timerRef.current) clearInterval(timerRef.current); };
     }, [userId]);
@@ -523,10 +548,6 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
     const activeDayData = schedule.find(d => d.day === selectedDay);
 
     const handleClockIn = async () => {
-        const now = new Date();
-        if (selectedDay !== now.getDate() || currentMonth !== now.getMonth()) return showToast("Only for today.");
-        if (activeDayData?.isLeave) return showToast("You are on leave today.");
-
         setAttendanceStatus('loading');
         navigator.geolocation.getCurrentPosition(async (pos) => {
             const checkInTime = new Date().toISOString();
@@ -535,25 +556,55 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                 is_within_geofence: true, shift_id: activeDayData?.id, store_id: storeInfo?.id
             }]);
             if (!error) { setAttendanceStatus('active'); startTimer(checkInTime); }
-            else setAttendanceStatus('idle');
-        });
+            else { setAttendanceStatus('idle'); showToast("Clock-in failed."); }
+        }, () => { setAttendanceStatus('idle'); showToast("Location required."); });
     };
 
     const handleClockOut = async () => {
         setAttendanceStatus('loading');
         const { error } = await supabase.from('attendance').update({ check_out: new Date().toISOString() }).eq('employee_id', userId).is('check_out', null);
-        if (!error) { if (timerRef.current) clearInterval(timerRef.current); setAttendanceStatus('completed'); }
+        if (!error) {
+            if (timerRef.current) clearInterval(timerRef.current);
+            setAttendanceStatus('completed');
+            showToast("Shift completed", "success");
+        }
     };
 
+    const handleWeekOffRequest = async () => {
+        if (!woSourceDay || !woTargetDay) return;
+
+        const { error } = await supabase.from('swap_requests').insert([{
+            requestor_id: userId,
+            receiver_id: userId,
+            shift_id: woTargetDay.id,
+            message: `Week Off Change: Move OFF from ${woSourceDay.fullDate} to ${woTargetDay.fullDate}`,
+            status: 'pending'
+        }]);
+
+        if (!error) {
+            showToast("Change request sent to Admin", "success");
+            setIsWeekOffModalOpen(false);
+            setWoSourceDay(null);
+            setWoTargetDay(null);
+        } else {
+            showToast("Request failed.");
+        }
+    };
+
+    // --- REVERTED THEME LOGIC TO PASTEL GREEN/BLUE ---
     const getTheme = (d: any) => {
         if (!d.day) return { bg: 'bg-transparent', text: 'text-transparent' };
         if (d.isLeave) return { bg: 'bg-amber-50', text: 'text-amber-700', label: 'On Leave' };
         if (!d.active) return { bg: 'bg-rose-50/50', text: 'text-rose-400', label: 'Off' };
 
-        const lower = (d.label || '').toLowerCase();
-        if (lower.includes('morning')) return { bg: 'bg-emerald-50', text: 'text-emerald-700', label: 'Morning' };
-        if (lower.includes('evening')) return { bg: 'bg-blue-50', text: 'text-blue-700', label: 'Evening' };
-        return { bg: 'bg-slate-50', text: 'text-slate-700', label: 'Shift' };
+        const lowerLabel = (d.label || '').toLowerCase();
+        if (lowerLabel.includes('morning')) {
+            return { bg: 'bg-emerald-50', text: 'text-emerald-700', label: 'Morning' };
+        }
+        if (lowerLabel.includes('evening')) {
+            return { bg: 'bg-blue-50', text: 'text-blue-700', label: 'Evening' };
+        }
+        return { bg: 'bg-slate-50', text: 'text-slate-700', label: 'Regular' };
     };
 
     return (
@@ -561,7 +612,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
             <AnimatePresence>
                 {toast && (
                     <motion.div initial={{ y: -50, opacity: 0 }} animate={{ y: 20, opacity: 1 }} exit={{ y: -50, opacity: 0 }}
-                        className={`fixed top-0 left-6 right-6 z-[200] p-4 rounded-2xl shadow-2xl flex items-center gap-3 border ${toast.type === 'error' ? 'bg-white border-rose-100 text-rose-600' : 'bg-white border-emerald-100 text-emerald-600'}`}>
+                        className={`fixed top-0 left-6 right-6 z-[200] p-4 rounded-2xl shadow-2xl flex items-center gap-3 border bg-white ${toast.type === 'error' ? 'border-rose-100 text-rose-600' : 'border-emerald-100 text-emerald-600'}`}>
                         {toast.type === 'error' ? <AlertCircle size={18} /> : <CheckCircle2 size={18} />}
                         <span className="text-xs font-bold uppercase tracking-wide">{toast.msg}</span>
                     </motion.div>
@@ -577,11 +628,9 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                         <MapPin size={10} /> {storeInfo?.name || 'Roster'}
                     </p>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="flex bg-slate-50 rounded-full p-1">
-                        <button onClick={() => setViewDate(new Date(currentYear, currentMonth - 1))} className="p-2 hover:bg-white hover:shadow-sm rounded-full transition-all"><ChevronLeft size={16} /></button>
-                        <button onClick={() => setViewDate(new Date(currentYear, currentMonth + 1))} className="p-2 hover:bg-white hover:shadow-sm rounded-full transition-all"><ChevronRight size={16} /></button>
-                    </div>
+                <div className="flex bg-slate-50 rounded-full p-1">
+                    <button onClick={() => setViewDate(new Date(currentYear, currentMonth - 1))} className="p-2 hover:bg-white rounded-full transition-all"><ChevronLeft size={16} /></button>
+                    <button onClick={() => setViewDate(new Date(currentYear, currentMonth + 1))} className="p-2 hover:bg-white rounded-full transition-all"><ChevronRight size={16} /></button>
                 </div>
             </header>
 
@@ -595,11 +644,10 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                     const theme = getTheme(d);
                     return (
                         <button key={idx} disabled={!d.day} onClick={() => d.day && setSelectedDay(d.day)}
-                            className={`aspect-square relative flex items-center justify-center rounded-xl text-[11px] font-semibold transition-all duration-300
+                            className={`aspect-square relative flex items-center justify-center rounded-xl text-[11px] font-semibold transition-all
                                 ${d.day ? theme.bg : ''} ${d.day ? theme.text : ''}
                                 ${isSelected ? 'ring-2 ring-slate-900 ring-offset-2 scale-90 z-10 !bg-slate-900 !text-white' : 'hover:opacity-80'}`}>
                             {d.day}
-                            {d.isLeave && !isSelected && <span className="absolute bottom-1.5 w-1 h-1 bg-amber-400 rounded-full" />}
                         </button>
                     );
                 })}
@@ -608,28 +656,26 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
             {/* Details Card */}
             <div className="relative">
                 <AnimatePresence mode="wait">
-                    {activeDayData?.isLeave ? (
-                        <motion.div key="leave" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-amber-50 border border-amber-100 rounded-[2.5rem] p-10 text-center space-y-4">
-                            <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center mx-auto shadow-sm text-amber-500">
+                    {!activeDayData?.active && activeDayData?.day ? (
+                        <motion.div key="off-day" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-rose-50 border border-rose-100 rounded-[2.5rem] p-8 text-center space-y-6">
+                            <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center mx-auto shadow-sm text-rose-400">
                                 <Ban size={32} />
                             </div>
                             <div className="space-y-1">
-                                <h4 className="text-xl font-black text-amber-900 uppercase tracking-tight">Approved Leave</h4>
-                                <p className="text-xs text-amber-700/60 font-medium">Your request for time off on this date was approved.</p>
+                                <h4 className="text-xl font-black text-rose-900 uppercase">Weekly Off</h4>
+                                <p className="text-xs text-rose-700/60 font-medium">No work scheduled for today.</p>
                             </div>
-                            <div className="pt-4">
-                                <span className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-[10px] font-black text-amber-600 uppercase tracking-widest border border-amber-100">
-                                    <CalendarDays size={12} /> Time Off Active
-                                </span>
-                            </div>
+                            <button onClick={() => setIsWeekOffModalOpen(true)} className="flex items-center gap-2 mx-auto bg-white px-5 py-2.5 rounded-full text-[10px] font-black text-rose-600 uppercase tracking-widest border border-rose-100 active:scale-95 transition-all">
+                                <RefreshCcw size={12} /> Request Change
+                            </button>
                         </motion.div>
                     ) : activeDayData?.active ? (
-                        <motion.div key="shift" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="space-y-4">
+                        <motion.div key="shift" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="space-y-4">
                             <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-sm">
                                 <div className="space-y-8">
                                     <div className="flex justify-between items-start">
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Shift Type</p>
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Shift</p>
                                             <h4 className="text-sm font-semibold text-slate-900 italic">{getTheme(activeDayData).label} Session</h4>
                                         </div>
                                         {attendanceStatus === 'active' && (
@@ -640,7 +686,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                                         )}
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Scheduled</p>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Working Hours</p>
                                         <div className="flex items-baseline gap-2">
                                             <span className="text-4xl font-light tracking-tighter text-slate-900">{activeDayData.start.time}</span>
                                             <span className="text-[10px] font-black text-slate-300 uppercase">{activeDayData.start.period}</span>
@@ -650,9 +696,11 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-between pt-6 border-t border-slate-50">
-                                        <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wide flex items-center gap-1.5"><Clock size={12} /> Status</span>
-                                        <button onClick={() => setIsSwapModalOpen(true)} className="text-[10px] font-black text-slate-900 uppercase tracking-widest border-b-2 border-slate-100 pb-0.5 flex items-center gap-1">
-                                            <ArrowLeftRight size={10} /> Trade Shift
+                                        <button onClick={() => setIsSwapModalOpen(true)} className="text-[10px] font-black text-slate-900 uppercase tracking-widest flex items-center gap-1">
+                                            <ArrowLeftRight size={10} /> Peer Swap
+                                        </button>
+                                        <button onClick={() => setIsWeekOffModalOpen(true)} className="text-[10px] font-black text-rose-600 uppercase tracking-widest flex items-center gap-1">
+                                            <RefreshCcw size={10} /> Shift Week Off
                                         </button>
                                     </div>
                                 </div>
@@ -683,29 +731,88 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                 </AnimatePresence>
             </div>
 
-            {/* Swap Modal */}
+            {/* Week Off Change Modal */}
+            <AnimatePresence>
+                {isWeekOffModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-end justify-center px-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsWeekOffModalOpen(false)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
+                        <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: 'spring', damping: 25 }}
+                            className="relative w-full max-w-md bg-white rounded-t-[3rem] p-8 pb-12 overflow-hidden">
+                            <div className="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-8" />
+                            <div className="space-y-8">
+                                <div>
+                                    <h3 className="text-xl font-bold tracking-tight text-slate-900">Move Your Week Off</h3>
+                                    <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Swap your OFF day with a Work day</p>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-3">
+                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Current Off Day</p>
+                                        <div className="max-h-40 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
+                                            {schedule.filter(d => d.day && !d.active).map(d => (
+                                                <button key={d.day} onClick={() => setWoSourceDay(d)} className={`w-full text-left p-3 rounded-xl text-[10px] font-bold transition-all ${woSourceDay?.day === d.day ? 'bg-rose-500 text-white shadow-md' : 'bg-slate-50 text-slate-600'}`}>
+                                                    {d.day} {new Intl.DateTimeFormat('en-US', { month: 'short' }).format(viewDate)}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Desired Off Day</p>
+                                        <div className="max-h-40 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
+                                            {schedule.filter(d => d.day && d.active).map(d => (
+                                                <button key={d.day} onClick={() => setWoTargetDay(d)} className={`w-full text-left p-3 rounded-xl text-[10px] font-bold transition-all ${woTargetDay?.day === d.day ? 'bg-slate-900 text-white shadow-md' : 'bg-slate-50 text-slate-600'}`}>
+                                                    {d.day} {new Intl.DateTimeFormat('en-US', { month: 'short' }).format(viewDate)}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {woSourceDay && woTargetDay && (
+                                    <div className="bg-slate-50 p-4 rounded-2xl flex items-center justify-between border border-slate-100">
+                                        <div className="text-center">
+                                            <p className="text-[8px] font-bold text-slate-400 uppercase">Current Off</p>
+                                            <p className="text-xs font-black text-slate-900">{woSourceDay.day} (OFF)</p>
+                                        </div>
+                                        <ArrowRight size={16} className="text-slate-300" />
+                                        <div className="text-center">
+                                            <p className="text-[8px] font-bold text-slate-400 uppercase">Target Day</p>
+                                            <p className="text-xs font-black text-slate-900">{woTargetDay.day} (SHIFT)</p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <button disabled={!woSourceDay || !woTargetDay} onClick={handleWeekOffRequest} className="w-full bg-slate-900 text-white py-5 rounded-[2rem] text-xs font-black uppercase tracking-widest disabled:opacity-30 transition-all shadow-lg active:scale-95">
+                                    Request Interchange
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Peer Swap Modal */}
             <AnimatePresence>
                 {isSwapModalOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-end justify-center">
+                    <div className="fixed inset-0 z-[100] flex items-end justify-center px-4">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsSwapModalOpen(false)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
-                        <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="relative w-full max-w-md bg-white rounded-t-[3rem] shadow-2xl p-8 pb-12">
+                        <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: 'spring', damping: 25 }}
+                            className="relative w-full max-w-md bg-white rounded-t-[3rem] p-8 pb-12">
                             <div className="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-8" />
                             <div className="space-y-6">
-                                <div className="space-y-1">
-                                    <h3 className="text-xl font-bold tracking-tight">Interchange Shift</h3>
-                                    <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Select a colleague to trade with</p>
-                                </div>
-                                <div className="max-h-64 overflow-y-auto space-y-2 pr-2">
+                                <h3 className="text-xl font-bold tracking-tight text-slate-900">Peer Interchange</h3>
+                                <div className="max-h-64 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
                                     {colleagues.map((c) => (
                                         <button key={c.id} onClick={() => setSelectedColleague(c.id)}
-                                            className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all border ${selectedColleague === c.id ? 'bg-slate-900 border-slate-900 text-white' : 'bg-slate-50 border-slate-50 text-slate-600'}`}>
+                                            className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${selectedColleague === c.id ? 'bg-slate-900 border-slate-900 text-white shadow-md' : 'bg-slate-50 border-slate-50 text-slate-600'}`}>
                                             <span className="text-xs font-bold uppercase tracking-tight">{c.full_name}</span>
                                             {selectedColleague === c.id && <CheckCircle2 size={16} />}
                                         </button>
                                     ))}
                                 </div>
-                                <button disabled={!selectedColleague} onClick={() => { }} className="w-full bg-slate-900 text-white py-5 rounded-[2rem] text-xs font-black uppercase tracking-widest active:scale-95 transition-all">Send Trade Request</button>
+                                <button disabled={!selectedColleague} onClick={() => setIsSwapModalOpen(false)} className="w-full bg-slate-900 text-white py-5 rounded-[2rem] text-xs font-black uppercase tracking-widest disabled:opacity-30 shadow-lg active:scale-95 transition-all">
+                                    Send Peer Request
+                                </button>
                             </div>
                         </motion.div>
                     </div>
