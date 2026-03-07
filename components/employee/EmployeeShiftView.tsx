@@ -416,6 +416,8 @@
 //         </div>
 //     );
 // }
+
+
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -457,6 +459,18 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
     const showToast = (msg: string, type: 'error' | 'success' = 'error') => {
         setToast({ msg, type });
         setTimeout(() => setToast(null), 3000);
+    };
+
+    // --- DUPLICATE REQUEST GUARD ---
+    const hasExistingRequest = async (shiftId: string) => {
+        const { data, error } = await supabase
+            .from('swap_requests')
+            .select('id')
+            .eq('shift_id', shiftId)
+            .eq('status', 'pending')
+            .maybeSingle();
+
+        return !!data;
     };
 
     const startTimer = (startTimeISO: string) => {
@@ -573,6 +587,13 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
     const handleWeekOffRequest = async () => {
         if (!woSourceDay || !woTargetDay) return;
 
+        // CHECK: Is there already a pending request for this specific shift?
+        const alreadyRequested = await hasExistingRequest(woTargetDay.id);
+        if (alreadyRequested) {
+            showToast("A request for this date is already pending.", "error");
+            return;
+        }
+
         const { error } = await supabase.from('swap_requests').insert([{
             requestor_id: userId,
             receiver_id: userId,
@@ -591,7 +612,33 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
         }
     };
 
-    // --- REVERTED THEME LOGIC TO PASTEL GREEN/BLUE ---
+    const handlePeerSwapRequest = async () => {
+        if (!selectedColleague || !activeDayData?.id) return;
+
+        // CHECK: Is there already a pending request for this specific shift?
+        const alreadyRequested = await hasExistingRequest(activeDayData.id);
+        if (alreadyRequested) {
+            showToast("This shift is already in a pending swap.", "error");
+            return;
+        }
+
+        const { error } = await supabase.from('swap_requests').insert([{
+            requestor_id: userId,
+            receiver_id: selectedColleague,
+            shift_id: activeDayData.id,
+            message: `Peer Swap: Requesting trade for ${activeDayData.fullDate}`,
+            status: 'pending'
+        }]);
+
+        if (!error) {
+            showToast("Swap request sent to colleague", "success");
+            setIsSwapModalOpen(false);
+            setSelectedColleague(null);
+        } else {
+            showToast("Swap failed to send.");
+        }
+    };
+
     const getTheme = (d: any) => {
         if (!d.day) return { bg: 'bg-transparent', text: 'text-transparent' };
         if (d.isLeave) return { bg: 'bg-amber-50', text: 'text-amber-700', label: 'On Leave' };
@@ -810,7 +857,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                                         </button>
                                     ))}
                                 </div>
-                                <button disabled={!selectedColleague} onClick={() => setIsSwapModalOpen(false)} className="w-full bg-slate-900 text-white py-5 rounded-[2rem] text-xs font-black uppercase tracking-widest disabled:opacity-30 shadow-lg active:scale-95 transition-all">
+                                <button disabled={!selectedColleague} onClick={handlePeerSwapRequest} className="w-full bg-slate-900 text-white py-5 rounded-[2rem] text-xs font-black uppercase tracking-widest disabled:opacity-30 shadow-lg active:scale-95 transition-all">
                                     Send Peer Request
                                 </button>
                             </div>
