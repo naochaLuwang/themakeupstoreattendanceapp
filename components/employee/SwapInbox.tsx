@@ -1,10 +1,211 @@
+// 'use client';
+// import { useState, useEffect, useCallback } from 'react';
+// import { createClient } from '@/lib/supabase/client';
+// import { motion, AnimatePresence } from 'framer-motion';
+// import {
+//     Inbox, ArrowDownLeft, ArrowUpRight,
+//     Check, X, Clock, Loader2, MessageSquare, RefreshCcw, User
+// } from 'lucide-react';
+
+// export default function SwapInbox({ userId }: { userId: string }) {
+//     const supabase = createClient();
+//     const [requests, setRequests] = useState<any[]>([]);
+//     const [loading, setLoading] = useState(true);
+//     const [filter, setFilter] = useState<'received' | 'sent'>('received');
+
+//     const fetchRequests = useCallback(async () => {
+//         setLoading(true);
+//         const isReceived = filter === 'received';
+
+//         let query = supabase
+//             .from('swap_requests')
+//             .select(`
+//                 *,
+//                 requestor:profiles!requestor_id(full_name),
+//                 receiver:profiles!receiver_id(full_name),
+//                 shift:shifts(*)
+//             `)
+//             .eq(isReceived ? 'receiver_id' : 'requestor_id', userId);
+
+//         // --- DYNAMIC FILTERING ---
+//         if (isReceived) {
+//             // Received Tab: Only show peer requests (Hide my own week-off moves)
+//             query = query.neq('requestor_id', 'receiver_id');
+//         }
+//         // Sent Tab: Show everything (Peer trades AND Admin week-off moves)
+
+//         const { data, error } = await query.order('created_at', { ascending: false });
+
+//         if (!error) setRequests(data || []);
+//         setLoading(false);
+//     }, [userId, filter, supabase]);
+
+//     useEffect(() => {
+//         fetchRequests();
+//     }, [fetchRequests]);
+
+//     const handleAction = async (request: any, newStatus: 'approved' | 'declined') => {
+//         if (newStatus === 'declined') {
+//             await supabase.from('swap_requests').update({ status: 'declined' }).eq('id', request.id);
+//             fetchRequests();
+//             return;
+//         }
+
+//         const shiftDate = new Date(request.shift?.start_time).toISOString().split('T')[0];
+
+//         // Find the receiver's shift to swap back to the requestor
+//         const { data: receiverShift, error: findError } = await supabase
+//             .from('shifts')
+//             .select('id')
+//             .eq('employee_id', userId)
+//             .filter('start_time', 'gte', `${shiftDate}T00:00:00Z`)
+//             .filter('start_time', 'lte', `${shiftDate}T23:59:59Z`)
+//             .maybeSingle();
+
+//         if (findError || !receiverShift) {
+//             alert("You don't have a shift on this day to interchange with!");
+//             return;
+//         }
+
+//         // Execute the atomic swap
+//         const { error: err1 } = await supabase.from('shifts').update({ employee_id: userId }).eq('id', request.shift_id);
+//         const { error: err2 } = await supabase.from('shifts').update({ employee_id: request.requestor_id }).eq('id', receiverShift.id);
+
+//         if (!err1 && !err2) {
+//             await supabase.from('swap_requests').update({ status: 'approved' }).eq('id', request.id);
+//             fetchRequests();
+//         } else {
+//             alert("Interchange failed.");
+//         }
+//     };
+
+//     return (
+//         <div className="px-6 pt-10 pb-24 max-w-md mx-auto font-sans">
+//             <header className="mb-8">
+//                 <div className="flex items-center gap-2 mb-1">
+//                     <div className="w-2 h-2 rounded-full bg-slate-900 animate-pulse" />
+//                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Activity Center</span>
+//                 </div>
+//                 <h2 className="text-3xl font-medium text-slate-900 tracking-tight">Inbox</h2>
+
+//                 <div className="flex gap-6 mt-6 border-b border-slate-100">
+//                     <TabBtn active={filter === 'received'} label="Received" onClick={() => setFilter('received')} />
+//                     <TabBtn active={filter === 'sent'} label="Sent" onClick={() => setFilter('sent')} />
+//                 </div>
+//             </header>
+
+//             <div className="space-y-4">
+//                 {loading ? (
+//                     <div className="flex justify-center py-20 opacity-20"><Loader2 className="animate-spin" /></div>
+//                 ) : requests.length > 0 ? (
+//                     <AnimatePresence mode="popLayout">
+//                         {requests.map((req) => {
+//                             const isSelfSwap = req.requestor_id === req.receiver_id;
+
+//                             return (
+//                                 <motion.div
+//                                     layout
+//                                     initial={{ opacity: 0, y: 10 }}
+//                                     animate={{ opacity: 1, y: 0 }}
+//                                     key={req.id}
+//                                     className="bg-white border border-slate-100 p-6 rounded-[2.5rem] shadow-sm hover:shadow-md transition-shadow"
+//                                 >
+//                                     <div className="flex justify-between items-start mb-6">
+//                                         <div className="flex items-center gap-4">
+//                                             <div className={`w-12 h-12 rounded-[1.2rem] flex items-center justify-center ${isSelfSwap ? 'bg-rose-50 text-rose-500' : (filter === 'received' ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-500')}`}>
+//                                                 {isSelfSwap ? <RefreshCcw size={20} /> : (filter === 'received' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />)}
+//                                             </div>
+//                                             <div>
+//                                                 <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest leading-none mb-1">
+//                                                     {isSelfSwap ? 'Admin Review' : (filter === 'received' ? 'Request From' : 'Sent To')}
+//                                                 </p>
+//                                                 <p className="text-sm font-bold text-slate-900">
+//                                                     {isSelfSwap ? 'Week Off Move' : (filter === 'received' ? req.requestor?.full_name : req.receiver?.full_name)}
+//                                                 </p>
+//                                             </div>
+//                                         </div>
+//                                         <StatusBadge status={req.status} />
+//                                     </div>
+
+//                                     <div className="bg-slate-50 rounded-3xl p-5 mb-6 space-y-3">
+//                                         <div className="flex items-center gap-2">
+//                                             <Clock size={14} className="text-slate-400" />
+//                                             <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
+//                                                 {new Date(req.shift?.start_time).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+//                                             </span>
+//                                         </div>
+//                                         {req.message && (
+//                                             <div className="flex items-start gap-2 pt-2 border-t border-slate-200/50">
+//                                                 <MessageSquare size={14} className="text-slate-300 mt-0.5" />
+//                                                 <p className="text-xs text-slate-500 leading-relaxed italic">"{req.message}"</p>
+//                                             </div>
+//                                         )}
+//                                     </div>
+
+//                                     {filter === 'received' && req.status.toLowerCase() === 'pending' && (
+//                                         <div className="flex gap-2">
+//                                             <button
+//                                                 onClick={() => handleAction(req, 'approved')}
+//                                                 className="flex-1 bg-slate-900 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-slate-200"
+//                                             >
+//                                                 Accept
+//                                             </button>
+//                                             <button
+//                                                 onClick={() => handleAction(req, 'declined')}
+//                                                 className="p-4 bg-white border border-slate-100 text-rose-500 rounded-2xl active:scale-90 transition-all"
+//                                             >
+//                                                 <X size={18} />
+//                                             </button>
+//                                         </div>
+//                                     )}
+//                                 </motion.div>
+//                             );
+//                         })}
+//                     </AnimatePresence>
+//                 ) : (
+//                     <div className="text-center py-24">
+//                         <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+//                             <Inbox size={24} className="text-slate-200" />
+//                         </div>
+//                         <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">No activity found</p>
+//                     </div>
+//                 )}
+//             </div>
+//         </div>
+//     );
+// }
+
+// function TabBtn({ label, active, onClick }: any) {
+//     return (
+//         <button onClick={onClick} className={`pb-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative ${active ? 'text-slate-900' : 'text-slate-300 hover:text-slate-400'}`}>
+//             {label}
+//             {active && <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-900" />}
+//         </button>
+//     );
+// }
+
+// function StatusBadge({ status }: { status: string }) {
+//     const s = status.toLowerCase();
+//     const styles: any = {
+//         pending: 'bg-amber-50 text-amber-600 border-amber-100',
+//         approved: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+//         declined: 'bg-rose-50 text-rose-600 border-rose-100',
+//     };
+//     return (
+//         <span className={`px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest border ${styles[s] || styles.pending}`}>
+//             {s}
+//         </span>
+//     );
+// }
+
+
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Inbox, ArrowDownLeft, ArrowUpRight,
-    Check, X, Clock, Loader2, MessageSquare, RefreshCcw, User
+    Check, X, Clock, Loader2, MessageSquare, RefreshCcw, ShieldCheck
 } from 'lucide-react';
 
 export default function SwapInbox({ userId }: { userId: string }) {
@@ -29,10 +230,10 @@ export default function SwapInbox({ userId }: { userId: string }) {
 
         // --- DYNAMIC FILTERING ---
         if (isReceived) {
-            // Received Tab: Only show peer requests (Hide my own week-off moves)
+            // Received Tab: Only show peer requests (Hide self-requests)
             query = query.neq('requestor_id', 'receiver_id');
         }
-        // Sent Tab: Show everything (Peer trades AND Admin week-off moves)
+        // Sent Tab: Show everything (Peer trades AND Admin interchange moves)
 
         const { data, error } = await query.order('created_at', { ascending: false });
 
@@ -53,8 +254,8 @@ export default function SwapInbox({ userId }: { userId: string }) {
 
         const shiftDate = new Date(request.shift?.start_time).toISOString().split('T')[0];
 
-        // Find the receiver's shift to swap back to the requestor
-        const { data: receiverShift, error: findError } = await supabase
+        // Find the user's corresponding shift on that day to interchange
+        const { data: userShift, error: findError } = await supabase
             .from('shifts')
             .select('id')
             .eq('employee_id', userId)
@@ -62,35 +263,35 @@ export default function SwapInbox({ userId }: { userId: string }) {
             .filter('start_time', 'lte', `${shiftDate}T23:59:59Z`)
             .maybeSingle();
 
-        if (findError || !receiverShift) {
-            alert("You don't have a shift on this day to interchange with!");
+        if (findError || !userShift) {
+            alert("Shift mismatch: You don't have a record on this day to interchange.");
             return;
         }
 
-        // Execute the atomic swap
+        // Atomic peer swap logic
         const { error: err1 } = await supabase.from('shifts').update({ employee_id: userId }).eq('id', request.shift_id);
-        const { error: err2 } = await supabase.from('shifts').update({ employee_id: request.requestor_id }).eq('id', receiverShift.id);
+        const { error: err2 } = await supabase.from('shifts').update({ employee_id: request.requestor_id }).eq('id', userShift.id);
 
         if (!err1 && !err2) {
             await supabase.from('swap_requests').update({ status: 'approved' }).eq('id', request.id);
             fetchRequests();
         } else {
-            alert("Interchange failed.");
+            alert("Swap failed. Please try again.");
         }
     };
 
     return (
         <div className="px-6 pt-10 pb-24 max-w-md mx-auto font-sans">
-            <header className="mb-8">
-                <div className="flex items-center gap-2 mb-1">
+            <header className="mb-8 text-center lg:text-left">
+                <div className="flex items-center justify-center lg:justify-start gap-2 mb-1">
                     <div className="w-2 h-2 rounded-full bg-slate-900 animate-pulse" />
                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Activity Center</span>
                 </div>
-                <h2 className="text-3xl font-medium text-slate-900 tracking-tight">Inbox</h2>
+                <h2 className="text-3xl font-medium text-slate-900 tracking-tight">Activity Inbox</h2>
 
-                <div className="flex gap-6 mt-6 border-b border-slate-100">
-                    <TabBtn active={filter === 'received'} label="Received" onClick={() => setFilter('received')} />
-                    <TabBtn active={filter === 'sent'} label="Sent" onClick={() => setFilter('sent')} />
+                <div className="flex justify-center lg:justify-start gap-8 mt-8 border-b border-slate-100">
+                    <TabBtn active={filter === 'received'} label="From Peers" onClick={() => setFilter('received')} />
+                    <TabBtn active={filter === 'sent'} label="My Requests" onClick={() => setFilter('sent')} />
                 </div>
             </header>
 
@@ -100,27 +301,28 @@ export default function SwapInbox({ userId }: { userId: string }) {
                 ) : requests.length > 0 ? (
                     <AnimatePresence mode="popLayout">
                         {requests.map((req) => {
-                            const isSelfSwap = req.requestor_id === req.receiver_id;
+                            const isSelfInterchange = req.requestor_id === req.receiver_id;
 
                             return (
                                 <motion.div
                                     layout
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
                                     key={req.id}
-                                    className="bg-white border border-slate-100 p-6 rounded-[2.5rem] shadow-sm hover:shadow-md transition-shadow"
+                                    className="bg-white border border-slate-100 p-6 rounded-[2.5rem] shadow-sm"
                                 >
                                     <div className="flex justify-between items-start mb-6">
                                         <div className="flex items-center gap-4">
-                                            <div className={`w-12 h-12 rounded-[1.2rem] flex items-center justify-center ${isSelfSwap ? 'bg-rose-50 text-rose-500' : (filter === 'received' ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-500')}`}>
-                                                {isSelfSwap ? <RefreshCcw size={20} /> : (filter === 'received' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />)}
+                                            <div className={`w-12 h-12 rounded-[1.2rem] flex items-center justify-center 
+                                                ${isSelfInterchange ? 'bg-indigo-50 text-indigo-500' : (filter === 'received' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-500')}`}>
+                                                {isSelfInterchange ? <ShieldCheck size={20} /> : (filter === 'received' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />)}
                                             </div>
                                             <div>
                                                 <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest leading-none mb-1">
-                                                    {isSelfSwap ? 'Admin Review' : (filter === 'received' ? 'Request From' : 'Sent To')}
+                                                    {isSelfInterchange ? 'Admin Review Required' : (filter === 'received' ? 'Incoming Trade' : 'Sent To Colleague')}
                                                 </p>
                                                 <p className="text-sm font-bold text-slate-900">
-                                                    {isSelfSwap ? 'Week Off Move' : (filter === 'received' ? req.requestor?.full_name : req.receiver?.full_name)}
+                                                    {isSelfInterchange ? 'Self-Interchange' : (filter === 'received' ? req.requestor?.full_name : req.receiver?.full_name)}
                                                 </p>
                                             </div>
                                         </div>
@@ -146,9 +348,9 @@ export default function SwapInbox({ userId }: { userId: string }) {
                                         <div className="flex gap-2">
                                             <button
                                                 onClick={() => handleAction(req, 'approved')}
-                                                className="flex-1 bg-slate-900 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-slate-200"
+                                                className="flex-1 bg-slate-900 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg"
                                             >
-                                                Accept
+                                                Accept Trade
                                             </button>
                                             <button
                                                 onClick={() => handleAction(req, 'declined')}
@@ -164,8 +366,8 @@ export default function SwapInbox({ userId }: { userId: string }) {
                     </AnimatePresence>
                 ) : (
                     <div className="text-center py-24">
-                        <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Inbox size={24} className="text-slate-200" />
+                        <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-200">
+                            <Inbox size={24} />
                         </div>
                         <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">No activity found</p>
                     </div>
