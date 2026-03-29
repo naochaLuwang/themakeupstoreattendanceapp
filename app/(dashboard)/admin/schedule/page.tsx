@@ -12,7 +12,7 @@ export default async function AdminSchedulePage() {
         .eq('role', 'employee');
 
     return (
-        <div className="max-w-[1600px] mx-auto space-y-8 animate-in fade-in duration-700">
+        <div className="max-w-[1600px] mx-auto space-y-8 animate-in fade-in duration-700 pb-32">
             {/* 1. Integrated Header */}
             <header className="px-4 md:px-0">
                 <h1 className="text-5xl font-black text-slate-900 tracking-tighter">Shift Planner</h1>

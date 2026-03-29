@@ -37,14 +37,14 @@ export default function FreeMonthlyRoaster() {
 
     const fetchRoaster = async () => {
         setLoading(true);
-        // We use local boundary dates to fetch data from Supabase
-        const firstDay = getLocalISOString(viewDate.getFullYear(), viewDate.getMonth(), 1);
-        const lastDay = getLocalISOString(viewDate.getFullYear(), viewDate.getMonth(), daysInMonth.length);
+        // 1. Fetch Month Level Data with Timezone-Aware Bounds (+05:30)
+        const firstDay = `${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, '0')}-01T00:00:00+05:30`;
+        const lastDay = `${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, '0')}-${String(daysInMonth.length).padStart(2, '0')}T23:59:59+05:30`;
 
         const [empRes, shiftRes, leaveRes] = await Promise.all([
             supabase.from('profiles').select('id, full_name').eq('role', 'employee'),
-            supabase.from('shifts').select('*').gte('start_time', `${firstDay}T00:00:00`).lte('start_time', `${lastDay}T23:59:59`),
-            supabase.from('leave_requests').select('*').eq('status', 'approved')
+            supabase.from('shifts').select('*').gte('start_time', firstDay).lte('start_time', lastDay),
+            supabase.from('leave_requests').select('*').eq('status', 'approved').gte('start_date', firstDay.split('T')[0]).lte('end_date', lastDay.split('T')[0])
         ]);
 
         setEmployees(empRes.data || []);
@@ -79,11 +79,27 @@ export default function FreeMonthlyRoaster() {
         });
 
         if (shift) {
-            const isMorning = shift.shift_label?.toLowerCase().includes('morning');
+            const label = shift.shift_label?.toLowerCase() || '';
+            const isSales = label.includes('sales');
+            const isDay = label.includes('day');
+            const isMorning = label.includes('morning');
+            
+            if (isSales) return {
+                type: 'SHIFT',
+                label: 'SS',
+                color: 'bg-indigo-100 text-indigo-700 border-indigo-200'
+            };
+            
+            if (isDay) return {
+                type: 'SHIFT',
+                label: 'D',
+                color: 'bg-emerald-100 text-emerald-700 border-emerald-200'
+            };
+
             return {
                 type: 'SHIFT',
                 label: isMorning ? 'M' : 'E',
-                color: isMorning ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-indigo-100 text-indigo-700 border-indigo-200',
+                color: isMorning ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-blue-100 text-blue-700 border-blue-200',
             };
         }
 
@@ -116,7 +132,7 @@ export default function FreeMonthlyRoaster() {
     );
 
     return (
-        <div className="space-y-6 max-w-[1600px] mx-auto">
+        <div className="space-y-6 max-w-[1600px] mx-auto pb-32">
             {/* Quick Day Search Section */}
             <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">

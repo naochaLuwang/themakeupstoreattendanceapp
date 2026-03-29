@@ -20,8 +20,24 @@ interface EmployeeProfile {
 }
 
 export async function GET() {
-    // FIX 1: You must await the createClient call in Server Components/Routes
+    // FIX 1: Access Control (RBAC) - Admins Only
     const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Verify admin role
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+    if (profile?.role !== 'admin') {
+        return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
+    }
 
     // Fetching Aggregated HR Insights
     const { data, error } = await supabase

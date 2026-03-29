@@ -1,48 +1,76 @@
 'use server'
-import { createClient } from '@supabase/supabase-js'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { createClient as createServerClient } from '@/lib/supabase/server'
 
-// IMPORTANT: Use your SERVICE_ROLE_KEY in .env.local
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-)
+// Helper to create an admin client only when needed and only after verified auth
+async function getAdminClient() {
+    const supabase = await createServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-export async function createNewUser(formData: FormData) {
-    const email = formData.get('email') as string
-    const password = formData.get('password') as string
-    const fullName = formData.get('fullName') as string
-    const username = formData.get('username') as string
-    const role = formData.get('role') as string
-    const storeId = formData.get('storeId') as string
+    if (!user) throw new Error("Unauthorized");
 
-    // 1. Create user in Supabase Auth
-    const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true,
-    })
-
-    if (authError) return { error: authError.message }
-
-    // 2. Update the public.profiles table
-    // We use .update because many Supabase triggers auto-create a profile on auth signup.
-    // If your trigger doesn't exist, use .insert()
-    const { error: profileError } = await supabaseAdmin
+    // Verify admin role first via the standard client (which should have RLS)
+    const { data: profile } = await supabase
         .from('profiles')
-        .update({
-            full_name: fullName,
-            username: username.toLowerCase(), // Store username in lowercase
-            role: role,
-            store_id: storeId,
-            email: email
-        })
-        .eq('id', authUser.user.id)
+        .select('role')
+        .eq('id', user.id)
+        .single();
 
-    if (profileError) {
-        // Cleanup: If profile update fails, we should technically delete the auth user
-        await supabaseAdmin.auth.admin.deleteUser(authUser.user.id);
-        return { error: profileError.message }
+    if (profile?.role !== 'admin') {
+        throw new Error("Forbidden: Admin access only");
     }
 
-    return { success: true }
+    // Now it is safe to return a service_role client for administrative bypass
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!serviceRoleKey) {
+        throw new Error("Server Error: Missing Service Role Configuration");
+    }
+
+    return createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        serviceRoleKey
+    );
+}
+
+export async function createNewUser(formData: FormData) {
+    try {
+        const adminClient = await getAdminClient();
+
+        const email = formData.get('email') as string
+        const password = formData.get('password') as string
+        const fullName = formData.get('fullName') as string
+        const username = formData.get('username') as string
+        const role = formData.get('role') as string
+        const storeId = formData.get('storeId') as string
+
+        // 1. Create user in Supabase Auth
+        const { data: authUser, error: authError } = await adminClient.auth.admin.createUser({
+            email,
+            password,
+            email_confirm: true,
+        })
+
+        if (authError) return { error: authError.message }
+
+        // 2. Update the public.profiles table
+        const { error: profileError } = await adminClient
+            .from('profiles')
+            .update({
+                full_name: fullName,
+                username: username.toLowerCase(),
+                role: role,
+                store_id: storeId,
+                email: email
+            })
+            .eq('id', authUser.user.id)
+
+        if (profileError) {
+            await adminClient.auth.admin.deleteUser(authUser.user.id);
+            return { error: profileError.message }
+        }
+
+        return { success: true }
+    } catch (err: any) {
+        return { error: err.message };
+    }
 }

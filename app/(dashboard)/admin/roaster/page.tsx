@@ -12,7 +12,7 @@ export default async function RoasterPage() {
     if (!user) redirect('/login');
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-700">
+        <div className="space-y-8 animate-in fade-in duration-700 pb-32">
             <header>
                 <h1 className="text-4xl font-black text-slate-900 tracking-tighter">System Overrides</h1>
                 <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mt-1">Critical alerts & clock-in fixes</p>

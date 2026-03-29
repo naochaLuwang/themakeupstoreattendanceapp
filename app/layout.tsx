@@ -2,6 +2,7 @@ import InstallPWA from "@/components/InstallPWA";
 import "./globals.css";
 import NextTopLoader from 'nextjs-toploader';
 import { Metadata } from "next";
+import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
   title: {
@@ -57,6 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main>
           {children}
         </main>
+        <Toaster position="top-center" richColors />
         <InstallPWA />
       </body>
     </html>

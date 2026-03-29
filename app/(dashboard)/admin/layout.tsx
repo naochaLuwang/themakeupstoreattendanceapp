@@ -32,5 +32,16 @@ async function AuthGuard({ children }: { children: React.ReactNode }) {
 
     if (!user) redirect('/login');
 
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+    if (profile?.role !== 'admin') {
+        // If not an admin, kick them back to their appropriate dashboard
+        redirect('/employee');
+    }
+
     return <>{children}</>;
 }
