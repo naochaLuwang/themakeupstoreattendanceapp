@@ -1,7 +1,7 @@
 // worker/index.ts
-declare let self: ServiceWorkerGlobalScope;
+const swSelf = (self as unknown as any);
 
-self.addEventListener('push', (event: any) => {
+swSelf.addEventListener('push', (event: any) => {
     if (!event.data) return;
 
     try {
@@ -17,7 +17,7 @@ self.addEventListener('push', (event: any) => {
         };
 
         event.waitUntil(
-            self.registration.showNotification(data.title, options)
+            swSelf.registration.showNotification(data.title, options)
         );
     } catch (err) {
         console.error('Error handling push event:', err);
@@ -27,7 +27,7 @@ self.addEventListener('push', (event: any) => {
 self.addEventListener('notificationclick', (event: any) => {
     event.notification.close();
     event.waitUntil(
-        (self as any).clients.openWindow(event.notification.data.url)
+        swSelf.clients.openWindow(event.notification.data.url)
     );
 });
 
