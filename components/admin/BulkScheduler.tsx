@@ -174,7 +174,7 @@ export default function BulkScheduler({ employees = [] }: { employees: Employee[
             const toUpsert = schedule.filter(d => d.day && d.active).map(d => {
                 const dateStr = `${monthPrefix}-${String(d.day).padStart(2, '0')}`;
                 return {
-                    id: d.id, // Providing ID triggers an update in Supabase upsert
+                    id: d.id || crypto.randomUUID(), // Generate valid UUID if missing
                     employee_id: selectedEmp,
                     start_time: `${dateStr}T${d.start}:00+05:30`,
                     end_time: `${dateStr}T${d.end}:00+05:30`,

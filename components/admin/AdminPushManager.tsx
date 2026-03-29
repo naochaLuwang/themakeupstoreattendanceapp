@@ -35,6 +35,10 @@ export default function AdminPushManager({ userId }: { userId: string }) {
 
             const registration = await navigator.serviceWorker.ready;
             
+            if (!VAPID_PUBLIC_KEY) {
+                throw new Error('VAPID Public Key is missing. Please check your .env.local and restart the server.');
+            }
+
             // 1. Request Permission
             const permission = await Notification.requestPermission();
             if (permission !== 'granted') {
