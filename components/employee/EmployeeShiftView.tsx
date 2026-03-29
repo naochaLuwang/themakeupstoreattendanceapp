@@ -7,6 +7,8 @@ import {
     Navigation, Loader2, AlertCircle,
     MapPin, Ban, RefreshCcw, ArrowRight, ArrowLeftRight, ShieldCheck, Timer, XCircle
 } from 'lucide-react';
+import { clockInAction, clockOutAction } from '@/app/actions/attendance';
+import { createSwapRequestAction } from '@/app/actions/requests';
 
 export default function EmployeeShiftView({ userId }: { userId: string }) {
     const supabase = createClient();
@@ -157,18 +159,35 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                 setAttendanceStatus('idle');
                 return showToast(`Too far (${Math.round(dist)}m).`);
             }
-            const { error } = await supabase.from('attendance').insert([{
-                employee_id: userId, check_in: new Date().toISOString(), is_within_geofence: true,
-                shift_id: activeDayData?.id, store_id: storeInfo?.id, check_in_lat: pos.coords.latitude, check_in_lng: pos.coords.longitude
-            }]);
-            if (!error) init(); else { setAttendanceStatus('idle'); showToast("Clock-in failed."); }
+            
+            const result = await clockInAction(
+                userId, 
+                storeInfo.id, 
+                activeDayData?.id || null, 
+                pos.coords.latitude, 
+                pos.coords.longitude
+            );
+
+            if (result.success) {
+                init();
+            } else {
+                setAttendanceStatus('idle');
+                showToast(result.error || "Clock-in failed.");
+            }
         }, () => { setAttendanceStatus('idle'); showToast("Location required."); });
     };
 
     const handleClockOut = async () => {
         setAttendanceStatus('loading');
-        const { error } = await supabase.from('attendance').update({ check_out: new Date().toISOString() }).eq('employee_id', userId).is('check_out', null);
-        if (!error) { if (timerRef.current) clearInterval(timerRef.current); setAttendanceStatus('completed'); showToast("Shift Ended", "success"); }
+        const result = await clockOutAction(userId);
+        if (result.success) {
+            if (timerRef.current) clearInterval(timerRef.current);
+            setAttendanceStatus('completed');
+            showToast("Shift Ended", "success");
+        } else {
+            setAttendanceStatus('active');
+            showToast(result.error || "Clock-out failed.");
+        }
     };
 
     const handleRequestReEntry = async () => {
@@ -210,11 +229,14 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
             return;
         }
 
-        const { error } = await supabase.from('swap_requests').insert([{
-            requestor_id: userId, receiver_id: userId, shift_id: shiftIdToUpdate, message, note: interchangeNote.trim() || null, status: 'pending'
-        }]);
+        const result = await createSwapRequestAction(
+            userId,
+            shiftIdToUpdate,
+            message,
+            interchangeNote.trim() || null
+        );
 
-        if (!error) {
+        if (result.success) {
             showToast("Sent to Admin", "success");
             setIsInterchangeModalOpen(false);
             setTargetDay(null);
@@ -222,8 +244,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
             setInterchangeNote('');
             fetchEverything();
         } else {
-            console.error(error);
-            showToast("Submission failed.");
+            showToast(result.error || "Submission failed.");
         }
     };
 

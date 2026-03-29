@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, Send, Loader2, X, Plus, Trash2, ArrowRight } from 'lucide-react';
+import { createLeaveRequestAction } from '@/app/actions/requests';
 
 export default function LeaveRequestView({ userId }: { userId: string }) {
     const supabase = createClient();
@@ -43,20 +44,15 @@ export default function LeaveRequestView({ userId }: { userId: string }) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        const { error } = await supabase.from('leave_requests').insert([{
-            employee_id: userId,
-            start_date: startDate,
-            end_date: endDate,
-            reason: reason,
-            status: 'pending'
-        }]);
+        
+        const result = await createLeaveRequestAction(userId, startDate, endDate, reason);
 
-        if (!error) {
+        if (result.success) {
             setShowForm(false);
             setStartDate(''); setEndDate(''); setReason('');
             fetchLeaveData();
         } else {
-            alert(error.message);
+            alert(result.error || "Submission failed.");
         }
         setLoading(false);
     };
