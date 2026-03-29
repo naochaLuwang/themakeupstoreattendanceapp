@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, Send, Loader2, X, Plus, Trash2 } from 'lucide-react';
+import { Clock, Send, Loader2, X, Plus, Trash2, ArrowRight } from 'lucide-react';
 
 export default function LeaveRequestView({ userId }: { userId: string }) {
     const supabase = createClient();
@@ -85,15 +85,20 @@ export default function LeaveRequestView({ userId }: { userId: string }) {
             </div>
 
             <div className="space-y-4">
-                <h3 className="text-[10px] font-black text-slate-400 uppercase px-2 tracking-widest flex items-center gap-2"><Clock size={12} /> Recent Activity</h3>
+                <div className="flex items-center justify-between px-2">
+                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><Clock size={12} /> Recent Activity</h3>
+                </div>
                 {history.map(req => (
-                    <div key={req.id} className="bg-white border border-slate-100 p-5 rounded-[1.5rem] flex items-center justify-between">
+                    <div key={req.id} className="bg-white border border-slate-100 p-5 rounded-[1.5rem] flex items-start justify-between">
                         <div>
-                            <p className="text-xs font-bold text-slate-900">{req.start_date} - {req.end_date}</p>
-                            <span className={`text-[8px] font-black uppercase tracking-widest ${req.status === 'approved' ? 'text-emerald-500' : 'text-amber-500'}`}>{req.status}</span>
+                            <p className="text-xs font-bold text-slate-900 flex items-center gap-2">{req.start_date} <ArrowRight size={10} className="text-slate-300" /> {req.end_date}</p>
+                            <p className="text-[10px] text-slate-500 font-medium mt-1.5 pr-4 italic leading-relaxed">"{req.reason}"</p>
+                            <div className="mt-3">
+                                <span className={`px-2.5 py-1 rounded-[8px] text-[8px] font-black uppercase tracking-widest ${req.status === 'approved' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>{req.status}</span>
+                            </div>
                         </div>
                         {req.status === 'pending' && (
-                            <button onClick={async () => { await supabase.from('leave_requests').delete().eq('id', req.id); fetchLeaveData(); }} className="p-2 text-slate-300 hover:text-rose-500 transition-colors">
+                            <button onClick={async () => { await supabase.from('leave_requests').delete().eq('id', req.id); fetchLeaveData(); }} className="p-3 bg-slate-50 rounded-xl text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-colors shrink-0">
                                 <Trash2 size={16} />
                             </button>
                         )}
@@ -104,16 +109,36 @@ export default function LeaveRequestView({ userId }: { userId: string }) {
 
             <AnimatePresence>
                 {showForm && (
-                    <motion.form initial={{ y: 100 }} animate={{ y: 0 }} exit={{ y: 100 }} onSubmit={handleSubmit} className="fixed bottom-32 left-6 right-6 bg-slate-900 p-8 rounded-[2.5rem] shadow-2xl z-[100] space-y-4">
-                        <div className="grid grid-cols-2 gap-3">
-                            <input type="date" required value={startDate} onChange={e => setStartDate(e.target.value)} className="bg-slate-800 border-none rounded-xl p-4 text-white text-xs font-bold" />
-                            <input type="date" required value={endDate} onChange={e => setEndDate(e.target.value)} className="bg-slate-800 border-none rounded-xl p-4 text-white text-xs font-bold" />
-                        </div>
-                        <textarea placeholder="Reason..." value={reason} onChange={e => setReason(e.target.value)} className="w-full bg-slate-800 border-none rounded-xl p-4 text-white text-xs font-bold h-24 resize-none" />
-                        <button disabled={loading} className="w-full bg-white text-slate-900 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
-                            {loading ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />} Submit Request
-                        </button>
-                    </motion.form>
+                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                        <motion.form initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }} onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-8 rounded-[2.5rem] shadow-2xl relative space-y-6">
+                            <button type="button" onClick={() => setShowForm(false)} className="absolute top-6 right-6 p-2 bg-slate-50 text-slate-400 rounded-full hover:bg-slate-100 hover:text-slate-600 transition-colors">
+                                <X size={16} />
+                            </button>
+                            <div>
+                                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Time Off Request</h3>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Submit your dates and reason</p>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-2">Start Date</label>
+                                        <input type="date" required value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-900 text-xs font-bold outline-none focus:border-indigo-500 focus:bg-indigo-50 transition-all cursor-pointer" />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-2">End Date</label>
+                                        <input type="date" required value={endDate} onChange={e => setEndDate(e.target.value)} className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-900 text-xs font-bold outline-none focus:border-indigo-500 focus:bg-indigo-50 transition-all cursor-pointer" />
+                                    </div>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-2">Reason</label>
+                                    <textarea required placeholder="Brief reason for your request..." value={reason} onChange={e => setReason(e.target.value)} className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-900 text-xs font-medium h-28 resize-none outline-none focus:border-indigo-500 focus:bg-indigo-50 transition-all leading-relaxed" />
+                                </div>
+                            </div>
+                            <button disabled={loading} className="w-full bg-slate-900 text-white py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-800 active:scale-95 transition-all shadow-xl shadow-slate-200">
+                                {loading ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />} Submit Request
+                            </button>
+                        </motion.form>
+                    </motion.div>
                 )}
             </AnimatePresence>
         </div>

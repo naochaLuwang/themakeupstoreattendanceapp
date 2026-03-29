@@ -26,9 +26,6 @@ export function PersonalDataForm({ initialName, userId }: { initialName: string,
                     className="w-full bg-neutral-50 border-none rounded-2xl px-6 py-4 text-xs font-bold focus:ring-1 focus:ring-black outline-none transition-all"
                 />
             </div>
-            <button disabled={loading} className="w-full bg-black text-white text-[10px] font-black uppercase tracking-widest py-4 rounded-2xl hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-                {loading && <Loader2 size={14} className="animate-spin" />} Sync Record
-            </button>
         </form>
     );
 }

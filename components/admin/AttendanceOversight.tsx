@@ -7,23 +7,38 @@ import { toast } from 'sonner';
 export default function AttendanceOversight() {
     const supabase = createClient();
     const [stats, setStats] = useState({ active: 0, autoChecked: 0 });
+    const [activeEmployees, setActiveEmployees] = useState<any[]>([]);
     const [isRunning, setIsRunning] = useState(false);
 
     const fetchStats = async () => {
-        const { count: active } = await supabase
-            .from('attendance')
-            .select('*', { count: 'exact', head: true })
-            .is('check_out', null);
-
         const { count: auto } = await supabase
             .from('attendance')
             .select('*', { count: 'exact', head: true })
             .eq('is_auto_checkout', true);
 
-        setStats({ active: active || 0, autoChecked: auto || 0 });
+        const { data: activeList } = await supabase
+            .from('attendance')
+            .select('*, profiles:employee_id(full_name)')
+            .is('check_out', null);
+
+        setStats({ active: activeList?.length || 0, autoChecked: auto || 0 });
+        setActiveEmployees(activeList || []);
     };
 
     useEffect(() => { fetchStats(); }, []);
+
+    const handleForceCheckout = async (attendanceId: string) => {
+        const { error } = await supabase.from('attendance')
+            .update({ check_out: new Date().toISOString() })
+            .eq('id', attendanceId);
+
+        if (!error) {
+            toast.success("Employee manually clocked out.");
+            fetchStats();
+        } else {
+            toast.error("Failed to clock out employee.");
+        }
+    };
 
     const runAutoCheckoutJob = async () => {
         setIsRunning(true);
@@ -59,7 +74,7 @@ export default function AttendanceOversight() {
             </div>
 
             {/* THE CRON TRIGGER BUTTON */}
-            <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl">
+            {/* <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl">
                 <div className="flex items-center justify-between mb-6">
                     <div>
                         <h4 className="text-sm font-black uppercase tracking-[0.2em]">Maintenance_Protocol</h4>
@@ -82,7 +97,34 @@ export default function AttendanceOversight() {
                 <p className="text-center text-[8px] text-white/20 uppercase font-black tracking-[0.3em] mt-6 italic">
                     Note: This triggers the same logic as the hourly server cron.
                 </p>
-            </div>
+            </div> */}
+
+            {/* Active Personnel List */}
+            {activeEmployees.length > 0 && (
+                <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden mt-6">
+                    <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+                        <h4 className="text-sm font-black uppercase tracking-wider text-slate-800">On Duty Personnel</h4>
+                    </div>
+                    <div className="divide-y divide-slate-100">
+                        {activeEmployees.map(emp => (
+                            <div key={emp.id} className="p-6 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
+                                <div>
+                                    <p className="font-bold text-slate-900">{emp.profiles?.full_name || 'Unknown'}</p>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                                        In: {new Date(emp.check_in).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => handleForceCheckout(emp.id)}
+                                    className="px-4 py-2 bg-rose-50 text-rose-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-100 active:scale-95 transition-all outline-none"
+                                >
+                                    Force Clock-Out
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

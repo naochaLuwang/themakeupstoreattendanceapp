@@ -1,11 +1,10 @@
 'use client';
+import { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { FileText, History as HistoryIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { FileDown, CalendarDays } from 'lucide-react';
 
-export default function PayrollHistory({ history }: { history: any[] }) {
-    // State to handle hydration
+export default function EmployeePayslipsClient({ history }: { history: any[] }) {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -34,7 +33,6 @@ export default function PayrollHistory({ history }: { history: any[] }) {
             const thisMonthHistory = history.filter(h => h.employee_id === rec.employee_id && new Date(h.month_year).getMonth() === new Date(rec.month_year).getMonth());
             const totalPaidThisMonth = thisMonthHistory.reduce((sum, h) => sum + h.net_pay, 0);
 
-            // Values
             const grossPay = Math.round(rec.gross_pay || 0);
             const netPay = Math.round(rec.net_pay || 0);
             const settlementLeft = Math.max(0, grossPay - totalPaidThisMonth);
@@ -77,56 +75,47 @@ export default function PayrollHistory({ history }: { history: any[] }) {
             doc.save(`Payslip_${(rec.profiles?.full_name || '').replace(/ /g, '_')}_${dateStr.replace(/ /g, '_')}.pdf`);
         };
 
-        // Try dynamically loading the store icon from public folder
         const img = new Image();
         img.src = '/icon-512x512.png';
         img.onload = () => generateFailsafeOrSuccess(img);
         img.onerror = () => generateFailsafeOrSuccess(null);
     };
 
-    return (
-        <div className="space-y-6">
-            <h2 className="text-2xl font-black italic flex items-center gap-3">
-                <HistoryIcon /> Transaction History
-            </h2>
-            <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl overflow-hidden">
-                <table className="w-full text-left text-sm">
-                    <thead className="bg-slate-50 text-[10px] font-black uppercase text-slate-400">
-                        <tr>
-                            <th className="px-8 py-4">Date</th>
-                            <th className="px-6 py-4">Personnel</th>
-                            <th className="px-6 py-4">Type</th>
-                            <th className="px-6 py-4 text-center">Amount (₹)</th>
-                            <th className="px-8 py-4 text-right">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-50">
-                        {history.map((rec) => (
-                            <tr key={rec.id} className="hover:bg-slate-50/50 transition-colors">
-                                <td className="px-8 py-4 font-bold text-slate-500">
-                                    {/* Only render date on client to avoid mismatch */}
-                                    {mounted ? new Date(rec.created_at).toLocaleDateString('en-IN') : '---'}
-                                </td>
-                                <td className="px-6 py-4 font-black">{rec.profiles?.full_name}</td>
-                                <td className="px-6 py-4 italic text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                    {rec.type}
-                                </td>
-                                <td className="px-6 py-4 text-center font-black text-slate-900">
-                                    ₹{rec.net_pay.toLocaleString('en-IN')}
-                                </td>
-                                <td className="px-8 py-4 text-right">
-                                    <button
-                                        onClick={() => downloadPDF(rec)}
-                                        className="p-2 hover:bg-slate-900 hover:text-white rounded-xl transition-all"
-                                    >
-                                        <FileText size={18} />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+    if (history.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center p-12 bg-white rounded-[2rem] border border-black/5 mt-4 text-center">
+                <CalendarDays size={32} className="text-black/20 mb-4" />
+                <p className="text-sm font-black text-slate-800 tracking-tighter uppercase">No Records Found</p>
+                <p className="text-[10px] font-bold text-slate-400 mt-2">Your historical payslips will securely appear here once generated.</p>
             </div>
+        );
+    }
+
+    return (
+        <div className="grid grid-cols-1 gap-4 mt-4">
+            {history.map((rec) => (
+                <div key={rec.id} className="bg-white p-6 rounded-[2rem] border border-black/5 flex items-center justify-between shadow-sm">
+                    <div>
+                        <p className="text-lg font-black text-slate-900 tracking-tighter">
+                            {mounted ? new Date(rec.month_year).toLocaleString('en-IN', { month: 'long', year: 'numeric' }) : '---'}
+                        </p>
+                        <div className="flex items-center gap-2 mt-2">
+                            <span className="text-[8px] font-black tracking-widest uppercase bg-indigo-50 text-indigo-500 px-2 py-1 rounded-[4px]">
+                                {rec.type}
+                            </span>
+                            <span className="text-xs font-bold text-slate-500">
+                                ₹{Math.round(rec.net_pay).toLocaleString('en-IN')}
+                            </span>
+                        </div>
+                    </div>
+                    <button 
+                        onClick={() => downloadPDF(rec)}
+                        className="w-12 h-12 flex items-center justify-center bg-slate-900 text-white rounded-2xl hover:bg-slate-800 active:scale-95 transition-all shadow-md"
+                    >
+                        <FileDown size={18} />
+                    </button>
+                </div>
+            ))}
         </div>
     );
 }

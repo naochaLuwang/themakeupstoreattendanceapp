@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
     Zap, Calendar, Palmtree, AlertOctagon, LogOut, Search,
     RefreshCcw, Eye, CreditCard, BarChart3, Clock, ShieldCheck,
-    MoreHorizontal, ChevronRight, X
+    MoreHorizontal, ChevronRight, X, MapPin
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -13,18 +13,16 @@ export default function AdminNav() {
     const pathname = usePathname();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    // Mapped from your project folder structure
     const links = [
         { href: '/admin', label: 'Live', icon: <Zap size={18} />, mobile: true },
         { href: '/admin/logs', label: 'Attendance', icon: <Search size={18} />, mobile: true },
         { href: '/admin/schedule', label: 'Planner', icon: <Calendar size={18} />, mobile: true },
-        { href: '/admin/weekoff-request', label: 'Weekoffs', icon: <RefreshCcw size={18} />, mobile: true },
+        { href: '/admin/weekoff-request', label: 'Swap Reqs', icon: <RefreshCcw size={18} />, mobile: true },
+        { href: '/admin/reports/consolidated', label: 'Consolidated', icon: <BarChart3 size={18} />, mobile: true },
+        { href: '/admin/reports/geotag', label: 'Geo Audit', icon: <MapPin size={18} />, mobile: false },
         { href: '/admin/leaves', label: 'Leaves', icon: <Palmtree size={18} />, mobile: false },
         { href: '/admin/oversight', label: 'Oversight', icon: <ShieldCheck size={18} />, mobile: false },
         { href: '/admin/payroll', label: 'Payroll', icon: <CreditCard size={18} />, mobile: false },
-        { href: '/admin/reports/hours', label: 'Hours', icon: <Clock size={18} />, mobile: false },
-        { href: '/admin/reports/reliability', label: 'Reliability', icon: <BarChart3 size={18} />, mobile: false },
-        { href: '/admin/overrides', label: 'Alerts', icon: <AlertOctagon size={18} />, mobile: false },
         { href: '/admin/roaster', label: 'Calendar', icon: <Calendar size={18} />, mobile: false },
     ];
 
@@ -35,12 +33,13 @@ export default function AdminNav() {
         <>
             {/* --- DESKTOP SIDEBAR --- */}
             <aside className="hidden lg:flex w-80 bg-white border-r border-slate-200 p-8 flex-col sticky top-0 h-screen shrink-0 overflow-y-auto">
-                <div className="mb-8 px-2">
-                    <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center mb-4 shadow-xl shadow-slate-200">
-                        <Zap className="text-white fill-current" size={24} />
+                <div className="mb-10 px-2">
+                    <div className="w-14 h-14 bg-slate-900 rounded-[1.2rem] flex items-center justify-center mb-6 shadow-2xl shadow-slate-200 overflow-hidden">
+                        {/* Custom MUS Icon overrides the standard Zap SVG */}
+                        <img src="/icon-512x512.png" alt="MUS Logo" className="w-full h-full object-cover" />
                     </div>
-                    <h2 className="text-2xl font-black tracking-tighter text-slate-900 leading-none">ADMIN</h2>
-                    <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em] mt-2">Daciana Stationery</p>
+                    <h2 className="text-3xl font-black tracking-tighter text-slate-900 leading-none">ADMIN</h2>
+                    <p className="text-[10px] font-black text-rose-500 uppercase tracking-[0.3em] mt-2">The Makeup Store</p>
                 </div>
 
                 <nav className="flex flex-col gap-1 w-full">

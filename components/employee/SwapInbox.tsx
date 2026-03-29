@@ -212,13 +212,11 @@ export default function SwapInbox({ userId }: { userId: string }) {
     const supabase = createClient();
     const [requests, setRequests] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState<'received' | 'sent'>('received');
 
     const fetchRequests = useCallback(async () => {
         setLoading(true);
-        const isReceived = filter === 'received';
 
-        let query = supabase
+        const { data, error } = await supabase
             .from('swap_requests')
             .select(`
                 *,
@@ -226,20 +224,12 @@ export default function SwapInbox({ userId }: { userId: string }) {
                 receiver:profiles!receiver_id(full_name),
                 shift:shifts(*)
             `)
-            .eq(isReceived ? 'receiver_id' : 'requestor_id', userId);
-
-        // --- DYNAMIC FILTERING ---
-        if (isReceived) {
-            // Received Tab: Only show peer requests (Hide self-requests)
-            query = query.neq('requestor_id', 'receiver_id');
-        }
-        // Sent Tab: Show everything (Peer trades AND Admin interchange moves)
-
-        const { data, error } = await query.order('created_at', { ascending: false });
+            .eq('requestor_id', userId)
+            .order('created_at', { ascending: false });
 
         if (!error) setRequests(data || []);
         setLoading(false);
-    }, [userId, filter, supabase]);
+    }, [userId, supabase]);
 
     useEffect(() => {
         fetchRequests();
@@ -288,11 +278,6 @@ export default function SwapInbox({ userId }: { userId: string }) {
                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Activity Center</span>
                 </div>
                 <h2 className="text-3xl font-medium text-slate-900 tracking-tight">Activity Inbox</h2>
-
-                <div className="flex justify-center lg:justify-start gap-8 mt-8 border-b border-slate-100">
-                    <TabBtn active={filter === 'received'} label="From Peers" onClick={() => setFilter('received')} />
-                    <TabBtn active={filter === 'sent'} label="My Requests" onClick={() => setFilter('sent')} />
-                </div>
             </header>
 
             <div className="space-y-4">
@@ -314,15 +299,15 @@ export default function SwapInbox({ userId }: { userId: string }) {
                                     <div className="flex justify-between items-start mb-6">
                                         <div className="flex items-center gap-4">
                                             <div className={`w-12 h-12 rounded-[1.2rem] flex items-center justify-center 
-                                                ${isSelfInterchange ? 'bg-indigo-50 text-indigo-500' : (filter === 'received' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-500')}`}>
-                                                {isSelfInterchange ? <ShieldCheck size={20} /> : (filter === 'received' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />)}
+                                                ${isSelfInterchange ? 'bg-indigo-50 text-indigo-500' : 'bg-slate-50 text-slate-500'}`}>
+                                                {isSelfInterchange ? <ShieldCheck size={20} /> : <ArrowUpRight size={20} />}
                                             </div>
                                             <div>
                                                 <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest leading-none mb-1">
-                                                    {isSelfInterchange ? 'Admin Review Required' : (filter === 'received' ? 'Incoming Trade' : 'Sent To Colleague')}
+                                                    {isSelfInterchange ? 'Admin Review Required' : 'Sent To Colleague'}
                                                 </p>
                                                 <p className="text-sm font-bold text-slate-900">
-                                                    {isSelfInterchange ? 'Self-Interchange' : (filter === 'received' ? req.requestor?.full_name : req.receiver?.full_name)}
+                                                    {isSelfInterchange ? 'Self-Interchange' : req.receiver?.full_name}
                                                 </p>
                                             </div>
                                         </div>
@@ -338,28 +323,20 @@ export default function SwapInbox({ userId }: { userId: string }) {
                                         </div>
                                         {req.message && (
                                             <div className="flex items-start gap-2 pt-2 border-t border-slate-200/50">
-                                                <MessageSquare size={14} className="text-slate-300 mt-0.5" />
-                                                <p className="text-xs text-slate-500 leading-relaxed italic">"{req.message}"</p>
+                                                <MessageSquare size={14} className="text-slate-300 mt-0.5 shrink-0" />
+                                                <div className="flex-1 space-y-2">
+                                                    <p className="text-xs text-slate-500 leading-relaxed italic">"{req.message}"</p>
+                                                    {req.note && (
+                                                        <div className="bg-white border text-left border-gray-100 rounded-lg p-2.5">
+                                                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Reason</p>
+                                                            <p className="text-[11px] font-medium text-slate-600">"{req.note}"</p>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         )}
                                     </div>
 
-                                    {filter === 'received' && req.status.toLowerCase() === 'pending' && (
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={() => handleAction(req, 'approved')}
-                                                className="flex-1 bg-slate-900 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg"
-                                            >
-                                                Accept Trade
-                                            </button>
-                                            <button
-                                                onClick={() => handleAction(req, 'declined')}
-                                                className="p-4 bg-white border border-slate-100 text-rose-500 rounded-2xl active:scale-90 transition-all"
-                                            >
-                                                <X size={18} />
-                                            </button>
-                                        </div>
-                                    )}
                                 </motion.div>
                             );
                         })}
@@ -374,15 +351,6 @@ export default function SwapInbox({ userId }: { userId: string }) {
                 )}
             </div>
         </div>
-    );
-}
-
-function TabBtn({ label, active, onClick }: any) {
-    return (
-        <button onClick={onClick} className={`pb-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative ${active ? 'text-slate-900' : 'text-slate-300 hover:text-slate-400'}`}>
-            {label}
-            {active && <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-900" />}
-        </button>
     );
 }
 

@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { User, LogOut, ChevronRight, ShieldCheck } from 'lucide-react';
+import Link from 'next/link';
+import { User, LogOut, ChevronRight, ShieldCheck, FileText } from 'lucide-react';
 import { PersonalDataForm, SecurityForm } from '@/components/employee/ProfileForm';
 
 export default async function ProfileWrapper() {
@@ -67,6 +68,17 @@ export default async function ProfileWrapper() {
                         <SecurityForm />
                     </div>
                 </details>
+
+                {/* Highly Visible Payslips Archive Link */}
+                <Link href="/employee/payslips" className="flex items-center justify-between px-8 py-7 hover:bg-neutral-50 transition-colors cursor-pointer list-none outline-none border-b border-neutral-50 group">
+                    <div className="flex items-center gap-5">
+                        <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white text-indigo-500 transition-all duration-300 shadow-sm">
+                            <FileText size={18} />
+                        </div>
+                        <span className="text-[11px] font-black uppercase tracking-widest text-slate-900">Payslip Archive</span>
+                    </div>
+                    <ChevronRight size={16} className="text-slate-300 group-hover:translate-x-1 transition-transform duration-300" />
+                </Link>
 
                 <form action="/signout" method="post">
                     <button className="w-full flex items-center gap-5 px-8 py-8 text-rose-500 hover:bg-rose-50/50 transition-all group outline-none">

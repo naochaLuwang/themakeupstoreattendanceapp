@@ -24,6 +24,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
     const [selectedNewShift, setSelectedNewShift] = useState<any>(null);
     const [cancellingRequestId, setCancellingRequestId] = useState<string | null>(null);
     const [interchangeMode, setInterchangeMode] = useState<'shift_type' | 'swap_date'>('shift_type');
+    const [interchangeNote, setInterchangeNote] = useState('');
 
     // Attendance & Timer
     const [elapsedTime, setElapsedTime] = useState('00:00:00');
@@ -170,6 +171,20 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
         if (!error) { if (timerRef.current) clearInterval(timerRef.current); setAttendanceStatus('completed'); showToast("Shift Ended", "success"); }
     };
 
+    const handleRequestReEntry = async () => {
+        if (!activeDayData) return;
+        const { error } = await supabase.from('swap_requests').insert([{
+            requestor_id: userId, receiver_id: userId, shift_id: activeDayData.id, message: `OVERRIDE REQUEST: Accidental check-out on ${activeDayData.fullDate}`, status: 'pending'
+        }]);
+
+        if (!error) {
+            showToast("Override Requested to Admin", "success");
+            fetchEverything();
+        } else {
+            showToast("Failed to request override.");
+        }
+    };
+
     // --- INTERCHANGE LOGIC ---
     const handleInterchangeRequest = async () => {
         let message = "";
@@ -196,7 +211,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
         }
 
         const { error } = await supabase.from('swap_requests').insert([{
-            requestor_id: userId, receiver_id: userId, shift_id: shiftIdToUpdate, message, status: 'pending'
+            requestor_id: userId, receiver_id: userId, shift_id: shiftIdToUpdate, message, note: interchangeNote.trim() || null, status: 'pending'
         }]);
 
         if (!error) {
@@ -204,6 +219,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
             setIsInterchangeModalOpen(false);
             setTargetDay(null);
             setSelectedNewShift(null);
+            setInterchangeNote('');
             fetchEverything();
         } else {
             console.error(error);
@@ -230,9 +246,11 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
         if (d.isLeave) return { bg: 'bg-amber-50', text: 'text-amber-700', label: 'Leave', dot: 'bg-amber-400' };
         if (!d.active) return { bg: 'bg-rose-50/50', text: 'text-rose-400', label: 'Off', dot: 'bg-rose-400' };
         const label = d.label?.toLowerCase() || '';
+        if (label.includes('sale')) return { bg: 'bg-fuchsia-50', text: 'text-fuchsia-700', label: d.label, dot: 'bg-fuchsia-400' };
+        if (label.includes('day')) return { bg: 'bg-orange-50', text: 'text-orange-700', label: d.label, dot: 'bg-orange-400' };
         if (label.includes('morning')) return { bg: 'bg-emerald-50', text: 'text-emerald-700', label: 'Morning', dot: 'bg-emerald-500' };
         if (label.includes('evening')) return { bg: 'bg-blue-50', text: 'text-blue-700', label: 'Evening', dot: 'bg-blue-500' };
-        return { bg: 'bg-slate-50', text: 'text-slate-700', label: 'Regular', dot: 'bg-slate-400' };
+        return { bg: 'bg-slate-50', text: 'text-slate-700', label: d.label || 'Regular', dot: 'bg-slate-400' };
     };
 
     const activeDayData = schedule.find(d => d.day === selectedDay);
@@ -364,6 +382,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                                                 setSourceDay(activeDayData);
                                                 setTargetDay(null);
                                                 setSelectedNewShift(null);
+                                                setInterchangeNote('');
                                                 // Default mode: shift_type for working days, swap_date for off days
                                                 setInterchangeMode(activeDayData.active ? 'shift_type' : 'swap_date');
                                                 setIsInterchangeModalOpen(true);
@@ -380,15 +399,22 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
 
                             {/* Clock In / Out Button — only for today's working shifts */}
                             {activeDayData.active && activeDayData.fullDate === todayStr && (
-                                <button onClick={attendanceStatus === 'active' ? handleClockOut : handleClockIn}
-                                    disabled={attendanceStatus === 'loading' || attendanceStatus === 'completed'}
-                                    className={`w-full py-6 rounded-[2rem] flex items-center justify-center gap-3 border transition-all active:scale-95
-                                        ${attendanceStatus === 'active' ? 'bg-rose-500 border-rose-400 text-white shadow-lg'
-                                            : attendanceStatus === 'completed' ? 'bg-slate-100 border-slate-200 text-slate-400 opacity-50'
-                                                : 'bg-slate-900 border-slate-800 text-white shadow-xl shadow-slate-200'}`}>
-                                    {attendanceStatus === 'loading' ? <Loader2 className="animate-spin" size={18} /> : attendanceStatus === 'completed' ? <CheckCircle2 size={18} /> : <Navigation size={18} />}
-                                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">{attendanceStatus === 'active' ? 'End Shift' : attendanceStatus === 'completed' ? 'Shift Locked' : 'Start Shift'}</span>
-                                </button>
+                                <div className="space-y-4">
+                                    <button onClick={attendanceStatus === 'active' ? handleClockOut : handleClockIn}
+                                        disabled={attendanceStatus === 'loading' || attendanceStatus === 'completed'}
+                                        className={`w-full py-6 rounded-[2rem] flex items-center justify-center gap-3 border transition-all active:scale-95
+                                            ${attendanceStatus === 'active' ? 'bg-rose-500 border-rose-400 text-white shadow-lg'
+                                                : attendanceStatus === 'completed' ? 'bg-slate-100 border-slate-200 text-slate-400 opacity-50'
+                                                    : 'bg-slate-900 border-slate-800 text-white shadow-xl shadow-slate-200'}`}>
+                                        {attendanceStatus === 'loading' ? <Loader2 className="animate-spin" size={18} /> : attendanceStatus === 'completed' ? <CheckCircle2 size={18} /> : <Navigation size={18} />}
+                                        <span className="text-[11px] font-black uppercase tracking-[0.2em]">{attendanceStatus === 'active' ? 'End Shift' : attendanceStatus === 'completed' ? 'Shift Locked' : 'Start Shift'}</span>
+                                    </button>
+                                    {attendanceStatus === 'completed' && (
+                                        <button onClick={handleRequestReEntry} className="w-full text-center text-[10px] font-bold text-slate-400 hover:text-rose-500 transition-colors uppercase tracking-widest underline decoration-dotted underline-offset-4">
+                                            Clocked out by accident? Request Re-Entry
+                                        </button>
+                                    )}
+                                </div>
                             )}
                         </motion.div>
                     ) : null}
@@ -514,6 +540,17 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                                         )}
                                     </div>
                                 )}
+
+                                {/* Reason/Note Input */}
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-2">Reason for Change (Optional)</label>
+                                    <textarea
+                                        value={interchangeNote}
+                                        onChange={(e) => setInterchangeNote(e.target.value)}
+                                        placeholder="E.g., Doctor appointment, Family emergency..."
+                                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 text-xs font-medium text-slate-700 placeholder:text-slate-300 outline-none focus:border-slate-300 focus:bg-white transition-all resize-none h-20"
+                                    />
+                                </div>
 
                                 {/* Submit */}
                                 <button

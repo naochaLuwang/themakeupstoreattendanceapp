@@ -39,9 +39,9 @@ export default function OverridesList({ adminId }: OverridesListProps) {
     const handleApprove = async (request: any) => {
         const today = new Date().toISOString().split('T')[0];
 
-        // 1. Delete the "stuck" record for today to allow fresh clock-in
+        // 1. Remove the accidental check-out to allow shift continuation
         await supabase.from('attendance')
-            .delete()
+            .update({ check_out: null, is_auto_checkout: false })
             .eq('employee_id', request.requestor_id)
             .gte('check_in', `${today}T00:00:00Z`);
 

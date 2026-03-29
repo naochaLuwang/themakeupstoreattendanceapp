@@ -278,6 +278,12 @@ export default function AdminRequestManager() {
                                                     </span>
                                                 </div>
                                                 <p className="text-xs text-slate-500 italic font-medium leading-relaxed">"{req.message}"</p>
+                                                {req.note && (
+                                                    <div className="mt-2 bg-slate-50/80 border border-slate-100/80 rounded-xl p-3">
+                                                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Employee Note</p>
+                                                        <p className="text-xs font-medium text-slate-600 italic">"{req.note}"</p>
+                                                    </div>
+                                                )}
 
                                                 {/* Shift Date Info */}
                                                 {req.shifts && (
