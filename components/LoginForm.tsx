@@ -27,8 +27,14 @@ export default function LoginForm() {
                 // We only reset if there is an error (though redirects usually stop execution).
                 try {
                     await login(formData);
-                } catch (e) {
-                    // If login action doesn't redirect (e.g., handles errors internally)
+                } catch (e: any) {
+                    // Next.js `redirect()` throws an error internally. If we catch it, 
+                    // we MUST re-throw it, otherwise the client-side router breaks in production
+                    // with "TypeError: Cannot read properties of undefined (reading 'payload')"
+                    if (e && e.message && e.message.includes('NEXT_REDIRECT')) {
+                        throw e;
+                    }
+                    console.error("Login failed:", e);
                     setIsPending(false);
                 }
             }}
