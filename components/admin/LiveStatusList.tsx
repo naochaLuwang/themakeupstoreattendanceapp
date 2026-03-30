@@ -53,13 +53,31 @@ export default function LiveStatusList() {
     }, []);
 
     // --- LOGIC HELPERS ---
+    // Safe literal extraction from "YYYY-MM-DDTHH:mm:00+05:30" or "YYYY-MM-DD HH:mm:00"
+    const extractLocalTime = (timeString: string | null) => {
+        if (!timeString) return null;
+        try {
+            if (timeString.includes('T')) {
+                return timeString.split('T')[1].substring(0, 5); // "HH:mm"
+            } else if (timeString.includes(' ')) {
+                return timeString.split(' ')[1].substring(0, 5);
+            }
+        } catch (e) {
+             return null;
+        }
+        return null;
+    };
+
     const getScheduledTime = (attendanceIn: string, shiftTime: string | null) => {
         if (!shiftTime) return null;
-        const actualDate = new Date(attendanceIn);
-        const dbDate = new Date(shiftTime);
+        const actualDate = new Date(attendanceIn); // Actual local check-in
+        const literalTime = extractLocalTime(shiftTime); // "10:00"
+        if (!literalTime) return null;
+
+        const [hours, minutes] = literalTime.split(':').map(Number);
         const combined = new Date(actualDate);
-        // Extract exact hours/mins from DB regardless of local offset
-        combined.setHours(dbDate.getUTCHours(), dbDate.getUTCMinutes(), 0, 0);
+        // Set the exact local hours/mins the admin intended
+        combined.setHours(hours, minutes, 0, 0);
         return combined;
     };
 
@@ -70,11 +88,21 @@ export default function LiveStatusList() {
         return h > 0 ? `${h}h ${m}m` : `${m}m`;
     };
 
-    const formatTime = (iso: string | null, useUTC = false) => {
+    // Format for display (10:00 -> 10:00 AM)
+    const formatTime12H = (iso: string | null) => {
+        const time24 = extractLocalTime(iso);
+        if (!time24) return '--:--';
+        const [hours, minutes] = time24.split(':').map(Number);
+        const period = hours >= 12 ? 'PM' : 'AM';
+        const hours12 = hours % 12 || 12;
+        return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+    };
+
+    // Fallback format for actual Date objects (check_in)
+    const formatActualTime = (iso: string | null) => {
         if (!iso) return '--:--';
         return new Date(iso).toLocaleTimeString('en-US', {
-            hour: '2-digit', minute: '2-digit', hour12: true,
-            ...(useUTC && { timeZone: 'UTC' })
+            hour: '2-digit', minute: '2-digit', hour12: true
         });
     };
 
@@ -138,13 +166,13 @@ export default function LiveStatusList() {
                                         <div className="bg-slate-50/50 p-3 rounded-2xl border border-slate-100">
                                             <p className="text-[7px] font-black text-slate-400 uppercase mb-1 tracking-widest">Scheduled</p>
                                             <p className="text-[10px] font-black text-slate-800">
-                                                {formatTime(record.shifts?.start_time, true)} - {formatTime(record.shifts?.end_time, true)}
+                                                {formatTime12H(record.shifts?.start_time)} - {formatTime12H(record.shifts?.end_time)}
                                             </p>
                                         </div>
                                         <div className="bg-slate-50/50 p-3 rounded-2xl border border-slate-100">
                                             <p className="text-[7px] font-black text-slate-400 uppercase mb-1 tracking-widest">Started At</p>
                                             <p className="text-[10px] font-black text-slate-800">
-                                                {formatTime(record.check_in)}
+                                                {formatActualTime(record.check_in)}
                                             </p>
                                         </div>
                                     </div>

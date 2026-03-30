@@ -144,7 +144,12 @@ export default function GeotagAnalysisClient({ records, selectedDate }: { record
                                             {rec.profiles?.full_name}
                                         </p>
                                         <p className={`text-[9px] font-black uppercase tracking-widest mt-0.5 ${isSelected ? 'text-slate-400' : 'text-slate-400'}`}>
-                                            {new Date(rec.check_in).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                                            {new Intl.DateTimeFormat('en-IN', {
+                                                timeZone: 'Asia/Kolkata',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                hour12: true
+                                            }).format(new Date(rec.check_in))}
                                         </p>
                                     </div>
                                     <div className={`p-2 rounded-xl shrink-0 ${

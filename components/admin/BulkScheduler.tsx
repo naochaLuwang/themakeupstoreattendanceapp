@@ -80,21 +80,34 @@ export default function BulkScheduler({ employees = [] }: { employees: Employee[
             toast.error("Failed to load shifts: " + error.message);
         } else if (existingShifts) {
             days = days.map(d => {
-                const shift = existingShifts.find(s => {
-                    const datePart = s.start_time.split('T')[0];
-                    const [y, m, day] = datePart.split('-').map(Number);
-                    return y === currentYear && m === (currentMonth + 1) && day === d.day;
-                });
+                // Find the shift that starts on this specific local date string
+                const prefix = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d.day).padStart(2, '0')}`;
+                
+                // Safe lookup: check if the start_time string starts with our local YYYY-MM-DD
+                const shift = existingShifts.find(s => s.start_time.startsWith(prefix));
+
+                // Safe literal extraction from "YYYY-MM-DDTHH:mm:00+05:30" or "YYYY-MM-DD HH:mm:00"
+                const extractLocalTime = (timeString?: string, fallback: string = '10:00') => {
+                    if (!timeString) return fallback;
+                    try {
+                        if (timeString.includes('T')) {
+                            return timeString.split('T')[1].substring(0, 5);
+                        } else if (timeString.includes(' ')) {
+                            return timeString.split(' ')[1].substring(0, 5);
+                        }
+                    } catch (e) {
+                         // Fallback on error
+                    }
+                    return fallback;
+                };
 
                 if (shift) {
-                    const startTime = shift.start_time.includes('T') ? shift.start_time.split('T')[1].slice(0, 5) : shift.start_time.split(' ')[1]?.slice(0, 5) || '10:00';
-                    const endTime = shift.end_time.includes('T') ? shift.end_time.split('T')[1].slice(0, 5) : shift.end_time.split(' ')[1]?.slice(0, 5) || '18:00';
                     return {
                         ...d,
                         id: shift.id, // Store ID
                         active: true,
-                        start: startTime,
-                        end: endTime,
+                        start: extractLocalTime(shift.start_time, '10:00'),
+                        end: extractLocalTime(shift.end_time, '18:00'),
                         label: shift.shift_label || 'Shift'
                     };
                 }
@@ -141,11 +154,15 @@ export default function BulkScheduler({ employees = [] }: { employees: Employee[
         setSchedule(prev => prev.map(d => {
             if (d.day !== dayNum) return d;
             if (activePreset) {
+                // Ensure we only ever grab 'HH:mm' from the preset regardless of how it's formatted
+                const cleanStart = activePreset.start_time.includes('T') ? activePreset.start_time.split('T')[1].substring(0, 5) : activePreset.start_time.substring(0, 5);
+                const cleanEnd = activePreset.end_time.includes('T') ? activePreset.end_time.split('T')[1].substring(0, 5) : activePreset.end_time.substring(0, 5);
+                
                 return {
                     ...d,
                     active: true,
-                    start: activePreset.start_time.slice(0, 5),
-                    end: activePreset.end_time.slice(0, 5),
+                    start: cleanStart,
+                    end: cleanEnd,
                     label: activePreset.label
                 };
             }
@@ -176,8 +193,11 @@ export default function BulkScheduler({ employees = [] }: { employees: Employee[
                 return {
                     id: d.id || crypto.randomUUID(), // Generate valid UUID if missing
                     employee_id: selectedEmp,
-                    start_time: `${dateStr}T${d.start}:00+05:30`,
-                    end_time: `${dateStr}T${d.end}:00+05:30`,
+                    // By removing the explicit timezone offset (+05:30), Supabase treats this as 
+                    // a naive timestamp or UTC timestamp depending on column setup, but guarantees 
+                    // the string "10:00:00" is what is stored and returned in the ISO output.
+                    start_time: `${dateStr}T${d.start}:00`,
+                    end_time: `${dateStr}T${d.end}:00`,
                     status: 'scheduled',
                     shift_label: d.label
                 };

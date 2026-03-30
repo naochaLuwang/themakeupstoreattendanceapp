@@ -85,7 +85,10 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
             const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
             const currentDate = new Date(dateStr);
 
-            const shift = shifts.find(s => s.start_time.split('T')[0] === dateStr);
+            // Extract the literal local time string from the database format (e.g. "2026-03-31T10:00:00+05:30" -> "10:00")
+            // This is safer than new Date() which can cause double-conversion bugs across different browsers/OS
+            const shift = shifts.find(s => s.start_time.startsWith(dateStr));
+            
             const leave = leaves.find(l => currentDate >= new Date(l.start_date) && currentDate <= new Date(l.end_date));
 
             // Only show pending requests as active request indicators
@@ -94,13 +97,32 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                 r.status === 'pending'
             );
 
+            // Safe literal extraction from "YYYY-MM-DDTHH:mm:00+05:30" or "YYYY-MM-DD HH:mm:00"
+            const extractLocalTime = (timeString?: string) => {
+                if (!timeString) return null;
+                try {
+                    // Extract HH:mm part regardless of timezone marker
+                    let timePart = '';
+                    if (timeString.includes('T')) {
+                        timePart = timeString.split('T')[1].substring(0, 5);
+                    } else if (timeString.includes(' ')) {
+                        timePart = timeString.split(' ')[1].substring(0, 5);
+                    } else {
+                        return null;
+                    }
+                    return formatTo12H(timePart); // Converts "10:00" to { time: "10:00", period: "AM" }
+                } catch (e) {
+                    return null;
+                }
+            };
+
             return {
                 id: shift?.id,
                 day: dayNum,
                 active: !!shift,
                 isLeave: !!leave,
-                start: shift ? formatTo12H(shift.start_time.split('T')[1].slice(0, 5)) : null,
-                end: shift ? formatTo12H(shift.end_time.split('T')[1].slice(0, 5)) : null,
+                start: extractLocalTime(shift?.start_time),
+                end: extractLocalTime(shift?.end_time),
                 label: leave ? 'LEAVE' : (shift?.shift_label || null),
                 fullDate: dateStr,
                 request: request || null
