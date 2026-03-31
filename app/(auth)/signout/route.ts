@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { NextResponse } from 'next/server';
+import { redirect } from 'next/navigation';
 
 export async function POST(request: Request) {
     const supabase = await createClient();
@@ -12,8 +12,5 @@ export async function POST(request: Request) {
     }
 
     // 2. Redirect back to the login page
-    const url = new URL(request.url);
-    return NextResponse.redirect(new URL('/login', url.origin), {
-        status: 302,
-    });
+    redirect('/login');
 }

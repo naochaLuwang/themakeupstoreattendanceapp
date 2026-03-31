@@ -12,7 +12,8 @@ export default function ActivityLogView({ userId }: { userId: string }) {
     const supabase = createClient();
     const [logs, setLogs] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [searchDate, setSearchDate] = useState(new Date().toISOString().split('T')[0]);
+    const now = new Date();
+    const [searchDate, setSearchDate] = useState(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`);
 
     useEffect(() => { fetchLogs(); }, [userId, searchDate]);
 
@@ -38,7 +39,10 @@ export default function ActivityLogView({ userId }: { userId: string }) {
     const navigateDate = (days: number) => {
         const current = new Date(searchDate);
         current.setDate(current.getDate() + days);
-        setSearchDate(current.toISOString().split('T')[0]);
+        const year = current.getFullYear();
+        const month = String(current.getMonth() + 1).padStart(2, '0');
+        const day = String(current.getDate()).padStart(2, '0');
+        setSearchDate(`${year}-${month}-${day}`);
     };
 
     const handleDragEnd = (event: any, info: any) => {

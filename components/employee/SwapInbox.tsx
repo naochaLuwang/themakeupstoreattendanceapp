@@ -242,7 +242,8 @@ export default function SwapInbox({ userId }: { userId: string }) {
             return;
         }
 
-        const shiftDate = new Date(request.shift?.start_time).toISOString().split('T')[0];
+        const d = new Date(request.shift?.start_time);
+        const shiftDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
         // Find the user's corresponding shift on that day to interchange
         const { data: userShift, error: findError } = await supabase

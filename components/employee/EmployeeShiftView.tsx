@@ -136,7 +136,8 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
         const { data: profile } = await supabase.from('profiles').select('*, stores(*)').eq('id', userId).single();
         if (profile?.stores) setStoreInfo(profile.stores);
 
-        const today = new Date().toISOString().split('T')[0];
+        const now = new Date();
+        const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
         const { data: record } = await supabase.from('attendance').select('*').eq('employee_id', userId).gte('check_in', `${today}T00:00:00Z`).order('check_in', { ascending: false }).limit(1).maybeSingle();
 
         if (record) {
@@ -171,8 +172,13 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
     };
 
     const handleClockIn = async () => {
-        const todayStr = new Date().toISOString().split('T')[0];
+        const now = new Date();
+        const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
         if (activeDayData?.fullDate !== todayStr) return showToast("Only available for today's shift.");
+
+        if (!storeInfo?.lat || !storeInfo?.lng) {
+            return showToast("Store location data missing.");
+        }
 
         setAttendanceStatus('loading');
         navigator.geolocation.getCurrentPosition(async (pos) => {

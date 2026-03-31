@@ -101,7 +101,8 @@ export default function AdminDashboard({ employees, liveAttendance, adminId }: a
     };
 
     const handleApproveOverride = async (request: any) => {
-        const today = new Date().toISOString().split('T')[0];
+        const now = new Date();
+        const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
         await supabase.from('attendance').delete().eq('employee_id', request.requestor_id).gte('check_in', `${today}T00:00:00Z`);
         await supabase.from('swap_requests').update({ status: 'approved' }).eq('id', request.id);
         fetchOverrides();

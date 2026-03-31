@@ -16,9 +16,12 @@ export async function processPayroll(formData: FormData) {
     // Capture the type (salary, advance, or bonus)
     const type = (formData.get('type') as string) || 'salary';
 
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
     const { error } = await supabase.from('payroll_records').insert({
         employee_id,
-        month_year: new Date().toISOString().split('T')[0],
+        month_year: today,
         base_hours,
         gross_pay,
         overtime_pay,

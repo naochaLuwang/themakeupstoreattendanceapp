@@ -6,7 +6,9 @@ export default async function GeotagReportPage({ searchParams }: { searchParams:
 
     // Leverage Next.js query parameters for historical time-travel bounds
     const { date } = await searchParams;
-    const targetDate = date || new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const targetDate = date || today;
 
     const { data: attendanceData } = await supabase
         .from('attendance')
