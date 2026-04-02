@@ -1,4 +1,7 @@
 // lib/push.ts
+
+"use server";
+
 import webpush from 'web-push';
 import { createClient } from '@/lib/supabase/server';
 
