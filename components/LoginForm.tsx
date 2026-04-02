@@ -1,17 +1,16 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { loginAction } from '@/app/actions/actions';
-import { useActionState, useEffect } from 'react';
+import { useState } from 'react';
 import { ArrowRight, Loader2 } from 'lucide-react';
 
 export default function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const queryError = searchParams.get('error');
-    
-    // Using useActionState for robust Next.js form handling
-    const [state, formAction, isPending] = useActionState(loginAction, null);
+
+    const [isPending, setIsPending] = useState(false);
+    const [localError, setLocalError] = useState<string | null>(null);
 
     // Haptic helper for mobile "click" feel
     const triggerHaptic = () => {
@@ -20,17 +19,45 @@ export default function LoginForm() {
         }
     };
 
-    const handleAction = (formData: FormData) => {
-        console.log('LoginForm: Triggering action...');
+    const handleLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         triggerHaptic();
-        formAction(formData);
+        setIsPending(true);
+        setLocalError(null);
+
+        const formData = new FormData(e.currentTarget);
+
+        try {
+            // Using a stable API route instead of a hashed Server Action
+            // This is immune to the "UnrecognizedActionError" in production
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                // If login works, we use router.push instead of redirect from server
+                // This ensures a clean client-side navigation
+                router.push('/');
+                router.refresh(); // Refresh to ensure session is recognized
+            } else {
+                setLocalError(result.error || 'Identity mismatch. Try again.');
+                setIsPending(false);
+            }
+        } catch (err: any) {
+            console.error('Login error:', err);
+            setLocalError('Network error. Please check your connection.');
+            setIsPending(false);
+        }
     };
 
-    const errorMessage = state?.error || queryError;
+    const errorMessage = localError || queryError;
 
     return (
         <form
-            action={handleAction}
+            onSubmit={handleLoginSubmit}
             className="space-y-8"
         >
             <div className="space-y-6">
@@ -65,9 +92,7 @@ export default function LoginForm() {
                 <div className="flex items-center gap-2 px-2 animate-in slide-in-from-top-1 duration-300">
                     <div className="w-1 h-1 bg-red-500 rounded-full" />
                     <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest">
-                        {errorMessage === 'User not found' || errorMessage === 'Invalid username or password' 
-                            ? "Identity mismatch. Try again." 
-                            : errorMessage}
+                        {errorMessage}
                     </p>
                 </div>
             )}
