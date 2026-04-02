@@ -839,18 +839,38 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
         const { data: profile } = await supabase.from('profiles').select('*, stores(*)').eq('id', userId).single();
         if (profile?.stores) setStoreInfo(profile.stores);
 
+        // 1. Check for ANY active session (not limited to today)
+        // This handles shifts that cross midnight.
+        const { data: activeRecord } = await supabase
+            .from('attendance')
+            .select('*')
+            .eq('employee_id', userId)
+            .is('check_out', null)
+            .order('check_in', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        if (activeRecord) {
+            setAttendanceStatus('active');
+            startTimer(activeRecord.check_in);
+            return;
+        }
+
+        // 2. If no active session, check if there was a completed session TODAY
         const now = new Date();
         const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-        const { data: record } = await supabase.from('attendance').select('*').eq('employee_id', userId).gte('check_in', `${today}T00:00:00Z`).order('check_in', { ascending: false }).limit(1).maybeSingle();
+        const { data: completedToday } = await supabase
+            .from('attendance')
+            .select('*')
+            .eq('employee_id', userId)
+            .gte('check_in', `${today}T00:00:00Z`)
+            .not('check_out', 'is', null)
+            .limit(1)
+            .maybeSingle();
 
-        if (record) {
-            if (record.check_out) {
-                setAttendanceStatus('completed');
-                if (timerRef.current) clearInterval(timerRef.current);
-            } else {
-                setAttendanceStatus('active');
-                startTimer(record.check_in);
-            }
+        if (completedToday) {
+            setAttendanceStatus('completed');
+            if (timerRef.current) clearInterval(timerRef.current);
         } else {
             setAttendanceStatus('idle');
         }
@@ -984,6 +1004,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                 setAttendanceStatus('completed');
                 showToast("Shift Ended", "success");
                 await init(); // Refresh to ensure consistency
+                await fetchEverything(); // Refresh schedule to show updated times if needed
             } else {
                 setAttendanceStatus('active');
                 showToast(result.error || "Clock-out failed.");
@@ -1143,7 +1164,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                                 </div>
                                 <div className="space-y-2">
                                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Request Details</p>
-                                    <p className="text-sm font-medium leading-relaxed italic text-slate-200">"{activeDayData.request.message}"</p>
+                                    <p className="text-sm font-medium leading-relaxed italic text-slate-200">&quot;{activeDayData.request.message}&quot;</p>
                                 </div>
                                 <div className="pt-4 border-t border-white/10 flex items-center justify-between">
                                     <div className="flex items-center gap-2 text-slate-500">

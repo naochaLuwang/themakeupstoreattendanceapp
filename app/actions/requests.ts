@@ -6,7 +6,13 @@ import { sendPushNotification } from '@/lib/push';
 export async function createLeaveRequestAction(userId: string, startDate: string, endDate: string, reason: string) {
     const supabase = await createClient();
 
-    // 1. Get user profile for notification
+    // 1. Security Check: Verify Session
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user || user.id !== userId) {
+        return { error: "Unauthorized: Access denied." };
+    }
+
+    // 2. Get user profile for notification
     const { data: profile } = await supabase
         .from('profiles')
         .select('full_name')
@@ -38,7 +44,13 @@ export async function createLeaveRequestAction(userId: string, startDate: string
 export async function createSwapRequestAction(userId: string, shiftId: string, message: string, note: string | null) {
     const supabase = await createClient();
 
-    // 1. Get user profile
+    // 1. Security Check: Verify Session
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user || user.id !== userId) {
+        return { error: "Unauthorized: Access denied." };
+    }
+
+    // 2. Get user profile
     const { data: profile } = await supabase
         .from('profiles')
         .select('full_name')
