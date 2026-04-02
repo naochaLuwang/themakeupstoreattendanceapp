@@ -39,7 +39,7 @@ export async function sendPushNotification(title: string, body: string, url: str
     // 2. Fetch all push subscriptions for these admins
     const { data: subscriptions } = await supabase
         .from('push_subscriptions')
-        .select('subscription')
+        .select('subscription_json')
         .in('user_id', adminIds);
 
     if (!subscriptions || subscriptions.length === 0) return;
@@ -49,7 +49,7 @@ export async function sendPushNotification(title: string, body: string, url: str
     // 3. Send notifications in parallel
     const sendPromises = subscriptions.map(async (subRecord: any) => {
         try {
-            await webpush.sendNotification(subRecord.subscription, payload);
+            await webpush.sendNotification(subRecord.subscription_json, payload);
         } catch (error: any) {
             console.error('Push failed for subscription:', error.endpoint, error.statusCode);
             // Optional: If error.statusCode is 410 or 404, the subscription is expired/invalid
@@ -58,7 +58,7 @@ export async function sendPushNotification(title: string, body: string, url: str
                 await supabase
                     .from('push_subscriptions')
                     .delete()
-                    .match({ 'subscription->endpoint': subRecord.subscription.endpoint });
+                    .match({ 'subscription_json->endpoint': subRecord.subscription_json.endpoint });
             }
         }
     });

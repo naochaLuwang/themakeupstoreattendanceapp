@@ -82,8 +82,9 @@ export default function AdminPushManager({ userId }: { userId: string }) {
                 .from('push_subscriptions')
                 .upsert({
                     user_id: userId,
-                    subscription: subscription.toJSON()
-                }, { onConflict: 'user_id, subscription->endpoint' });
+                    endpoint: subscription.endpoint,
+                    subscription_json: subscription.toJSON()
+                }, { onConflict: 'endpoint' }); // Endpoint is unique enough
 
             if (dbError) throw dbError;
 
@@ -108,7 +109,7 @@ export default function AdminPushManager({ userId }: { userId: string }) {
                     .from('push_subscriptions')
                     .delete()
                     .eq('user_id', userId)
-                    .match({ 'subscription->endpoint': subscription.endpoint });
+                    .match({ 'subscription_json->endpoint': subscription.endpoint });
 
                 await subscription.unsubscribe();
             }
