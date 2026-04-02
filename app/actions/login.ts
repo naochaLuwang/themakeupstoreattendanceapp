@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
-export async function login(formData: FormData) {
+export async function login(_prevState: any, formData: FormData) {
     const supabase = await createClient()
 
     // 1. Get username and password from the form
@@ -11,11 +11,10 @@ export async function login(formData: FormData) {
     const password = formData.get('password') as string
 
     if (!username || !password) {
-        return redirect('/login?error=Please fill in all fields')
+        return { error: 'Please fill in all fields' }
     }
 
     // 2. Resolve the Email from the Profiles table
-    // We assume your 'profiles' table has columns: id, username, and email
     const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('email')
@@ -25,7 +24,7 @@ export async function login(formData: FormData) {
     // If username doesn't exist or there is a DB error
     if (profileError || !profile?.email) {
         console.error('Username resolution error:', profileError)
-        return redirect('/login?error=User not found')
+        return { error: 'User not found' }
     }
 
     // 3. Perform the actual Auth using the resolved email
@@ -35,8 +34,7 @@ export async function login(formData: FormData) {
     })
 
     if (authError) {
-        // Handle incorrect password or auth-specific errors
-        return redirect('/login?error=Invalid username or password')
+        return { error: 'Invalid username or password' }
     }
 
     // 4. On success, redirect to the home screen

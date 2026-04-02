@@ -1,13 +1,16 @@
 'use client';
+
 import { useSearchParams } from 'next/navigation';
 import { login } from '@/app/actions/login';
-import { useState } from 'react';
+import { useActionState } from 'react';
 import { ArrowRight, Loader2 } from 'lucide-react';
 
 export default function LoginForm() {
     const searchParams = useSearchParams();
-    const error = searchParams.get('error');
-    const [isPending, setIsPending] = useState(false);
+    const queryError = searchParams.get('error');
+    
+    // Using useActionState for robust Next.js 15/React 19 form handling
+    const [state, formAction, isPending] = useActionState(login, null);
 
     // Haptic helper for mobile "click" feel
     const triggerHaptic = () => {
@@ -16,27 +19,13 @@ export default function LoginForm() {
         }
     };
 
+    const errorMessage = state?.error || queryError;
+
     return (
         <form
-            action={async (formData) => {
+            action={(formData) => {
                 triggerHaptic();
-                setIsPending(true);
-
-                // We don't setIsPending(false) here on success 
-                // because the redirect will handle the page change.
-                // We only reset if there is an error (though redirects usually stop execution).
-                try {
-                    await login(formData);
-                } catch (e: any) {
-                    // Next.js `redirect()` throws an error internally. If we catch it, 
-                    // we MUST re-throw it, otherwise the client-side router breaks in production
-                    // with "TypeError: Cannot read properties of undefined (reading 'payload')"
-                    if (e && e.message && e.message.includes('NEXT_REDIRECT')) {
-                        throw e;
-                    }
-                    console.error("Login failed:", e);
-                    setIsPending(false);
-                }
+                formAction(formData);
             }}
             className="space-y-8"
         >
@@ -68,11 +57,13 @@ export default function LoginForm() {
                 </div>
             </div>
 
-            {error && (
+            {errorMessage && (
                 <div className="flex items-center gap-2 px-2 animate-in slide-in-from-top-1 duration-300">
                     <div className="w-1 h-1 bg-red-500 rounded-full" />
                     <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest">
-                        Identity mismatch. Try again.
+                        {errorMessage === 'User not found' || errorMessage === 'Invalid username or password' 
+                            ? "Identity mismatch. Try again." 
+                            : errorMessage}
                     </p>
                 </div>
             )}
