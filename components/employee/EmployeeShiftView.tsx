@@ -707,7 +707,6 @@
 //     );
 // }
 
-
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -845,9 +844,16 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
         const { data: record } = await supabase.from('attendance').select('*').eq('employee_id', userId).gte('check_in', `${today}T00:00:00Z`).order('check_in', { ascending: false }).limit(1).maybeSingle();
 
         if (record) {
-            if (record.check_out) setAttendanceStatus('completed');
-            else { setAttendanceStatus('active'); startTimer(record.check_in); }
-        } else setAttendanceStatus('idle');
+            if (record.check_out) {
+                setAttendanceStatus('completed');
+                if (timerRef.current) clearInterval(timerRef.current);
+            } else {
+                setAttendanceStatus('active');
+                startTimer(record.check_in);
+            }
+        } else {
+            setAttendanceStatus('idle');
+        }
     }, [userId, supabase]);
 
     useEffect(() => { fetchEverything(); }, [fetchEverything]);
@@ -898,49 +904,94 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
     };
 
     const handleClockIn = async () => {
+        // Prevent double-click
+        if (attendanceStatus === 'loading') return;
+
         const now = new Date();
         const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-        if (activeDayData?.fullDate !== todayStr) return showToast("Only available for today's shift.");
 
+        // Validate today's shift
+        if (!activeDayData) {
+            showToast("No shift data available.");
+            return;
+        }
+        if (activeDayData.fullDate !== todayStr) {
+            showToast("Only available for today's shift.");
+            return;
+        }
+        if (!activeDayData.active) {
+            showToast("No scheduled shift today.");
+            return;
+        }
         if (!storeInfo?.lat || !storeInfo?.lng) {
-            return showToast("Store location data missing.");
+            showToast("Store location data missing.");
+            return;
         }
 
         setAttendanceStatus('loading');
-        navigator.geolocation.getCurrentPosition(async (pos) => {
+
+        // Use a promise with timeout for geolocation
+        const getPosition = () => new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            });
+        });
+
+        try {
+            const pos = await getPosition();
             const dist = calculateDistance(pos.coords.latitude, pos.coords.longitude, storeInfo.lat, storeInfo.lng);
-            if (dist > (storeInfo.radius_meters || 100)) {
+            const radius = storeInfo.radius_meters || 100;
+            if (dist > radius) {
                 setAttendanceStatus('idle');
-                return showToast(`Too far (${Math.round(dist)}m).`);
+                showToast(`Too far (${Math.round(dist)}m). Required within ${radius}m.`);
+                return;
             }
 
             const result = await clockInAction(
                 userId,
                 storeInfo.id,
-                activeDayData?.id || null,
+                activeDayData.id || null,
                 pos.coords.latitude,
                 pos.coords.longitude
             );
 
             if (result.success) {
-                init();
+                await init(); // Refresh attendance status
+                showToast("Clocked in successfully!", "success");
             } else {
                 setAttendanceStatus('idle');
                 showToast(result.error || "Clock-in failed.");
             }
-        }, () => { setAttendanceStatus('idle'); showToast("Location required."); });
+        } catch (err: any) {
+            console.error("Clock-in error:", err);
+            setAttendanceStatus('idle');
+            if (err.code === 1) showToast("Location permission denied. Please enable GPS.");
+            else if (err.code === 2) showToast("Location unavailable. Try again.");
+            else if (err.code === 3) showToast("Location request timed out.");
+            else showToast(err.message || "Clock-in failed.");
+        }
     };
 
     const handleClockOut = async () => {
+        if (attendanceStatus !== 'active') return;
         setAttendanceStatus('loading');
-        const result = await clockOutAction(userId);
-        if (result.success) {
-            if (timerRef.current) clearInterval(timerRef.current);
-            setAttendanceStatus('completed');
-            showToast("Shift Ended", "success");
-        } else {
+        try {
+            const result = await clockOutAction(userId);
+            if (result.success) {
+                if (timerRef.current) clearInterval(timerRef.current);
+                setAttendanceStatus('completed');
+                showToast("Shift Ended", "success");
+                await init(); // Refresh to ensure consistency
+            } else {
+                setAttendanceStatus('active');
+                showToast(result.error || "Clock-out failed.");
+            }
+        } catch (err: any) {
+            console.error("Clock-out error:", err);
             setAttendanceStatus('active');
-            showToast(result.error || "Clock-out failed.");
+            showToast(err.message || "Clock-out failed.");
         }
     };
 
@@ -1173,7 +1224,8 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
 
                             {activeDayData.active && activeDayData.fullDate === todayStr && (
                                 <div className="space-y-4">
-                                    <button onClick={attendanceStatus === 'active' ? handleClockOut : handleClockIn}
+                                    <button
+                                        onClick={attendanceStatus === 'active' ? handleClockOut : handleClockIn}
                                         disabled={attendanceStatus === 'loading' || attendanceStatus === 'completed'}
                                         className={`w-full py-6 rounded-[2rem] flex items-center justify-center gap-3 border transition-all active:scale-95
                                             ${attendanceStatus === 'active' ? 'bg-rose-500 border-rose-400 text-white shadow-lg'
