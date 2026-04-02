@@ -12,9 +12,16 @@ export async function proxy(request: NextRequest) {
     pathname.endsWith('.ico') ||
     pathname.endsWith('.webmanifest') ||
     pathname.startsWith('/sw.js') ||
+    pathname.startsWith('/MUS-SW.js') ||
     pathname.startsWith('/workbox-')
   ) {
-    return NextResponse.next();
+    const response = NextResponse.next();
+    // CRITICAL: Ensure Service Worker is NEVER cached by the browser
+    if (pathname.includes('SW.js') || pathname.includes('sw.js')) {
+      response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      response.headers.set('Service-Worker-Allowed', '/');
+    }
+    return response;
   }
 
   let response = NextResponse.next({
@@ -57,6 +64,6 @@ export const config = {
      * 1. Next.js internals and static files
      * 2. PWA generated files (sw, manifest, fallback)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|manifest.webmanifest|manifest.json|sw.js|workbox-.*|fallback-.*|icons).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|manifest.webmanifest|manifest.json|sw.js|MUS-SW.js|workbox-.*|fallback-.*|icons).*)',
   ],
 }

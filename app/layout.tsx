@@ -45,16 +45,32 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <head>
         <script dangerouslySetInnerHTML={{ __html: `
+          window.selfHeal = async () => {
+            if ('serviceWorker' in navigator) {
+              const registrations = await navigator.serviceWorker.getRegistrations();
+              for (let registration of registrations) {
+                await registration.unregister();
+              }
+            }
+            window.location.reload();
+          };
+
           window.addEventListener('error', (e) => {
-            if (e.message && (e.message.includes('Loading chunk') || e.message.includes('Loading CSS chunk') || e.message.includes('reading \\'payload\\''))) {
-              console.log('Chunk error detected, self-healing reload...');
-              window.location.reload();
+            const msg = e.message || '';
+            const isChunkError = msg.includes('Loading chunk') || msg.includes('Loading CSS chunk') || msg.includes('reading \\'payload\\'');
+            const isSWError = msg.includes('Failed to execute \\'importScripts\\'') || msg.includes('NetworkError');
+            
+            if (isChunkError || isSWError) {
+              console.log('Critical error detected, triggering self-heal...', msg);
+              window.selfHeal();
             }
           }, true);
+
           window.addEventListener('unhandledrejection', (e) => {
-            if (e.reason && e.reason.message && e.reason.message.includes('reading \\'payload\\'')) {
-               console.log('Rejection error detected, self-healing reload...');
-               window.location.reload();
+            const reason = (e.reason && e.reason.message) || '';
+            if (reason.includes('reading \\'payload\\'') || reason.includes('Registration failed') || reason.includes('AbortError')) {
+               console.log('Rejection detected, triggering self-heal...', reason);
+               window.selfHeal();
             }
           });
         ` }} />

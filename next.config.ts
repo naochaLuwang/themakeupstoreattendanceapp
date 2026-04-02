@@ -5,29 +5,27 @@ import withPWAInit from "@ducanh2912/next-pwa";
 
 const withPWA = withPWAInit({
   dest: "public",
-  cacheOnFrontEndNav: false, // DON'T cache pages, this leads to 404 chunk errors on new builds
+  cacheOnFrontEndNav: false,
   reloadOnOnline: true,
-  sw: "sw.js",
+  sw: "MUS-SW.js", // Force a fresh Service Worker name to bypass broken caches
   disable: process.env.NODE_ENV === 'development',
-  customWorkerSrc: "worker", // Explicitly name the output service worker
+  customWorkerSrc: "worker",
   workboxOptions: {
     disableDevLogs: true,
     skipWaiting: true,
     clientsClaim: true,
-    // Provide a runtime caching rule to always bypass the service worker 
-    // for Server Actions (POST requests to the same origin).
     runtimeCaching: [
       {
-        urlPattern: ({ request }) => request.method === 'POST',
-        handler: 'NetworkOnly',
+        urlPattern: ({ request }) => request.mode === 'navigate',
+        handler: 'NetworkFirst',
         options: {
-          backgroundSync: {
-            name: 'post-sync',
-            options: {
-              maxRetentionTime: 24 * 60 // Retry for max of 24 Hours
-            }
-          }
+          cacheName: 'navigation-cache',
+          networkTimeoutSeconds: 5
         }
+      },
+      {
+        urlPattern: ({ request }) => request.method === 'POST',
+        handler: 'NetworkOnly'
       }
     ]
   },

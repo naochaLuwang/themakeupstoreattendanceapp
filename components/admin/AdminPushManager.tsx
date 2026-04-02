@@ -148,9 +148,21 @@ export default function AdminPushManager({ userId }: { userId: string }) {
             </div>
 
             {error && (
-                <p className="text-[9px] font-bold text-rose-500 bg-rose-50 p-2 rounded-lg text-center uppercase tracking-widest">
-                    {error}
-                </p>
+                <div className="space-y-2">
+                    <p className="text-[9px] font-bold text-rose-500 bg-rose-50 p-2 rounded-lg text-center uppercase tracking-widest">
+                        {error.includes('AbortError') ? 'Push Service Error: Try refreshing the page or checking your internet connection.' : error}
+                    </p>
+                    <button 
+                        onClick={() => {
+                            if (window.confirm('This will refresh the app to fix caching issues. Continue?')) {
+                                (window as any).selfHeal?.();
+                            }
+                        }}
+                        className="w-full py-2 text-[8px] font-black uppercase text-slate-400 hover:text-slate-600 transition-colors underline"
+                    >
+                        Troubleshoot / Reset App
+                    </button>
+                </div>
             )}
 
             <div className="flex flex-col gap-2">
