@@ -3,7 +3,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
-export async function login(_prevState: any, formData: FormData) {
+export const loginAction = async (prevState: any, formData: FormData) => {
+    console.log('Login action being processed on server...');
     const supabase = await createClient()
 
     // 1. Get username and password from the form

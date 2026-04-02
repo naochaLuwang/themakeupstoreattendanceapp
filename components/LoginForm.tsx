@@ -1,16 +1,17 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import { login } from '@/app/actions/login';
-import { useActionState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { loginAction } from '@/app/actions/actions';
+import { useActionState, useEffect } from 'react';
 import { ArrowRight, Loader2 } from 'lucide-react';
 
 export default function LoginForm() {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const queryError = searchParams.get('error');
     
-    // Using useActionState for robust Next.js 15/React 19 form handling
-    const [state, formAction, isPending] = useActionState(login, null);
+    // Using useActionState for robust Next.js form handling
+    const [state, formAction, isPending] = useActionState(loginAction, null);
 
     // Haptic helper for mobile "click" feel
     const triggerHaptic = () => {
@@ -19,14 +20,17 @@ export default function LoginForm() {
         }
     };
 
+    const handleAction = (formData: FormData) => {
+        console.log('LoginForm: Triggering action...');
+        triggerHaptic();
+        formAction(formData);
+    };
+
     const errorMessage = state?.error || queryError;
 
     return (
         <form
-            action={(formData) => {
-                triggerHaptic();
-                formAction(formData);
-            }}
+            action={handleAction}
             className="space-y-8"
         >
             <div className="space-y-6">
