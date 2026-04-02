@@ -6,6 +6,7 @@ import {
     Check, X, Clock, ArrowRight, RefreshCcw,
     Calendar, Search, Loader2, ArrowLeftRight, AlertCircle
 } from 'lucide-react';
+import { approveOverrideRequest } from '@/app/actions/attendance-override';
 
 export default function AdminRequestManager() {
     const supabase = createClient();
@@ -35,12 +36,22 @@ export default function AdminRequestManager() {
     const handleAction = async (request: any, action: 'approved' | 'declined') => {
         setProcessingId(request.id);
         try {
+            // --- Override request (accidental clock-out) ---
+            const isOverride = request.message?.includes('OVERRIDE REQUEST');
+            if (action === 'approved' && isOverride) {
+                const result = await approveOverrideRequest(request.id);
+                if (!result.success) throw new Error(result.error);
+                await fetchRequests();
+                return;
+            }
+
+            // --- Normal shift swap / change logic ---
             if (action === 'approved' && request.shifts) {
                 const isSelf = request.requestor_id === request.receiver_id;
                 const msg = request.message || "";
 
                 if (isSelf) {
-                    // --- CASE 1: SHIFT TIME CHANGE (same day, different schedule) ---
+                    // CASE 1: SHIFT TIME CHANGE (same day, different schedule)
                     if (msg.includes("Shift Change")) {
                         const labelMatch = msg.match(/to (.+?) for/);
                         const newLabel = labelMatch ? labelMatch[1].trim() : null;
@@ -63,7 +74,7 @@ export default function AdminRequestManager() {
                             }
                         }
                     }
-                    // --- CASE 2: DATE INTERCHANGE (move shift from one date to another) ---
+                    // CASE 2: DATE INTERCHANGE (move shift from one date to another)
                     else {
                         const dateMatch = msg.match(/(\d{4}-\d{2}-\d{2})/g);
                         if (dateMatch && dateMatch.length === 2) {
@@ -71,14 +82,9 @@ export default function AdminRequestManager() {
                             const targetDate = dateMatch[1];
 
                             if (msg.includes("Week Off Change")) {
-                                // Moving a shift FROM sourceDate TO targetDate (source was OFF, target was WORK)
-                                // So shift is on targetDate — move it to sourceDate (make source a work day, target becomes off)
                                 const newStart = request.shifts.start_time.replace(targetDate, sourceDate);
                                 const newEnd = request.shifts.end_time.replace(targetDate, sourceDate);
-
-                                // Check if the replacement makes sense
                                 if (newStart === request.shifts.start_time) {
-                                    // Fallback: try the other direction
                                     const altStart = request.shifts.start_time.replace(sourceDate, targetDate);
                                     const altEnd = request.shifts.end_time.replace(sourceDate, targetDate);
                                     const { error } = await supabase.from('shifts').update({
@@ -93,7 +99,6 @@ export default function AdminRequestManager() {
                                 }
                             } else {
                                 // Shift Interchange: swap dates of two shifts
-                                // Find both shifts
                                 const { data: sourceShift } = await supabase
                                     .from('shifts')
                                     .select('*')
@@ -111,7 +116,6 @@ export default function AdminRequestManager() {
                                     .maybeSingle();
 
                                 if (sourceShift && targetShift) {
-                                    // Swap timings between the two shifts
                                     const sourceTime = sourceShift.start_time.split('T')[1];
                                     const sourceEndTime = sourceShift.end_time.split('T')[1];
                                     const targetTime = targetShift.start_time.split('T')[1];
@@ -129,7 +133,6 @@ export default function AdminRequestManager() {
                                         shift_label: sourceShift.shift_label
                                     }).eq('id', targetShift.id);
                                 } else if (sourceShift || targetShift) {
-                                    // One is a work day, one is off — just move the shift
                                     const existingShift = sourceShift || targetShift;
                                     const moveToDate = sourceShift ? targetDate : sourceDate;
                                     const timeOnly = existingShift.start_time.split('T')[1];
@@ -145,10 +148,8 @@ export default function AdminRequestManager() {
                         }
                     }
                 } else {
-                    // --- CASE 3: PEER SWAP (proper 2-way swap) ---
+                    // CASE 3: PEER SWAP
                     const shiftDate = request.shifts.start_time.split('T')[0];
-
-                    // Find the receiver's shift on the same date
                     const { data: receiverShift } = await supabase
                         .from('shifts')
                         .select('*')
@@ -158,16 +159,13 @@ export default function AdminRequestManager() {
                         .maybeSingle();
 
                     if (receiverShift) {
-                        // 2-way swap: swap employee_ids
-                        const { error: err1 } = await supabase.from('shifts')
+                        await supabase.from('shifts')
                             .update({ employee_id: request.receiver_id })
                             .eq('id', request.shift_id);
-                        const { error: err2 } = await supabase.from('shifts')
+                        await supabase.from('shifts')
                             .update({ employee_id: request.requestor_id })
                             .eq('id', receiverShift.id);
-                        if (err1 || err2) throw new Error("Peer swap failed");
                     } else {
-                        // Receiver has no shift — just reassign the requester's shift
                         const { error } = await supabase.from('shifts')
                             .update({ employee_id: request.receiver_id })
                             .eq('id', request.shift_id);
@@ -176,7 +174,7 @@ export default function AdminRequestManager() {
                 }
             }
 
-            // Update request status
+            // Update request status (for non‑override approvals and all declines)
             const { error: statusErr } = await supabase.from('swap_requests').update({ status: action }).eq('id', request.id);
             if (statusErr) throw statusErr;
             fetchRequests();
@@ -215,7 +213,6 @@ export default function AdminRequestManager() {
 
     return (
         <div className="max-w-4xl mx-auto p-6 space-y-8 font-sans pb-32">
-            {/* Header */}
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-medium tracking-tight text-slate-900">Request Hub</h1>
@@ -233,14 +230,12 @@ export default function AdminRequestManager() {
                 </div>
             </header>
 
-            {/* Search */}
             <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
                 <input type="text" placeholder="Search personnel..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 pl-12 pr-4 text-[10px] font-bold uppercase outline-none focus:ring-2 focus:ring-slate-900/5" />
             </div>
 
-            {/* Loading State */}
             {loading ? (
                 <div className="py-20 flex flex-col items-center gap-4 opacity-30">
                     <Loader2 className="animate-spin" size={24} />
@@ -253,7 +248,6 @@ export default function AdminRequestManager() {
                     </p>
                 </div>
             ) : (
-                /* Request Cards */
                 <div className="grid gap-4">
                     <AnimatePresence mode="popLayout">
                         {filtered.map((req) => {
@@ -261,15 +255,11 @@ export default function AdminRequestManager() {
                             return (
                                 <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} key={req.id}
                                     className={`bg-white border rounded-[2.5rem] p-8 transition-all ${req.status !== 'pending' ? 'opacity-60' : 'border-slate-100 shadow-sm hover:shadow-md'}`}>
-
                                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                                         <div className="flex items-start gap-5">
-                                            {/* Icon */}
                                             <div className={`p-4 rounded-2xl shrink-0 ${reqType.color}`}>
                                                 {reqType.icon}
                                             </div>
-
-                                            {/* Details */}
                                             <div className="space-y-2 min-w-0 flex-1">
                                                 <div className="flex items-center gap-3 flex-wrap">
                                                     <span className="text-lg font-bold text-slate-900">{req.requestor?.full_name}</span>
@@ -284,8 +274,6 @@ export default function AdminRequestManager() {
                                                         <p className="text-xs font-medium text-slate-600 italic">"{req.note}"</p>
                                                     </div>
                                                 )}
-
-                                                {/* Shift Date Info */}
                                                 {req.shifts && (
                                                     <div className="flex items-center gap-2 mt-2">
                                                         <Clock size={12} className="text-slate-300" />
@@ -295,23 +283,17 @@ export default function AdminRequestManager() {
                                                         </span>
                                                     </div>
                                                 )}
-
-                                                {/* Peer swap receiver info */}
                                                 {req.requestor_id !== req.receiver_id && req.receiver?.full_name && (
                                                     <div className="flex items-center gap-2">
                                                         <ArrowRight size={12} className="text-slate-300" />
                                                         <span className="text-[10px] font-bold text-slate-400 uppercase">To: {req.receiver.full_name}</span>
                                                     </div>
                                                 )}
-
-                                                {/* Timestamp */}
                                                 <p className="text-[9px] text-slate-300 font-bold">
                                                     {new Date(req.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                                 </p>
                                             </div>
                                         </div>
-
-                                        {/* Actions */}
                                         <div className="flex items-center gap-2 shrink-0">
                                             {req.status === 'pending' ? (
                                                 <>
