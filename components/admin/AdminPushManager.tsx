@@ -152,16 +152,39 @@ export default function AdminPushManager({ userId }: { userId: string }) {
                 </p>
             )}
 
-            <button
-                onClick={isSubscribed ? unsubscribe : subscribe}
-                disabled={loading}
-                className={`w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-[0.98] flex items-center justify-center gap-2
-                    ${isSubscribed 
-                        ? 'bg-rose-50 text-rose-600 border border-rose-100' 
-                        : 'bg-slate-900 text-white shadow-xl shadow-slate-200'}`}
-            >
-                {loading ? <Loader2 className="animate-spin" size={14} /> : isSubscribed ? 'Disable Alerts' : 'Enable Alerts'}
-            </button>
+            <div className="flex flex-col gap-2">
+                <button
+                    onClick={isSubscribed ? unsubscribe : subscribe}
+                    disabled={loading}
+                    className={`w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-[0.98] flex items-center justify-center gap-2
+                        ${isSubscribed 
+                            ? 'bg-rose-50 text-rose-600 border border-rose-100' 
+                            : 'bg-slate-900 text-white shadow-xl shadow-slate-200'}`}
+                >
+                    {loading ? <Loader2 className="animate-spin" size={14} /> : isSubscribed ? 'Disable Alerts' : 'Enable Alerts'}
+                </button>
+
+                {isSubscribed && (
+                    <button
+                        onClick={async () => {
+                            setLoading(true);
+                            try {
+                                const res = await fetch('/api/admin/test-push', { method: 'POST' });
+                                if (!res.ok) throw new Error('Test failed');
+                                alert('Test Notification Sent! Check your device.');
+                            } catch (e) {
+                                alert('Failed to send test push.');
+                            } finally {
+                                setLoading(false);
+                            }
+                        }}
+                        disabled={loading}
+                        className="w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] bg-emerald-50 text-emerald-600 border border-emerald-100 transition-all active:scale-[0.95] flex items-center justify-center gap-2"
+                    >
+                        {loading ? <Loader2 className="animate-spin" size={14} /> : 'Send Test Push'}
+                    </button>
+                )}
+            </div>
         </div>
     );
 }
