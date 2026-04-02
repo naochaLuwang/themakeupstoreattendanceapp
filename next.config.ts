@@ -9,11 +9,12 @@ const withPWA = withPWAInit({
   reloadOnOnline: true,
   sw: "MUS-SW.js", // Force a fresh Service Worker name to bypass broken caches
   disable: process.env.NODE_ENV === 'development',
-  customWorkerSrc: "worker",
+  // customWorkerSrc removed to avoid hashed filenames causing 404s
   workboxOptions: {
     disableDevLogs: true,
     skipWaiting: true,
     clientsClaim: true,
+    importScripts: ['/push-worker.js'], // Load stable, non-hashed push logic
     runtimeCaching: [
       {
         urlPattern: ({ request }) => request.mode === 'navigate',
