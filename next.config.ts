@@ -5,9 +5,10 @@ import withPWAInit from "@ducanh2912/next-pwa";
 
 const withPWA = withPWAInit({
   dest: "public",
-  cacheOnFrontEndNav: true,
+  cacheOnFrontEndNav: false, // DON'T cache pages, this leads to 404 chunk errors on new builds
   reloadOnOnline: true,
   sw: "sw.js",
+  disable: process.env.NODE_ENV === 'development',
   customWorkerSrc: "worker", // Explicitly name the output service worker
   workboxOptions: {
     disableDevLogs: true,

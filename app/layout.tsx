@@ -43,6 +43,22 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          window.addEventListener('error', (e) => {
+            if (e.message && (e.message.includes('Loading chunk') || e.message.includes('Loading CSS chunk') || e.message.includes('reading \\'payload\\''))) {
+              console.log('Chunk error detected, self-healing reload...');
+              window.location.reload();
+            }
+          }, true);
+          window.addEventListener('unhandledrejection', (e) => {
+            if (e.reason && e.reason.message && e.reason.message.includes('reading \\'payload\\'')) {
+               console.log('Rejection error detected, self-healing reload...');
+               window.location.reload();
+            }
+          });
+        ` }} />
+      </head>
       <body className="antialiased">
         <NextTopLoader
           color="#0f172a" // Matches your slate-900 color
