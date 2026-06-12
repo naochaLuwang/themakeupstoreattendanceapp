@@ -19,6 +19,7 @@ export default function AdminNav() {
         { href: '/admin/schedule', label: 'Planner', icon: <Calendar size={18} />, mobile: true },
         { href: '/admin/weekoff-request', label: 'Swap Reqs', icon: <RefreshCcw size={18} />, mobile: true },
         { href: '/admin/reports/consolidated', label: 'Consolidated', icon: <BarChart3 size={18} />, mobile: true },
+        { href: '/admin/reports/graphs', label: 'Graphs', icon: <BarChart3 size={18} />, mobile: true },
         { href: '/admin/reports/geotag', label: 'Geo Audit', icon: <MapPin size={18} />, mobile: false },
         { href: '/admin/leaves', label: 'Leaves', icon: <Palmtree size={18} />, mobile: false },
         { href: '/admin/oversight', label: 'Oversight', icon: <ShieldCheck size={18} />, mobile: false },

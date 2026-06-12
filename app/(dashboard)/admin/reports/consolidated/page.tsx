@@ -81,6 +81,7 @@ export default function ConsolidatedOutputReport() {
         let totalWorkedHours = 0;
         let totalOvertimeHours = 0;
         let totalEarlyInHours = 0;
+        let totalLateInHours = 0;
         let presentDays = 0;
 
         const dailyData = Array.from({ length: daysInMonth }, (_, i) => {
@@ -97,6 +98,7 @@ export default function ConsolidatedOutputReport() {
 
             let workedHours = 0;
             let earlyInHours = 0;
+            let lateInHours = 0;
             let overtimeHours = 0;
 
             if (att && att.check_in) {
@@ -104,8 +106,9 @@ export default function ConsolidatedOutputReport() {
                 const checkInTime = new Date(att.check_in).getTime();
                 const checkOutTime = att.check_out ? new Date(att.check_out).getTime() : new Date().getTime(); // ongoing if no checkout
                 
-                if (att.check_out) {
-                    workedHours = (checkOutTime - checkInTime) / (1000 * 60 * 60);
+                // Calculate worked hours (either actual or ongoing)
+                workedHours = (checkOutTime - checkInTime) / (1000 * 60 * 60);
+                if (workedHours > 0) {
                     totalWorkedHours += workedHours;
                 }
 
@@ -130,6 +133,12 @@ export default function ConsolidatedOutputReport() {
                         if(earlyInHours > 0) totalEarlyInHours += earlyInHours;
                     }
 
+                    // Calculate Late In
+                    if (checkInTime > shiftStartMs) {
+                        lateInHours = (checkInTime - shiftStartMs) / (1000 * 60 * 60);
+                        if(lateInHours > 0) totalLateInHours += lateInHours;
+                    }
+
                     // Calculate Overtime (Late Out)
                     if (att.check_out && checkOutTime > shiftEndMs) {
                         overtimeHours = (checkOutTime - shiftEndMs) / (1000 * 60 * 60);
@@ -147,6 +156,7 @@ export default function ConsolidatedOutputReport() {
                 checkOut: att?.check_out ? formatTimeOnly(att.check_out) : (att ? 'Active' : '—'),
                 workedText: workedHours > 0 ? formatDuration(workedHours) : (att && !att.check_out ? 'Ongoing' : '—'),
                 earlyIn: earlyInHours > 0 ? formatDuration(earlyInHours) : '—',
+                lateIn: lateInHours > 0 ? formatDuration(lateInHours) : '—',
                 overtime: overtimeHours > 0 ? formatDuration(overtimeHours) : '—'
             };
         });
@@ -155,6 +165,7 @@ export default function ConsolidatedOutputReport() {
         setSummary({
             totalWorked: formatDuration(totalWorkedHours),
             totalEarlyIn: formatDuration(totalEarlyInHours),
+            totalLateIn: formatDuration(totalLateInHours),
             totalOvertime: formatDuration(totalOvertimeHours),
             presentDays,
             totalDays: daysInMonth
@@ -170,25 +181,62 @@ export default function ConsolidatedOutputReport() {
     const exportToPDF = () => {
         const doc = new jsPDF();
         const empName = employees.find(e => e.id === selectedEmployee)?.full_name || 'Employee';
-        
-        doc.setFontSize(20);
-        doc.text(`Consolidated Attendance Report`, 14, 22);
-        
-        doc.setFontSize(11);
-        doc.setTextColor(100);
-        doc.text(`Employee: ${empName}`, 14, 30);
-        doc.text(`Month: ${selectedMonth}`, 14, 36);
+        const pageW = doc.internal.pageSize.getWidth();
+
+        // Header
+        doc.setFontSize(22);
+        doc.setTextColor(15, 23, 42);
+        doc.text('Consolidated Attendance Report', 14, 22);
+
+        doc.setFontSize(10);
+        doc.setTextColor(100, 116, 139);
+        doc.text(`Employee: ${empName}     Month: ${selectedMonth}`, 14, 30);
+
+        // Divider line
+        doc.setDrawColor(226, 232, 240);
+        doc.line(14, 35, pageW - 14, 35);
+
+        // Summary Metrics Box
+        const metrics = [
+            { label: 'Total Worked', value: summary.totalWorked, color: [99, 102, 241] },
+            { label: 'Early In', value: summary.totalEarlyIn, color: [16, 185, 129] },
+            { label: 'Late In', value: summary.totalLateIn, color: [249, 115, 22] },
+            { label: 'Overtime', value: summary.totalOvertime, color: [245, 158, 11] },
+            { label: 'Present', value: `${summary.presentDays} / ${summary.totalDays}`, color: [59, 130, 246] },
+        ];
+
+        // Filled background for metrics
+        doc.setFillColor(248, 250, 252);
+        doc.roundedRect(14, 40, pageW - 28, 14, 2, 2, 'F');
+
+        let mx = 20;
+        const swatchW = 4;
+        const gap = (pageW - 40) / metrics.length;
+        metrics.forEach((m) => {
+            doc.setFillColor(m.color[0], m.color[1], m.color[2]);
+            doc.rect(mx, 44, swatchW, swatchW, 'F');
+            doc.setFontSize(7);
+            doc.setTextColor(100, 116, 139);
+            doc.text(m.label, mx + 7, 47);
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(15, 23, 42);
+            doc.text(m.value, mx + 7, 53);
+            doc.setFont('helvetica', 'normal');
+            mx += gap;
+        });
 
         autoTable(doc, {
-            startY: 45,
+            startY: 62,
             headStyles: { fillColor: [15, 23, 42] }, // slate-900
-            head: [['Date', 'Shift', 'Check In', 'Check Out', 'Early In', 'Overtime', 'Total Worked']],
+            head: [['Date', 'Shift', 'Check In', 'Check Out', 'Early In', 'Late In', 'Overtime', 'Total Worked']],
             body: reportData.map(row => [
                 row.displayDate,
                 row.shift,
                 row.checkIn,
                 row.checkOut,
                 row.earlyIn,
+                row.lateIn,
                 row.overtime,
                 row.workedText
             ]),
@@ -245,9 +293,10 @@ export default function ConsolidatedOutputReport() {
                         
                         {/* Summary Cards */}
                         {summary && (
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                                 <SummaryCard label="Total Worked" value={summary.totalWorked} icon={<Clock size={20} />} color="indigo" />
                                 <SummaryCard label="Total Early In" value={summary.totalEarlyIn} icon={<TrendingUp size={20} />} color="emerald" />
+                                <SummaryCard label="Total Late In" value={summary.totalLateIn} icon={<Clock size={20} />} color="orange" />
                                 <SummaryCard label="Total Overtime" value={summary.totalOvertime} icon={<AlertCircle size={20} />} color="amber" />
                                 <SummaryCard label="Days Present" value={`${summary.presentDays} / ${summary.totalDays}`} icon={<Calendar size={20} />} color="blue" />
                             </div>
@@ -273,6 +322,7 @@ export default function ConsolidatedOutputReport() {
                                             <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Check In</th>
                                             <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Check Out</th>
                                             <th className="px-6 py-4 text-[9px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-50/30">Early In</th>
+                                            <th className="px-6 py-4 text-[9px] font-black text-orange-500 uppercase tracking-widest bg-orange-50/30">Late In</th>
                                             <th className="px-6 py-4 text-[9px] font-black text-amber-500 uppercase tracking-widest bg-amber-50/30">Overtime</th>
                                             <th className="px-6 py-4 text-[9px] font-black text-slate-900 uppercase tracking-widest bg-slate-100/50">Total Worked</th>
                                         </tr>
@@ -300,7 +350,14 @@ export default function ConsolidatedOutputReport() {
                                                         {row.earlyIn}
                                                     </span>
                                                 </td>
-                                                
+
+                                                {/* Late In Column */}
+                                                <td className="px-6 py-4 whitespace-nowrap bg-orange-50/10">
+                                                    <span className={`text-xs font-black ${row.lateIn !== '—' ? 'text-orange-600' : 'text-slate-300'}`}>
+                                                        {row.lateIn}
+                                                    </span>
+                                                </td>
+
                                                 {/* Overtime Column */}
                                                 <td className="px-6 py-4 whitespace-nowrap bg-amber-50/10">
                                                     <span className={`text-xs font-black ${row.overtime !== '—' ? 'text-amber-600' : 'text-slate-300'}`}>
@@ -333,6 +390,7 @@ function SummaryCard({ label, value, icon, color }: any) {
         emerald: 'bg-emerald-50 text-emerald-600 border-emerald-100',
         amber: 'bg-amber-50 text-amber-600 border-amber-100',
         blue: 'bg-blue-50 text-blue-600 border-blue-100',
+        orange: 'bg-orange-50 text-orange-600 border-orange-100',
     };
     
     return (
