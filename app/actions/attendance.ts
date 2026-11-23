@@ -2,17 +2,7 @@
 'use server'
 import { createClient } from '@/lib/supabase/server';
 import { sendPushNotification } from '@/lib/push';
-
-// Helper for server-side geofence validation
-function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
-    const R = 6371e3; // Earth's radius in meters
-    const φ1 = lat1 * Math.PI / 180;
-    const φ2 = lat2 * Math.PI / 180;
-    const Δφ = (lat2 - lat1) * Math.PI / 180;
-    const Δλ = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
-}
+import { calculateDistance } from '@/lib/geofence';
 
 export async function clockInAction(userId: string, storeId: string, shiftId: string | null, lat: number, lng: number) {
     const supabase = await createClient();

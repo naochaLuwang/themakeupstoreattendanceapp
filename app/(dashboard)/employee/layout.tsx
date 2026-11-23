@@ -1,25 +1,31 @@
 import { Suspense } from 'react';
-import HomeSkeleton from '@/components/HomeSkeleton';
+import WorkspaceSkeleton from '@/components/WorkspaceSkeleton';
+import '@/components/workspace.css';
+import './employee.css';
 import NavWrapper from '@/components/employee/NavWrapper';
+import ThemeToggle from '@/components/ThemeToggle';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 
 export default function EmployeeLayout({ children }: { children: React.ReactNode }) {
     return (
-        <div className="min-h-screen bg-[#FBFBFE]">
-            {/* The main content renders immediately */}
-            <main className="pb-24">
-                <Suspense fallback={<HomeSkeleton />}>
-                    <AuthGuard>
-                        {children}
-                    </AuthGuard>
-                </Suspense>
-            </main>
-
-            {/* The dynamic Nav (with auth check) is wrapped in Suspense */}
-            <Suspense fallback={null}>
-                <NavWrapper />
-            </Suspense>
+        <div className="employee-shell store-ui">
+            <a href="#employee-content" className="employee-skip-link">Skip to content</a>
+            <Suspense fallback={null}><NavWrapper /></Suspense>
+            <div id="employee-content" tabIndex={-1} className="employee-content">
+                <div className="employee-brand-mobile">
+                    <div>
+                        <p className="employee-wordmark">The Makeup Store</p>
+                        <p className="employee-brand-location">Wangkhei · Staff workspace</p>
+                    </div>
+                    <ThemeToggle />
+                </div>
+                <div className="employee-content-inner">
+                    <Suspense fallback={<WorkspaceSkeleton />}>
+                        <AuthGuard>{children}</AuthGuard>
+                    </Suspense>
+                </div>
+            </div>
         </div>
     );
 }

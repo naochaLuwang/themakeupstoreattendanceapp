@@ -22,15 +22,15 @@ export default async function GeotagReportPage({ searchParams }: { searchParams:
         .order('check_in', { ascending: false });
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA] p-4 md:p-8 pb-24 md:pb-32">
+        <div className="space-y-8">
             <header className="mb-6 md:mb-8 mt-4 md:mt-0">
                 <div className="flex items-center gap-2 mb-2">
                     <span className="w-2 h-[2px] bg-indigo-500" />
-                    <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em]">Geo_Spatial_Audit</p>
+                    <p className="text-sm font-medium text-indigo-500 tracking-normal">Attendance locations</p>
                 </div>
-                <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter">Live Operations Geotag.</h1>
-                <p className="text-xs font-bold text-slate-400 mt-2 max-w-xl">
-                    Validating geographical coordinates and compliance of all active shifts initiated on {targetDate}.
+                <h1 className="text-3xl md:text-3xl font-medium text-slate-900 tracking-normal">Location audit</h1>
+                <p className="text-xs font-medium text-slate-500 mt-2 max-w-xl">
+                    Review clock-in locations and store geofence checks for {targetDate}.
                 </p>
             </header>
 

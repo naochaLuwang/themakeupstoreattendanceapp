@@ -83,13 +83,13 @@ export default function FreeMonthlyRoaster() {
             const isSales = label.includes('sales');
             const isDay = label.includes('day');
             const isMorning = label.includes('morning');
-            
+
             if (isSales) return {
                 type: 'SHIFT',
                 label: 'SS',
                 color: 'bg-indigo-100 text-indigo-700 border-indigo-200'
             };
-            
+
             if (isDay) return {
                 type: 'SHIFT',
                 label: 'D',
@@ -107,7 +107,7 @@ export default function FreeMonthlyRoaster() {
         return {
             type: 'OFF',
             label: 'OFF',
-            color: 'bg-red-50 text-red-500 border-red-100 opacity-80'
+            color: 'bg-red-50 text-red-500 border-red-100 '
         };
     };
 
@@ -125,22 +125,22 @@ export default function FreeMonthlyRoaster() {
     }, [searchDate, employees, shifts, leaves]);
 
     if (loading) return (
-        <div className="h-96 flex flex-col items-center justify-center opacity-30">
+        <div className="h-96 flex flex-col items-center justify-center ">
             <Loader2 className="animate-spin mb-4" />
-            <p className="text-[10px] font-black uppercase tracking-widest">Syncing Roaster...</p>
+            <p className="text-sm font-medium tracking-normal">Syncing Roaster...</p>
         </div>
     );
 
     return (
-        <div className="space-y-6 max-w-[1600px] mx-auto pb-32">
+        <div className="space-y-6 max-w-[1600px] mx-auto">
             {/* Quick Day Search Section */}
-            <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl">
+            <div className="bg-slate-900 rounded-xl p-8 text-white">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="space-y-1">
-                        <h3 className="text-xl font-black tracking-tight flex items-center gap-2">
+                        <h3 className="text-xl font-medium tracking-normal flex items-center gap-2">
                             <Search size={20} className="text-blue-400" /> Daily Quick Lookup
                         </h3>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Identify coverage gaps instantly</p>
+                        <p className="text-sm font-medium text-slate-500 tracking-normal">Identify coverage gaps instantly</p>
                     </div>
                     <div className="relative">
                         <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
@@ -148,37 +148,37 @@ export default function FreeMonthlyRoaster() {
                             type="date"
                             value={searchDate}
                             onChange={(e) => setSearchDate(e.target.value)}
-                            className="bg-slate-800 border-none rounded-2xl pl-12 pr-6 py-4 text-[11px] font-black uppercase tracking-widest text-white outline-none focus:ring-2 ring-blue-500 transition-all"
+                            className="bg-slate-800 border-none rounded-xl pl-12 pr-6 py-4 text-sm font-medium tracking-normal text-white outline-none focus:ring-2 ring-blue-500 transition-colors"
                         />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
                     {/* Working Card */}
-                    <div className="bg-slate-800/50 rounded-[2rem] p-6 border border-slate-700">
+                    <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
                         <div className="flex items-center gap-2 mb-4 text-emerald-400">
                             <UserCheck size={16} />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Working Today ({daySummary.working.length})</span>
+                            <span className="text-sm font-medium tracking-normal">Working Today ({daySummary.working.length})</span>
                         </div>
                         <div className="flex flex-wrap gap-2">
                             {daySummary.working.length > 0 ? daySummary.working.map((emp, i) => (
-                                <span key={i} className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1.5 rounded-xl text-[10px] font-bold">
-                                    {emp.name} <span className="opacity-50 ml-1">({emp.label})</span>
+                                <span key={i} className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1.5 rounded-xl text-sm font-medium">
+                                    {emp.name} <span className=" ml-1">({emp.label})</span>
                                 </span>
-                            )) : <span className="text-[10px] text-slate-500 italic">No shifts assigned</span>}
+                            )) : <span className="text-sm text-slate-500">No shifts assigned</span>}
                         </div>
                     </div>
 
                     {/* Off/Leave Card */}
-                    <div className="bg-slate-800/50 rounded-[2rem] p-6 border border-slate-700">
+                    <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700">
                         <div className="flex items-center gap-2 mb-4 text-rose-400">
                             <UserX size={16} />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Off / Leave ({daySummary.off.length})</span>
+                            <span className="text-sm font-medium tracking-normal">Off / Leave ({daySummary.off.length})</span>
                         </div>
                         <div className="flex flex-wrap gap-2">
                             {daySummary.off.map((emp, i) => (
-                                <span key={i} className={`px-3 py-1.5 rounded-xl text-[10px] font-bold border ${emp.type === 'LEAVE' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
-                                    {emp.name} <span className="text-[8px] opacity-60 ml-1">[{emp.type}]</span>
+                                <span key={i} className={`px-3 py-1.5 rounded-xl text-sm font-medium border ${emp.type === 'LEAVE' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
+                                    {emp.name} <span className="text-xs  ml-1">[{emp.type}]</span>
                                 </span>
                             ))}
                         </div>
@@ -187,9 +187,9 @@ export default function FreeMonthlyRoaster() {
             </div>
 
             {/* Monthly Roaster Grid */}
-            <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-2xl overflow-hidden">
+            <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
                 <div className="p-8 flex items-center justify-between border-b border-slate-50">
-                    <h2 className="text-2xl font-black text-slate-900 tracking-tighter">
+                    <h2 className="text-2xl font-medium text-slate-900 tracking-normal">
                         {viewDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
                     </h2>
                     <div className="flex gap-2">
@@ -202,11 +202,11 @@ export default function FreeMonthlyRoaster() {
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="bg-slate-50/50">
-                                <th className="sticky left-0 z-20 bg-white p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-left border-b border-slate-100 min-w-[160px]">Personnel</th>
+                                <th className="sticky left-0 z-20 bg-white p-4 text-sm font-medium text-slate-500 tracking-normal text-left border-b border-slate-100 min-w-[160px]">Personnel</th>
                                 {daysInMonth.map(day => (
-                                    <th key={day} className="p-2 text-[10px] font-black text-slate-400 border-b border-slate-100 min-w-[50px] text-center">
+                                    <th key={day} className="p-2 text-sm font-medium text-slate-500 border-b border-slate-100 min-w-[50px] text-center">
                                         {day}
-                                        <div className="text-[7px] font-bold opacity-40 uppercase">
+                                        <div className="text-xs font-medium ">
                                             {new Date(viewDate.getFullYear(), viewDate.getMonth(), day).toLocaleDateString('en-US', { weekday: 'short' })}
                                         </div>
                                     </th>
@@ -216,7 +216,7 @@ export default function FreeMonthlyRoaster() {
                         <tbody>
                             {employees.map(emp => (
                                 <tr key={emp.id} className="hover:bg-slate-50/30 transition-colors">
-                                    <td className="sticky left-0 z-20 bg-white p-4 border-b border-slate-50 text-[11px] font-black text-slate-800 uppercase tracking-tight shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)]">
+                                    <td className="sticky left-0 z-20 bg-white p-4 border-b border-slate-50 text-sm font-medium text-slate-800 tracking-normal">
                                         {emp.full_name}
                                     </td>
                                     {daysInMonth.map(day => {
@@ -224,7 +224,7 @@ export default function FreeMonthlyRoaster() {
                                         const status = getStatus(emp.id, dateStr);
                                         return (
                                             <td key={day} className="p-1 border-b border-slate-50">
-                                                <div className={`h-10 w-full rounded-xl border flex items-center justify-center text-[9px] font-black transition-all ${status.color}`}>
+                                                <div className={`h-10 w-full rounded-xl border flex items-center justify-center text-xs font-medium transition-colors ${status.color}`}>
                                                     {status.label}
                                                 </div>
                                             </td>
@@ -241,7 +241,7 @@ export default function FreeMonthlyRoaster() {
 }
 
 const NavBtn = ({ onClick, icon }: any) => (
-    <button onClick={onClick} className="p-3 bg-slate-50 hover:bg-slate-100 rounded-2xl transition-all active:scale-95 text-slate-600 border border-slate-100">
+    <button onClick={onClick} className="p-3 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors text-slate-600 border border-slate-100">
         {icon}
     </button>
 );

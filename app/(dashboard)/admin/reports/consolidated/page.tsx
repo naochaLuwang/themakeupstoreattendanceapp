@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
     Calendar, User, Clock, Loader2, FileDown, TrendingUp, AlertCircle
 } from 'lucide-react';
@@ -14,7 +13,7 @@ export default function ConsolidatedOutputReport() {
     const [employees, setEmployees] = useState<any[]>([]);
     const [selectedEmployee, setSelectedEmployee] = useState<string>('');
     const [selectedMonth, setSelectedMonth] = useState<string>(new Date().toISOString().slice(0, 7)); // 'YYYY-MM'
-    
+
     const [reportData, setReportData] = useState<any[]>([]);
     const [summary, setSummary] = useState<any>(null);
     const [loading, setLoading] = useState(false);
@@ -56,7 +55,7 @@ export default function ConsolidatedOutputReport() {
         const year = parseInt(selectedMonth.split('-')[0]);
         const month = parseInt(selectedMonth.split('-')[1]) - 1; // 0-indexed month
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-        
+
         const monthStart = `${selectedMonth}-01T00:00:00Z`;
         const monthEnd = `${selectedMonth}-${String(daysInMonth).padStart(2, '0')}T23:59:59Z`;
 
@@ -87,12 +86,12 @@ export default function ConsolidatedOutputReport() {
         const dailyData = Array.from({ length: daysInMonth }, (_, i) => {
             const dayNum = i + 1;
             const dateStr = `${selectedMonth}-${String(dayNum).padStart(2, '0')}`;
-            
+
             // Find Shift
             const shift = shifts.find(s => s.start_time.startsWith(dateStr));
-            
+
             // Find Attendance (Try matching by shift_id first, fallback to date match via check_in)
-            const att = attendance.find(a => 
+            const att = attendance.find(a =>
                 (shift && a.shift_id === shift.id) || a.check_in.startsWith(dateStr)
             );
 
@@ -105,7 +104,7 @@ export default function ConsolidatedOutputReport() {
                 presentDays++;
                 const checkInTime = new Date(att.check_in).getTime();
                 const checkOutTime = att.check_out ? new Date(att.check_out).getTime() : new Date().getTime(); // ongoing if no checkout
-                
+
                 // Calculate worked hours (either actual or ongoing)
                 workedHours = (checkOutTime - checkInTime) / (1000 * 60 * 60);
                 if (workedHours > 0) {
@@ -121,8 +120,8 @@ export default function ConsolidatedOutputReport() {
                     })();
 
                     const shiftEndMs = (() => {
-                        const d = new Date(dateStr + 'T00:00:00'); 
-                        const sD = new Date(shift.end_time);
+                        const d = new Date(dateStr + 'T00:00:00');
+                        const sD = new Date(shift.end_time || '');
                         d.setHours(sD.getUTCHours(), sD.getUTCMinutes(), 0, 0);
                         return d.getTime();
                     })();
@@ -150,7 +149,7 @@ export default function ConsolidatedOutputReport() {
             return {
                 date: dateStr,
                 displayDate: new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' }),
-                shift: shift ? `${formatShiftTimeOnly(shift.start_time)} - ${formatShiftTimeOnly(shift.end_time)}` : 'Off',
+                shift: shift ? `${formatShiftTimeOnly(shift.start_time)} - ${formatShiftTimeOnly(shift.end_time || '')}` : 'Off',
                 shift_label: shift?.shift_label || null,
                 checkIn: att ? formatTimeOnly(att.check_in) : '—',
                 checkOut: att?.check_out ? formatTimeOnly(att.check_out) : (att ? 'Active' : '—'),
@@ -246,23 +245,23 @@ export default function ConsolidatedOutputReport() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto p-6 space-y-8 font-sans pb-32">
+        <div className="space-y-8">
             {/* Header & Controls */}
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-medium tracking-tight text-slate-900">Consolidated Output</h1>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    <h1 className="text-3xl font-medium tracking-normal text-slate-900">Consolidated attendance</h1>
+                    <p className="text-sm font-medium text-slate-500 tracking-normal">
                         Detailed monthly attendance metrics
                     </p>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-4 bg-slate-50 p-2 rounded-2xl border border-slate-100">
+                <div className="flex flex-wrap items-center gap-4 bg-slate-50 p-2 rounded-xl border border-slate-100">
                     <div className="flex items-center gap-3 px-3 py-2 bg-white rounded-xl shadow-sm border border-slate-100">
-                        <User size={16} className="text-slate-400" />
-                        <select 
-                            value={selectedEmployee} 
+                        <User size={16} className="text-slate-500" />
+                        <select
+                            value={selectedEmployee}
                             onChange={(e) => setSelectedEmployee(e.target.value)}
-                            className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer"
+                            className="bg-transparent text-xs font-medium text-slate-700 outline-none cursor-pointer"
                         >
                             {employees.map(emp => (
                                 <option key={emp.id} value={emp.id}>{emp.full_name}</option>
@@ -271,26 +270,26 @@ export default function ConsolidatedOutputReport() {
                     </div>
 
                     <div className="flex items-center gap-3 px-3 py-2 bg-white rounded-xl shadow-sm border border-slate-100">
-                        <Calendar size={16} className="text-slate-400" />
-                        <input 
-                            type="month" 
-                            value={selectedMonth} 
+                        <Calendar size={16} className="text-slate-500" />
+                        <input
+                            type="month"
+                            value={selectedMonth}
                             onChange={(e) => setSelectedMonth(e.target.value)}
-                            className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer"
+                            className="bg-transparent text-xs font-medium text-slate-700 outline-none cursor-pointer"
                         />
                     </div>
                 </div>
             </header>
 
             {loading ? (
-                <div className="py-32 flex flex-col items-center justify-center gap-4 opacity-30">
+                <div className="py-32 flex flex-col items-center justify-center gap-4 ">
                     <Loader2 className="animate-spin text-slate-900" size={32} />
-                    <p className="text-[10px] font-black uppercase tracking-widest">Calculating Metrics...</p>
+                    <p className="text-sm font-medium tracking-normal">Loading attendance report</p>
                 </div>
             ) : (
-                <AnimatePresence mode="wait">
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
-                        
+                <>
+                    <div className="space-y-8">
+
                         {/* Summary Cards */}
                         {summary && (
                             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -303,12 +302,12 @@ export default function ConsolidatedOutputReport() {
                         )}
 
                         {/* Data Table */}
-                        <div className="bg-white border border-slate-100 rounded-[2rem] shadow-sm overflow-hidden">
+                        <div className="bg-white border border-slate-100 rounded-xl shadow-sm overflow-hidden">
                             <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50/50">
-                                <h3 className="text-sm font-black uppercase tracking-wider text-slate-800">Daily Breakdown</h3>
-                                <button 
+                                <h3 className="text-sm font-medium tracking-normal text-slate-800">Daily Breakdown</h3>
+                                <button
                                     onClick={exportToPDF}
-                                    className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all active:scale-95 shadow-md"
+                                    className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-medium tracking-normal hover:bg-slate-800 transition-colors"
                                 >
                                     <FileDown size={14} /> Export PDF
                                 </button>
@@ -317,57 +316,57 @@ export default function ConsolidatedOutputReport() {
                                 <table className="w-full text-left min-w-[800px]">
                                     <thead>
                                         <tr className="bg-slate-50 border-b border-slate-100">
-                                            <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Date</th>
-                                            <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Shift Schedule</th>
-                                            <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Check In</th>
-                                            <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Check Out</th>
-                                            <th className="px-6 py-4 text-[9px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-50/30">Early In</th>
-                                            <th className="px-6 py-4 text-[9px] font-black text-orange-500 uppercase tracking-widest bg-orange-50/30">Late In</th>
-                                            <th className="px-6 py-4 text-[9px] font-black text-amber-500 uppercase tracking-widest bg-amber-50/30">Overtime</th>
-                                            <th className="px-6 py-4 text-[9px] font-black text-slate-900 uppercase tracking-widest bg-slate-100/50">Total Worked</th>
+                                            <th className="px-6 py-4 text-xs font-medium text-slate-500 tracking-normal">Date</th>
+                                            <th className="px-6 py-4 text-xs font-medium text-slate-500 tracking-normal">Shift Schedule</th>
+                                            <th className="px-6 py-4 text-xs font-medium text-slate-500 tracking-normal">Check In</th>
+                                            <th className="px-6 py-4 text-xs font-medium text-slate-500 tracking-normal">Check Out</th>
+                                            <th className="px-6 py-4 text-xs font-medium text-emerald-500 tracking-normal bg-emerald-50/30">Early In</th>
+                                            <th className="px-6 py-4 text-xs font-medium text-orange-500 tracking-normal bg-orange-50/30">Late In</th>
+                                            <th className="px-6 py-4 text-xs font-medium text-amber-500 tracking-normal bg-amber-50/30">Overtime</th>
+                                            <th className="px-6 py-4 text-xs font-medium text-slate-900 tracking-normal bg-slate-100/50">Total Worked</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-50">
                                         {reportData.map((row, idx) => (
                                             <tr key={idx} className="hover:bg-slate-50 transition-colors">
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className="text-xs font-bold text-slate-900">{row.displayDate}</span>
+                                                    <span className="text-xs font-medium text-slate-900">{row.displayDate}</span>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className={`text-[10px] font-bold uppercase ${row.shift === 'Off' ? 'text-rose-400' : 'text-slate-500'}`}>
-                                                        {row.shift} 
-                                                        {row.shift_label && <span className="ml-1 opacity-50">({row.shift_label})</span>}
+                                                    <span className={`text-sm font-medium  ${row.shift === 'Off' ? 'text-rose-400' : 'text-slate-500'}`}>
+                                                        {row.shift}
+                                                        {row.shift_label && <span className="ml-1 ">({row.shift_label})</span>}
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-xs font-medium text-slate-600">{row.checkIn}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-xs font-medium text-slate-600">
-                                                    {row.checkOut === 'Active' ? <span className="text-emerald-500 font-bold animate-pulse">Active</span> : row.checkOut}
+                                                    {row.checkOut === 'Active' ? <span className="text-emerald-500 font-medium">Active</span> : row.checkOut}
                                                 </td>
-                                                
+
                                                 {/* Early In Column */}
                                                 <td className="px-6 py-4 whitespace-nowrap bg-emerald-50/10">
-                                                    <span className={`text-xs font-black ${row.earlyIn !== '—' ? 'text-emerald-600' : 'text-slate-300'}`}>
+                                                    <span className={`text-xs font-medium ${row.earlyIn !== '—' ? 'text-emerald-600' : 'text-slate-500'}`}>
                                                         {row.earlyIn}
                                                     </span>
                                                 </td>
 
                                                 {/* Late In Column */}
                                                 <td className="px-6 py-4 whitespace-nowrap bg-orange-50/10">
-                                                    <span className={`text-xs font-black ${row.lateIn !== '—' ? 'text-orange-600' : 'text-slate-300'}`}>
+                                                    <span className={`text-xs font-medium ${row.lateIn !== '—' ? 'text-orange-600' : 'text-slate-500'}`}>
                                                         {row.lateIn}
                                                     </span>
                                                 </td>
 
                                                 {/* Overtime Column */}
                                                 <td className="px-6 py-4 whitespace-nowrap bg-amber-50/10">
-                                                    <span className={`text-xs font-black ${row.overtime !== '—' ? 'text-amber-600' : 'text-slate-300'}`}>
+                                                    <span className={`text-xs font-medium ${row.overtime !== '—' ? 'text-amber-600' : 'text-slate-500'}`}>
                                                         {row.overtime}
                                                     </span>
                                                 </td>
 
                                                 {/* Total Worked */}
                                                 <td className="px-6 py-4 whitespace-nowrap bg-slate-50/30">
-                                                    <span className="text-sm font-black text-indigo-600 tracking-tight">
+                                                    <span className="text-sm font-medium text-indigo-600 tracking-normal">
                                                         {row.workedText}
                                                     </span>
                                                 </td>
@@ -377,8 +376,8 @@ export default function ConsolidatedOutputReport() {
                                 </table>
                             </div>
                         </div>
-                    </motion.div>
-                </AnimatePresence>
+                    </div>
+                </>
             )}
         </div>
     );
@@ -392,15 +391,15 @@ function SummaryCard({ label, value, icon, color }: any) {
         blue: 'bg-blue-50 text-blue-600 border-blue-100',
         orange: 'bg-orange-50 text-orange-600 border-orange-100',
     };
-    
+
     return (
-        <div className={`p-6 rounded-3xl border ${colors[color]} flex flex-col items-start gap-4`}>
-            <div className="p-3 bg-white/60 rounded-2xl shadow-sm">
+        <div className={`p-6 rounded-xl border ${colors[color]} flex flex-col items-start gap-4`}>
+            <div className="p-3 bg-white/60 rounded-xl shadow-sm">
                 {icon}
             </div>
             <div>
-                <p className="text-[9px] font-black uppercase tracking-widest opacity-60 mb-1">{label}</p>
-                <p className="text-2xl font-black tracking-tighter leading-none">{value}</p>
+                <p className="text-xs font-medium tracking-normal  mb-1">{label}</p>
+                <p className="text-2xl font-medium tracking-normal leading-none">{value}</p>
             </div>
         </div>
     );

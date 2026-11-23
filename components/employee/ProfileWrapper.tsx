@@ -17,84 +17,83 @@ export default async function ProfileWrapper() {
         .single();
 
     return (
-        <div className="p-6 md:p-8 space-y-8 animate-in slide-in-from-bottom-4 duration-700 max-w-2xl mx-auto">
+        <div className="space-y-6">
 
+            <header>
+                <h1 className="text-3xl font-medium text-slate-900">Profile</h1>
+                <p className="mt-2 text-sm text-slate-500">Your details, password, and payslips</p>
+            </header>
             {/* High-Design Profile Header */}
-            <div className="flex items-end gap-6 px-2">
-                <div className="w-20 h-20 md:w-24 md:h-24 bg-black rounded-[2.2rem] md:rounded-[2.5rem] flex items-center justify-center text-white text-3xl font-black uppercase shadow-2xl shadow-black/20 shrink-0">
+            <div className="flex items-center gap-4">
+                <div className="employee-profile-avatar">
                     {profile?.full_name?.[0] || 'U'}
                 </div>
                 <div className="pb-2 overflow-hidden">
-                    <h3 className="text-xl md:text-2xl font-black text-slate-900 leading-tight truncate">
+                    <h3 className="text-xl md:text-2xl font-medium text-slate-900 leading-tight truncate">
                         {profile?.full_name}
                     </h3>
-                    <p className="text-black/30 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mt-1 truncate">
+                    <p className="text-black/30 text-xs md:text-sm font-medium tracking-normal mt-1 truncate">
                         {profile?.role || 'Staff'}
                     </p>
                 </div>
             </div>
 
             {/* Action Grid using native Details/Summary for accordions */}
-            <div className="bg-white rounded-[2.5rem] md:rounded-[3rem] border border-neutral-100 overflow-hidden shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)]">
+            <div className="bg-white rounded-xl md:rounded-xl border border-neutral-100 overflow-hidden">
 
-                {/* Personal Data Section */}
+                {/* Personal details Section */}
                 <details className="group border-b border-neutral-50 outline-none">
-                    <summary className="flex items-center justify-between px-8 py-7 hover:bg-neutral-50 transition-colors cursor-pointer list-none outline-none">
-                        <div className="flex items-center gap-5">
-                            <div className="w-10 h-10 rounded-2xl bg-neutral-50 flex items-center justify-center group-open:bg-black group-open:text-white transition-all duration-300">
+                    <summary className="flex items-center justify-between px-4 sm:px-5 py-4 hover:bg-neutral-50 transition-colors cursor-pointer list-none outline-none">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-neutral-50 flex items-center justify-center  transition-colors duration-300">
                                 <User size={18} />
                             </div>
-                            <span className="text-[11px] font-black uppercase tracking-widest text-slate-900">Personal Data</span>
+                            <span className="text-sm font-medium tracking-normal text-slate-900">Personal details</span>
                         </div>
-                        <ChevronRight size={16} className="text-slate-300 group-open:rotate-90 transition-transform duration-300" />
+                        <ChevronRight size={16} className="text-slate-500 group-open:rotate-90 transition-transform duration-300" />
                     </summary>
-                    <div className="px-8 overflow-hidden animate-in fade-in slide-in-from-top-2">
+                    <div className="px-4 sm:px-5 overflow-hidden">
                         <PersonalDataForm initialName={profile?.full_name || ''} userId={user.id} />
                     </div>
                 </details>
 
                 {/* Security Section */}
                 <details className="group border-b border-neutral-50 outline-none">
-                    <summary className="flex items-center justify-between px-8 py-7 hover:bg-neutral-50 transition-colors cursor-pointer list-none outline-none">
-                        <div className="flex items-center gap-5">
-                            <div className="w-10 h-10 rounded-2xl bg-neutral-50 flex items-center justify-center group-open:bg-black group-open:text-white transition-all duration-300">
+                    <summary className="flex items-center justify-between px-4 sm:px-5 py-4 hover:bg-neutral-50 transition-colors cursor-pointer list-none outline-none">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-neutral-50 flex items-center justify-center  transition-colors duration-300">
                                 <ShieldCheck size={18} />
                             </div>
-                            <span className="text-[11px] font-black uppercase tracking-widest text-slate-900">Change Password</span>
+                            <span className="text-sm font-medium tracking-normal text-slate-900">Change password</span>
                         </div>
-                        <ChevronRight size={16} className="text-slate-300 group-open:rotate-90 transition-transform duration-300" />
+                        <ChevronRight size={16} className="text-slate-500 group-open:rotate-90 transition-transform duration-300" />
                     </summary>
-                    <div className="px-8 overflow-hidden animate-in fade-in slide-in-from-top-2">
+                    <div className="px-4 sm:px-5 overflow-hidden">
                         <SecurityForm />
                     </div>
                 </details>
 
                 {/* Highly Visible Payslips Archive Link */}
-                <Link href="/employee/payslips" className="flex items-center justify-between px-8 py-7 hover:bg-neutral-50 transition-colors cursor-pointer list-none outline-none border-b border-neutral-50 group">
-                    <div className="flex items-center gap-5">
-                        <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white text-indigo-500 transition-all duration-300 shadow-sm">
+                <Link href="/employee/payslips" className="flex items-center justify-between px-4 sm:px-5 py-4 hover:bg-neutral-50 transition-colors cursor-pointer list-none outline-none border-b border-neutral-50 group">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center  text-indigo-500 transition-colors duration-300 shadow-sm">
                             <FileText size={18} />
                         </div>
-                        <span className="text-[11px] font-black uppercase tracking-widest text-slate-900">Payslip Archive</span>
+                        <span className="text-sm font-medium tracking-normal text-slate-900">Payslips</span>
                     </div>
-                    <ChevronRight size={16} className="text-slate-300 group-hover:translate-x-1 transition-transform duration-300" />
+                    <ChevronRight size={16} className="text-slate-500 group-hover:translate-x-1 transition-transform duration-300" />
                 </Link>
 
                 <form action="/signout" method="post">
-                    <button className="w-full flex items-center gap-5 px-8 py-8 text-rose-500 hover:bg-rose-50/50 transition-all group outline-none">
-                        <div className="w-10 h-10 rounded-2xl bg-rose-50 flex items-center justify-center group-hover:bg-rose-500 group-hover:text-white transition-all">
+                    <button className="w-full flex items-center gap-3 px-4 sm:px-5 py-4 text-rose-500 hover:bg-rose-50/50 transition-colors group outline-none">
+                        <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center  transition-colors">
                             <LogOut size={18} />
                         </div>
-                        <span className="text-[11px] font-black uppercase tracking-[0.3em]">Sign Out</span>
+                        <span className="text-sm font-medium tracking-normal">Sign out</span>
                     </button>
                 </form>
             </div>
 
-            {/* Systematic Footer Info */}
-            <div className="px-8 flex justify-between items-center opacity-20">
-                <p className="text-[8px] font-black uppercase tracking-[0.5em]">Auth_Status: Verified</p>
-                <p className="text-[8px] font-black uppercase tracking-[0.5em]">v2.6.0</p>
-            </div>
         </div>
     );
 }

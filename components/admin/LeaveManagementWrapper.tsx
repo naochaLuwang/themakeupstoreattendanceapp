@@ -61,7 +61,7 @@ export default function LeaveManagementWrapper({ adminId, employees }: any) {
         setLoading(false);
     };
 
-    const handleAction = async (id: string, status: 'approved' | 'rejected') => {
+    const handleAction = async (id: string, status: 'approved' | 'declined') => {
         const { error } = await supabase
             .from('leave_requests')
             .update({
@@ -76,17 +76,17 @@ export default function LeaveManagementWrapper({ adminId, employees }: any) {
     };
 
     return (
-        <div className="bg-white border border-slate-200 rounded-[2.5rem] shadow-sm overflow-hidden p-8">
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden p-8">
             <div className="flex gap-8 border-b border-slate-100 mb-8">
                 <button
                     onClick={() => setShowHistory(false)}
-                    className={`pb-4 text-[11px] font-black uppercase tracking-widest transition-all ${!showHistory ? 'text-slate-900 border-b-2 border-slate-900' : 'text-slate-300'}`}
+                    className={`pb-4 text-sm font-medium  tracking-normal transition-colors ${!showHistory ? 'text-slate-900 border-b-2 border-slate-900' : 'text-slate-500'}`}
                 >
                     Pending Queue ({leaves.length})
                 </button>
                 <button
                     onClick={() => setShowHistory(true)}
-                    className={`pb-4 text-[11px] font-black uppercase tracking-widest transition-all ${showHistory ? 'text-slate-900 border-b-2 border-slate-900' : 'text-slate-300'}`}
+                    className={`pb-4 text-sm font-medium  tracking-normal transition-colors ${showHistory ? 'text-slate-900 border-b-2 border-slate-900' : 'text-slate-500'}`}
                 >
                     Archive
                 </button>
@@ -94,13 +94,13 @@ export default function LeaveManagementWrapper({ adminId, employees }: any) {
 
             {showHistory ? (
                 <div className="space-y-6">
-                    <div className="flex items-center gap-3 bg-slate-900 p-4 rounded-3xl shadow-inner">
+                    <div className="flex items-center gap-3 bg-slate-900 p-4 rounded-xl">
                         <div className="relative flex-1">
                             <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
                             <select
                                 value={selectedEmployee}
                                 onChange={(e) => setSelectedEmployee(e.target.value)}
-                                className="w-full bg-slate-800 border-none rounded-2xl pl-12 pr-4 py-3 text-[11px] font-black text-white uppercase outline-none appearance-none"
+                                className="w-full bg-slate-800 border-none rounded-xl pl-12 pr-4 py-3 text-sm font-medium text-white outline-none appearance-none"
                             >
                                 <option value="">All Personnel</option>
                                 {employees?.map((emp: any) => (
@@ -108,26 +108,26 @@ export default function LeaveManagementWrapper({ adminId, employees }: any) {
                                 ))}
                             </select>
                         </div>
-                        <button onClick={() => setSelectedEmployee('')} className="bg-slate-800 text-slate-400 p-3.5 rounded-2xl hover:text-white transition-all">
+                        <button onClick={() => setSelectedEmployee('')} className="bg-slate-800 text-slate-500 p-3.5 rounded-xl hover:text-white transition-colors">
                             <RotateCcw size={18} />
                         </button>
                     </div>
 
                     <div className="space-y-3">
                         {loading ? (
-                            <div className="py-20 text-center animate-pulse text-[10px] font-black text-slate-300 uppercase">Updating...</div>
+                            <div className="py-20 text-center text-sm font-medium text-slate-500">Updating...</div>
                         ) : leaveHistory.map(item => (
-                            <div key={item.id} className="p-5 border border-slate-100 rounded-[2rem] flex items-center justify-between bg-slate-50/30">
+                            <div key={item.id} className="p-5 border border-slate-100 rounded-xl flex items-center justify-between bg-slate-50/30">
                                 <div className="flex items-center gap-4">
                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${item.status === 'approved' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
                                         {item.status === 'approved' ? <Check size={18} /> : <X size={18} />}
                                     </div>
                                     <div>
-                                        <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{item.profiles?.full_name || 'Staff'}</p>
-                                        <p className="text-[10px] text-slate-400 font-bold">{item.start_date} — {item.end_date}</p>
+                                        <p className="text-xs font-medium text-slate-900 tracking-normal">{item.profiles?.full_name || 'Staff'}</p>
+                                        <p className="text-sm text-slate-500 font-medium">{item.start_date} — {item.end_date}</p>
                                     </div>
                                 </div>
-                                <span className={`text-[8px] font-black uppercase px-3 py-1 rounded-full border ${item.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>{item.status}</span>
+                                <span className={`text-xs font-medium  px-3 py-1 rounded-full border ${item.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>{item.status}</span>
                             </div>
                         ))}
                     </div>
@@ -135,27 +135,27 @@ export default function LeaveManagementWrapper({ adminId, employees }: any) {
             ) : (
                 <div className="space-y-4">
                     {leaves.length > 0 ? leaves.map(l => (
-                        <div key={l.id} className="p-6 border border-slate-100 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-6 bg-white shadow-sm border-l-4 border-l-blue-500">
+                        <div key={l.id} className="p-6 border border-slate-100 rounded-xl flex flex-col md:flex-row items-center justify-between gap-6 bg-white shadow-sm border-l-4 border-l-blue-500">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center font-black uppercase">
+                                <div className="w-12 h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center font-medium">
                                     {l.profiles?.full_name?.[0] || '?'}
                                 </div>
                                 <div>
-                                    <p className="text-sm font-black text-slate-900 uppercase">{l.profiles?.full_name}</p>
-                                    <p className="text-[11px] text-slate-500 font-bold">{l.start_date} — {l.end_date}</p>
+                                    <p className="text-sm font-medium text-slate-900">{l.profiles?.full_name}</p>
+                                    <p className="text-sm text-slate-500 font-medium">{l.start_date} — {l.end_date}</p>
                                 </div>
                             </div>
-                            <div className="flex-1 italic text-slate-400 text-[11px] px-6 border-l border-slate-100 line-clamp-2">
+                            <div className="flex-1 text-slate-500 text-sm px-6 border-l border-slate-100 line-clamp-2">
                                 "{l.reason || 'No reason'}"
                             </div>
                             <div className="flex gap-2 w-full md:w-auto">
-                                <button onClick={() => handleAction(l.id, 'approved')} className="flex-1 bg-slate-900 text-white px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-emerald-600 transition-all"><Check size={14} /> Approve</button>
-                                <button onClick={() => handleAction(l.id, 'rejected')} className="flex-1 bg-white border border-slate-200 text-rose-500 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose-50 transition-all"><X size={14} /> Reject</button>
+                                <button onClick={() => handleAction(l.id, 'approved')} className="flex-1 bg-slate-900 text-white px-6 py-4 rounded-xl text-sm font-medium tracking-normal flex items-center justify-center gap-2 hover:bg-emerald-600 transition-colors"><Check size={14} /> Approve</button>
+                                <button onClick={() => handleAction(l.id, 'declined')} className="flex-1 bg-white border border-slate-200 text-rose-500 px-6 py-4 rounded-xl text-sm font-medium tracking-normal flex items-center justify-center gap-2 hover:bg-rose-50 transition-colors"><X size={14} /> Reject</button>
                             </div>
                         </div>
                     )) : (
-                        <div className="py-24 text-center border-2 border-dashed border-slate-100 rounded-[3rem]">
-                            <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">No pending requests</p>
+                        <div className="py-24 text-center border border-dashed border-slate-100 rounded-xl">
+                            <p className="text-sm font-medium text-slate-500 tracking-normal">No pending requests</p>
                         </div>
                     )}
                 </div>

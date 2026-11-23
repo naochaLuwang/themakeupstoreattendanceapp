@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import type { Database } from '@/lib/supabase/database.types'
 
-// 1. Rename this function to 'proxy'
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -28,7 +28,7 @@ export async function proxy(request: NextRequest) {
     request: { headers: request.headers },
   })
 
-  const supabase = createServerClient(
+  const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
@@ -56,7 +56,6 @@ export async function proxy(request: NextRequest) {
 
   return response
 }
-// 2. Keep your config as is
 export const config = {
   matcher: [
     /*

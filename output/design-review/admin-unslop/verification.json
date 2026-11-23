@@ -1,0 +1,901 @@
+{
+  "date": "2026-11-23",
+  "scope": "Admin UI presentation; all Supabase responses are local fictional fixtures.",
+  "routes": [
+    {
+      "route": "/admin",
+      "status": 200,
+      "url": "/admin",
+      "title": [
+        "Live presence"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/logs",
+      "status": 200,
+      "url": "/admin/logs",
+      "title": [
+        "Attendance logs"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/schedule",
+      "status": 200,
+      "url": "/admin/schedule",
+      "title": [
+        "Shift planner"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/weekoff-request",
+      "status": 200,
+      "url": "/admin/weekoff-request",
+      "title": [
+        "Swap requests"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/reports/consolidated",
+      "status": 200,
+      "url": "/admin/reports/consolidated",
+      "title": [
+        "Consolidated attendance"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/reports/graphs",
+      "status": 200,
+      "url": "/admin/reports/graphs",
+      "title": [
+        "Attendance graphs"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": [
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "path",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "path",
+              "cls": {},
+              "text": ""
+            }
+          ]
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": [
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "path",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "path",
+              "cls": {},
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "route": "/admin/reports/geotag",
+      "status": 200,
+      "url": "/admin/reports/geotag",
+      "title": [
+        "Location audit"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/leaves",
+      "status": 200,
+      "url": "/admin/leaves",
+      "title": [
+        "Leave requests"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/oversight",
+      "status": 200,
+      "url": "/admin/oversight",
+      "title": [
+        "Attendance oversight"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/payroll",
+      "status": 200,
+      "url": "/admin/payroll",
+      "title": [
+        "Payroll"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/roaster",
+      "status": 200,
+      "url": "/admin/roaster",
+      "title": [
+        "Shift calendar"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/reports/reliability",
+      "status": 200,
+      "url": "/admin/reports/reliability",
+      "title": [
+        "Staff insights"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": [
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "path",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "path",
+              "cls": {},
+              "text": ""
+            }
+          ]
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": [
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "g",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "path",
+              "cls": {},
+              "text": ""
+            },
+            {
+              "tag": "path",
+              "cls": {},
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "route": "/admin/store-operations/audits/audits",
+      "status": 200,
+      "url": "/admin/store-operations/audits/audits",
+      "title": [
+        "Store Audits"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/store-operations",
+      "status": 200,
+      "url": "/admin/store-operations",
+      "title": [
+        "Store operations"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/store-operations/shelf-inspection",
+      "status": 200,
+      "url": "/admin/store-operations/shelf-inspection",
+      "title": [
+        "Shelf Inspections"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/store-operations/damage-reports",
+      "status": 200,
+      "url": "/admin/store-operations/damage-reports",
+      "title": [
+        "Damage Reports"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/store-operations/testers",
+      "status": 200,
+      "url": "/admin/store-operations/testers",
+      "title": [
+        "Testers"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/store-operations/daily-checklist",
+      "status": 200,
+      "url": "/admin/store-operations/daily-checklist",
+      "title": [
+        "Daily Checklist"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/store-operations/tasks",
+      "status": 200,
+      "url": "/admin/store-operations/tasks",
+      "title": [
+        "Tasks"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/store-operations/incidents",
+      "status": 200,
+      "url": "/admin/store-operations/incidents",
+      "title": [
+        "Incidents"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/store-operations/restocking",
+      "status": 200,
+      "url": "/admin/store-operations/restocking",
+      "title": [
+        "Restocking"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/store-operations/reports",
+      "status": 200,
+      "url": "/admin/store-operations/reports",
+      "title": [
+        "Reports"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/store-operations/shelf-inspection/new",
+      "status": 200,
+      "url": "/admin/store-operations/shelf-inspection/new",
+      "title": [
+        "New Shelf Inspection"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/store-operations/damage-reports/new",
+      "status": 200,
+      "url": "/admin/store-operations/damage-reports/new",
+      "title": [
+        "New Damage Report"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/store-operations/tasks/new",
+      "status": 200,
+      "url": "/admin/store-operations/tasks/new",
+      "title": [
+        "New Task"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/store-operations/testers/new",
+      "status": 200,
+      "url": "/admin/store-operations/testers/new",
+      "title": [
+        "New Tester"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/store-operations/incidents/new",
+      "status": 200,
+      "url": "/admin/store-operations/incidents/new",
+      "title": [
+        "New Incident"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    },
+    {
+      "route": "/admin/store-operations/restocking/new",
+      "status": 200,
+      "url": "/admin/store-operations/restocking/new",
+      "title": [
+        "New Restock Request"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "overflow": []
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "overflow": []
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "overflow": []
+        }
+      ]
+    }
+  ],
+  "interaction_checks": [
+    "Keyboard tab navigation and associated panels",
+    "Manual attendance field labels and required-field validation",
+    "Native mobile dialog focus containment, Escape, and resize cleanup",
+    "Parent navigation stays active on nested Store Operations forms",
+    "Only the selected Store Operations tab is marked current",
+    "Attendance empty state",
+    "Attendance service error and Retry recovery",
+    "Automatic dark theme and reduced-motion styling",
+    "Anonymous requests redirect to the existing login page"
+  ],
+  "not_exercised": [
+    "Live store data",
+    "Real database mutations",
+    "Live Supabase Realtime event delivery",
+    "Push delivery to a real device"
+  ],
+  "lint_baseline": {
+    "admin_errors": 128,
+    "admin_warnings": 12
+  },
+  "lint_after": {
+    "admin_errors": 111,
+    "admin_warnings": 10,
+    "new_regressions": 0
+  },
+  "typecheck": "pass",
+  "build": "pass: npm run build with the normal workspace environment",
+  "source_lint": {
+    "errors": 240,
+    "warnings": 29,
+    "status": "fails on inherited findings; no new admin lint regressions"
+  }
+}

@@ -3,25 +3,26 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
+import AdminPageSkeleton from '@/components/admin/AdminPageSkeleton';
+import '@/components/workspace.css';
+import './admin.css';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
     return (
-        <div className="flex min-h-screen bg-slate-50 flex-col lg:flex-row">
+        <div className="admin-shell store-ui">
+            <a href="#admin-content" className="admin-skip-link">Skip to content</a>
             {/* Sidebar remains visible while content loads */}
             <AdminNav />
 
-            <main className="flex-1 p-4 md:p-10 overflow-y-auto max-h-screen">
-                <Suspense fallback={
-                    <div className="flex flex-col gap-6 animate-pulse">
-                        <div className="h-20 w-1/3 bg-slate-200 rounded-2xl" />
-                        <div className="h-[500px] w-full bg-slate-200 rounded-[3rem]" />
-                    </div>
-                }>
-                    <AuthGuard>
-                        {children}
-                    </AuthGuard>
-                </Suspense>
-            </main>
+            <div id="admin-content" tabIndex={-1} className="admin-content">
+                <div className="admin-content-inner">
+                    <Suspense fallback={<AdminPageSkeleton />}>
+                        <AuthGuard>
+                            {children}
+                        </AuthGuard>
+                    </Suspense>
+                </div>
+            </div>
         </div>
     );
 }
@@ -38,8 +39,7 @@ async function AuthGuard({ children }: { children: React.ReactNode }) {
         .eq('id', user.id)
         .single();
 
-    if (profile?.role !== 'admin') {
-        // If not an admin, kick them back to their appropriate dashboard
+    if (profile?.role !== 'admin' && profile?.role !== 'manager') {
         redirect('/employee');
     }
 

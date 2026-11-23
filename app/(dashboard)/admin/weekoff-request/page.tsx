@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
     Check, X, Clock, ArrowRight, RefreshCcw,
     Calendar, Search, Loader2, ArrowLeftRight, AlertCircle
@@ -117,9 +116,9 @@ export default function AdminRequestManager() {
 
                                 if (sourceShift && targetShift) {
                                     const sourceTime = sourceShift.start_time.split('T')[1];
-                                    const sourceEndTime = sourceShift.end_time.split('T')[1];
+                                    const sourceEndTime = (sourceShift.end_time || '').split('T')[1];
                                     const targetTime = targetShift.start_time.split('T')[1];
-                                    const targetEndTime = targetShift.end_time.split('T')[1];
+                                    const targetEndTime = (targetShift.end_time || '').split('T')[1];
 
                                     await supabase.from('shifts').update({
                                         start_time: `${sourceDate}T${targetTime}`,
@@ -133,10 +132,11 @@ export default function AdminRequestManager() {
                                         shift_label: sourceShift.shift_label
                                     }).eq('id', targetShift.id);
                                 } else if (sourceShift || targetShift) {
-                                    const existingShift = sourceShift || targetShift;
+                                    const existingShift: typeof sourceShift = sourceShift || targetShift;
+                                    if (!existingShift) return;
                                     const moveToDate = sourceShift ? targetDate : sourceDate;
-                                    const timeOnly = existingShift.start_time.split('T')[1];
-                                    const endTimeOnly = existingShift.end_time.split('T')[1];
+                                    const timeOnly = (existingShift.start_time || '').split('T')[1];
+                                    const endTimeOnly = (existingShift.end_time || '').split('T')[1];
 
                                     const { error } = await supabase.from('shifts').update({
                                         start_time: `${moveToDate}T${timeOnly}`,
@@ -207,77 +207,77 @@ export default function AdminRequestManager() {
         const s = status.toLowerCase();
         if (s === 'approved') return 'bg-emerald-50 border-emerald-100 text-emerald-600';
         if (s === 'declined') return 'bg-rose-50 border-rose-100 text-rose-600';
-        if (s === 'cancelled') return 'bg-slate-50 border-slate-200 text-slate-400';
+        if (s === 'cancelled') return 'bg-slate-50 border-slate-200 text-slate-500';
         return 'bg-amber-50 border-amber-100 text-amber-600';
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-6 space-y-8 font-sans pb-32">
+        <div className="space-y-8">
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-medium tracking-tight text-slate-900">Request Hub</h1>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> Live Sync Enabled
+                    <h1 className="text-3xl font-medium tracking-normal text-slate-900">Swap requests</h1>
+                    <p className="text-sm font-medium text-slate-500 tracking-normal flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> Shift swaps and change requests
                     </p>
                 </div>
-                <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200/50">
-                    <button onClick={() => setActiveTab('pending')} className={`px-8 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'pending' ? 'bg-white shadow-md text-slate-900' : 'text-slate-400'}`}>
+                <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200/50">
+                    <button onClick={() => setActiveTab('pending')} className={`px-8 py-2.5 rounded-xl text-sm font-medium  tracking-normal transition-colors ${activeTab === 'pending' ? 'bg-white  text-slate-900' : 'text-slate-500'}`}>
                         Pending ({requests.filter(r => r.status === 'pending').length})
                     </button>
-                    <button onClick={() => setActiveTab('history')} className={`px-8 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'history' ? 'bg-white shadow-md text-slate-900' : 'text-slate-400'}`}>
+                    <button onClick={() => setActiveTab('history')} className={`px-8 py-2.5 rounded-xl text-sm font-medium  tracking-normal transition-colors ${activeTab === 'history' ? 'bg-white  text-slate-900' : 'text-slate-500'}`}>
                         History
                     </button>
                 </div>
             </header>
 
             <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-                <input type="text" placeholder="Search personnel..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 pl-12 pr-4 text-[10px] font-bold uppercase outline-none focus:ring-2 focus:ring-slate-900/5" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                <input type="text" placeholder="Search staff" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-xl py-4 pl-12 pr-4 text-sm font-medium outline-none focus:ring-2 focus:ring-slate-900/5" />
             </div>
 
             {loading ? (
-                <div className="py-20 flex flex-col items-center gap-4 opacity-30">
+                <div className="py-20 flex flex-col items-center gap-4 ">
                     <Loader2 className="animate-spin" size={24} />
-                    <p className="text-[10px] font-black uppercase tracking-widest">Loading requests...</p>
+                    <p className="text-sm font-medium tracking-normal">Loading requests...</p>
                 </div>
             ) : filtered.length === 0 ? (
-                <div className="py-24 text-center border-2 border-dashed border-slate-100 rounded-[2rem]">
-                    <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
+                <div className="py-24 text-center border border-dashed border-slate-100 rounded-xl">
+                    <p className="text-sm font-medium text-slate-500 tracking-normal">
                         {activeTab === 'pending' ? 'No pending requests' : 'No history found'}
                     </p>
                 </div>
             ) : (
                 <div className="grid gap-4">
-                    <AnimatePresence mode="popLayout">
+                    <>
                         {filtered.map((req) => {
                             const reqType = getRequestType(req);
                             return (
-                                <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} key={req.id}
-                                    className={`bg-white border rounded-[2.5rem] p-8 transition-all ${req.status !== 'pending' ? 'opacity-60' : 'border-slate-100 shadow-sm hover:shadow-md'}`}>
+                                <div key={req.id}
+                                    className={`bg-white border rounded-xl p-8 transition-colors ${req.status !== 'pending' ? '' : 'border-slate-100 shadow-sm '}`}>
                                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                                         <div className="flex items-start gap-5">
-                                            <div className={`p-4 rounded-2xl shrink-0 ${reqType.color}`}>
+                                            <div className={`p-4 rounded-xl shrink-0 ${reqType.color}`}>
                                                 {reqType.icon}
                                             </div>
                                             <div className="space-y-2 min-w-0 flex-1">
                                                 <div className="flex items-center gap-3 flex-wrap">
-                                                    <span className="text-lg font-bold text-slate-900">{req.requestor?.full_name}</span>
-                                                    <span className="text-[8px] font-black uppercase px-2.5 py-1 rounded-full bg-slate-100 text-slate-500 shrink-0">
+                                                    <span className="text-lg font-medium text-slate-900">{req.requestor?.full_name}</span>
+                                                    <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-100 text-slate-500 shrink-0">
                                                         {reqType.type}
                                                     </span>
                                                 </div>
-                                                <p className="text-xs text-slate-500 italic font-medium leading-relaxed">"{req.message}"</p>
+                                                <p className="text-xs text-slate-500 font-medium leading-relaxed">"{req.message}"</p>
                                                 {req.note && (
                                                     <div className="mt-2 bg-slate-50/80 border border-slate-100/80 rounded-xl p-3">
-                                                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Employee Note</p>
-                                                        <p className="text-xs font-medium text-slate-600 italic">"{req.note}"</p>
+                                                        <p className="text-xs font-medium text-slate-500 tracking-normal mb-1.5">Employee Note</p>
+                                                        <p className="text-xs font-medium text-slate-600">"{req.note}"</p>
                                                     </div>
                                                 )}
                                                 {req.shifts && (
                                                     <div className="flex items-center gap-2 mt-2">
-                                                        <Clock size={12} className="text-slate-300" />
-                                                        <span className="text-[10px] font-bold text-slate-400 uppercase">
+                                                        <Clock size={12} className="text-slate-500" />
+                                                        <span className="text-sm font-medium text-slate-500">
                                                             Shift: {new Date(req.shifts.start_time).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}
                                                             {req.shifts.shift_label && <span className="ml-2 text-slate-500">({req.shifts.shift_label})</span>}
                                                         </span>
@@ -285,11 +285,11 @@ export default function AdminRequestManager() {
                                                 )}
                                                 {req.requestor_id !== req.receiver_id && req.receiver?.full_name && (
                                                     <div className="flex items-center gap-2">
-                                                        <ArrowRight size={12} className="text-slate-300" />
-                                                        <span className="text-[10px] font-bold text-slate-400 uppercase">To: {req.receiver.full_name}</span>
+                                                        <ArrowRight size={12} className="text-slate-500" />
+                                                        <span className="text-sm font-medium text-slate-500">To: {req.receiver.full_name}</span>
                                                     </div>
                                                 )}
-                                                <p className="text-[9px] text-slate-300 font-bold">
+                                                <p className="text-xs text-slate-500 font-medium">
                                                     {new Date(req.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                                 </p>
                                             </div>
@@ -298,27 +298,27 @@ export default function AdminRequestManager() {
                                             {req.status === 'pending' ? (
                                                 <>
                                                     <button onClick={() => handleAction(req, 'declined')}
-                                                        className="p-4 rounded-2xl bg-slate-50 text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-all active:scale-95">
+                                                        className="p-4 rounded-xl bg-slate-50 text-slate-500 hover:bg-rose-50 hover:text-rose-500 transition-colors">
                                                         <X size={20} />
                                                     </button>
                                                     <button onClick={() => handleAction(req, 'approved')}
                                                         disabled={processingId === req.id}
-                                                        className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-slate-900 text-white hover:bg-emerald-600 transition-all shadow-xl shadow-slate-200 active:scale-95 disabled:opacity-50">
+                                                        className="flex items-center gap-3 px-8 py-4 rounded-xl bg-slate-900 text-white hover:bg-emerald-600 transition-colors disabled:opacity-50">
                                                         {processingId === req.id ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
-                                                        <span className="text-[10px] font-black uppercase tracking-widest">Approve</span>
+                                                        <span className="text-sm font-medium tracking-normal">Approve</span>
                                                     </button>
                                                 </>
                                             ) : (
-                                                <div className={`px-6 py-3 rounded-full text-[9px] font-black uppercase border ${getStatusStyle(req.status)}`}>
+                                                <div className={`px-6 py-3 rounded-full text-xs font-medium  border ${getStatusStyle(req.status)}`}>
                                                     {req.status}
                                                 </div>
                                             )}
                                         </div>
                                     </div>
-                                </motion.div>
+                                </div>
                             );
                         })}
-                    </AnimatePresence>
+                    </>
                 </div>
             )}
         </div>

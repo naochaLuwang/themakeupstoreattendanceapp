@@ -1,0 +1,27 @@
+{
+  "mode": "Built-in image generation",
+  "reference": "/Users/somojitarambam/Documents/THE MAKEUP STORE/2.png",
+  "base": "Use case: logo-brand. Create ONE polished app-icon concept for THE MAKEUP STORE WANGKHEI attendance app. The supplied image is the parent brand reference, not a shape that must be copied exactly. The user explicitly permits changing the M, but it MUST retain a distinctive family resemblance: paired parallel diagonal strokes, rounded ends, asymmetric open M construction, and strong negative space. Do not substitute an ordinary font M. This is a mobile HOME SCREEN ICON, so prioritize a bold, simple, compact silhouette that reads at 32 pixels. Flat vector-style precision, optically balanced, clean geometry. Plain pure white square background, symbol filling about 65–72% of the square, centered with safe margins. No text, no words, no initials besides the custom M mark, no captions, no multiple options in one image, no phone mockup, no texture, no gradients, no shadows, no watermarks. No clocks, clock rings, calendar outlines, circular borders, floating badges or detached check marks.",
+  "variants": [
+    {
+      "slug": "01-bold-monogram",
+      "name": "Bold monogram",
+      "direction": "DIRECTION 1 — BOLD MONOGRAM: Evolve the reference into a tighter and heavier black (#151515) custom M app symbol. Preserve its exact recognizable paired descending diagonals and rising right stroke, but shorten the silhouette into a compact almost-square monogram, thicken the strokes and tighten the spacing for strong small-size readability. Softly rounded ends. Strict monochrome. The result should feel like the original brand's confident app-sized sibling, with no additional pictograms."
+    },
+    {
+      "slug": "02-check-monogram",
+      "name": "Integrated check",
+      "direction": "DIRECTION 2 — INTEGRATED CHECK: Design a custom black M monogram where the final lower-right turn naturally becomes a small rising verification-check gesture. The check must be integral to the letter's continuous geometry, NEVER a separate badge or detached symbol. Preserve the reference's paired sloping diagonal DNA and rounded terminals, while reshaping the M to make a distinctive new attendance symbol. Use black for most of the letter and muted plum (#704858) only for the short rising terminal. Bold, minimal, clear at small sizes."
+    },
+    {
+      "slug": "03-swipe-monogram",
+      "name": "Swipe monogram",
+      "direction": "DIRECTION 3 — SWIPE MONOGRAM: Create a new bold black M app mark inspired by the attendance app's swipe interaction. Build the symbol from two compact rounded angular ribbons that echo the reference's paired descending diagonals; introduce a short horizontal rightward extension as part of the upper-right stroke, suggesting movement without drawing an arrow or adding any separate icon. Slight forward momentum, stable square overall mass, generous clean white channels between the parallel strokes. Monochrome black. Distinctly different construction from a normal M and from a literal checkmark."
+    },
+    {
+      "slug": "04-cutout-monogram",
+      "name": "Cutout monogram",
+      "direction": "DIRECTION 4 — CUTOUT MONOGRAM: A premium chunky geometric M symbol in muted plum (#704858), sculpted as one compact solid form with two crisp parallel diagonal white negative-space channels. The channels must recall the distinctive double-slash rhythm of the reference logo; retain an open asymmetric M and softened outside corners. More filled and substantial than the original line logo, fewer rounded loose strokes, an unmistakable silhouette for an app home screen. Single plum glyph on white; no black, no decorative accents, no enclosing outline. Bold, intelligent, compact."
+    }
+  ]
+}

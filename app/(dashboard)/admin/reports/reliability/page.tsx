@@ -77,19 +77,19 @@ export default function ReliabilityReport() {
     }, [avgScore]);
 
     return (
-        <div className="max-w-7xl mx-auto p-8 space-y-8 animate-in fade-in duration-500">
+        <div className="space-y-8">
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
-                    <h1 className="text-5xl font-black text-slate-900 tracking-tighter italic">Staff Insights.</h1>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mt-2 flex items-center gap-2">
+                    <h1 className="text-3xl font-medium text-slate-900 tracking-normal">Staff insights</h1>
+                    <p className="text-sm font-medium text-slate-500 tracking-normal mt-2 flex items-center gap-2">
                         <Activity size={14} className="text-indigo-600" /> Reliability & Swap Analytics
                     </p>
                 </div>
                 <div className="flex gap-2">
-                    <button onClick={fetchReport} className="p-3 bg-slate-100 rounded-xl hover:bg-slate-200 transition-all">
+                    <button aria-label="Refresh reliability report" onClick={fetchReport} className="p-3 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors">
                         <RefreshCcw size={18} className={loading ? 'animate-spin' : ''} />
                     </button>
-                    <button className="flex items-center gap-2 bg-slate-900 text-white px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-lg shadow-slate-200">
+                    <button className="flex items-center gap-2 bg-slate-900 text-white px-5 py-3 rounded-xl text-sm font-medium tracking-normal hover:bg-black transition-colors">
                         <Download size={14} /> Export Report
                     </button>
                 </div>
@@ -97,59 +97,59 @@ export default function ReliabilityReport() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="space-y-6">
-                    <div className="bg-white border border-slate-100 p-6 rounded-[2rem] shadow-sm">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Average Reliability</p>
+                    <div className="bg-white border border-slate-100 p-6 rounded-xl shadow-sm">
+                        <p className="text-sm font-medium text-slate-500 tracking-normal mb-1">Average Reliability</p>
                         <div className="flex items-center gap-2">
-                            <span className="text-4xl font-black text-slate-900">{avgScore.toFixed(1)}%</span>
+                            <span className="text-3xl font-medium text-slate-900">{avgScore.toFixed(1)}%</span>
                             <TrendingUp className="text-emerald-500" size={20} />
                         </div>
                     </div>
-                    <div className="bg-slate-900 p-6 rounded-[2rem] shadow-xl text-white">
-                        <p className="text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-1">Alert Status</p>
+                    <div className="bg-slate-900 p-6 rounded-xl text-white">
+                        <p className="text-sm font-medium text-indigo-300 tracking-normal mb-1">Alert Status</p>
                         <div className="flex items-center gap-2">
-                            <span className="text-4xl font-black">
+                            <span className="text-3xl font-medium">
                                 {filteredData.filter(d => (d.reliability_score || 0) < 75).length}
                             </span>
                             <ShieldAlert className="text-amber-400" size={20} />
                         </div>
-                        <p className="text-[9px] mt-2 opacity-50 font-bold uppercase">Staff requiring review</p>
+                        <p className="text-xs mt-2  font-medium">Staff requiring review</p>
                     </div>
                 </div>
 
-                <div className="lg:col-span-2 bg-white border border-slate-100 p-6 rounded-[2.5rem] shadow-sm h-[260px]">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Weekly Reliability Trend</p>
+                <div className="lg:col-span-2 min-w-0 overflow-hidden bg-white border border-slate-100 p-6 rounded-xl shadow-sm h-[260px]">
+                    <p className="text-sm font-medium text-slate-500 tracking-normal mb-4">Weekly Reliability Trend</p>
                     <ResponsiveContainer width="100%" height="85%">
                         <AreaChart data={trendData}>
                             <defs>
                                 <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.15} />
-                                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                                    <stop offset="5%" stopColor="var(--store-accent)" stopOpacity={0.15} />
+                                    <stop offset="95%" stopColor="var(--store-accent)" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f8fafc" />
-                            <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: '900', fill: '#cbd5e1' }} />
+                            <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: '500', fill: '#cbd5e1' }} />
                             <YAxis hide domain={[0, 100]} />
                             <Tooltip
-                                cursor={{ stroke: '#6366f1', strokeWidth: 2 }}
+                                cursor={{ stroke: 'var(--store-accent)', strokeWidth: 2 }}
                                 contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', padding: '12px' }}
-                                labelStyle={{ fontWeight: '900', fontSize: '10px', textTransform: 'uppercase', color: '#64748b', marginBottom: '4px' }}
-                                itemStyle={{ fontWeight: '900', fontSize: '14px', color: '#1e293b' }}
+                                labelStyle={{ fontWeight: '500', fontSize: '10px', textTransform: 'none', color: '#64748b', marginBottom: '4px' }}
+                                itemStyle={{ fontWeight: '500', fontSize: '14px', color: '#1e293b' }}
                             />
-                            <Area type="monotone" dataKey="score" stroke="#6366f1" strokeWidth={4} fillOpacity={1} fill="url(#colorScore)" />
+                            <Area type="monotone" dataKey="score" stroke="var(--store-accent)" strokeWidth={4} fillOpacity={1} fill="url(#colorScore)" />
                         </AreaChart>
                     </ResponsiveContainer>
                 </div>
             </div>
 
-            <div className="bg-white border border-slate-100 rounded-[3rem] shadow-sm overflow-hidden">
+            <div className="bg-white border border-slate-100 rounded-xl shadow-sm overflow-hidden">
                 <div className="p-6 bg-slate-50/50 flex items-center gap-4">
                     <div className="relative flex-1">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                         <input
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Filter by employee name..."
-                            className="w-full bg-white border-none rounded-2xl py-4 pl-12 pr-6 text-sm font-bold shadow-sm focus:ring-2 ring-indigo-500 transition-all outline-none"
+                            className="w-full bg-white border-none rounded-xl py-4 pl-12 pr-6 text-sm font-medium shadow-sm focus:ring-2 ring-indigo-500 transition-colors outline-none"
                         />
                     </div>
                 </div>
@@ -157,23 +157,23 @@ export default function ReliabilityReport() {
                 {error ? (
                     <div className="p-20 text-center space-y-4">
                         <ShieldAlert className="mx-auto text-rose-500" size={40} />
-                        <p className="text-sm font-bold text-slate-600 tracking-tight">{error}</p>
+                        <p className="text-sm font-medium text-slate-600 tracking-normal">{error}</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="border-b border-slate-50">
-                                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Employee</th>
-                                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Leaves</th>
-                                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Swaps</th>
-                                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Index</th>
+                                    <th className="px-8 py-5 text-sm font-medium text-slate-500 tracking-normal">Employee</th>
+                                    <th className="px-8 py-5 text-sm font-medium text-slate-500 tracking-normal text-center">Leaves</th>
+                                    <th className="px-8 py-5 text-sm font-medium text-slate-500 tracking-normal text-center">Swaps</th>
+                                    <th className="px-8 py-5 text-sm font-medium text-slate-500 tracking-normal text-right">Index</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50">
                                 {loading ? (
                                     [1, 2, 3].map(i => (
-                                        <tr key={i} className="animate-pulse">
+                                        <tr key={i} className="">
                                             <td colSpan={4} className="px-8 py-8 bg-slate-50/30"></td>
                                         </tr>
                                     ))
@@ -182,24 +182,24 @@ export default function ReliabilityReport() {
                                         <tr key={i} className="hover:bg-slate-50/50 transition-colors">
                                             <td className="px-8 py-5">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="h-9 w-9 bg-indigo-50 rounded-xl flex items-center justify-center font-black text-xs text-indigo-600">
+                                                    <div className="h-9 w-9 bg-indigo-50 rounded-xl flex items-center justify-center font-medium text-xs text-indigo-600">
                                                         {emp.name?.charAt(0) || '?'}
                                                     </div>
                                                     <div>
-                                                        <p className="font-bold text-slate-900 text-sm">{emp.name || 'Anonymous'}</p>
-                                                        <p className="text-[9px] font-black text-slate-400 uppercase">@{emp.username || 'unknown'}</p>
+                                                        <p className="font-medium text-slate-900 text-sm">{emp.name || 'Anonymous'}</p>
+                                                        <p className="text-xs font-medium text-slate-500">@{emp.username || 'unknown'}</p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="px-8 py-5 text-center">
-                                                <span className="text-xs font-black text-slate-700">{emp.total_approved_leaves || 0}</span>
+                                                <span className="text-xs font-medium text-slate-700">{emp.total_approved_leaves || 0}</span>
                                             </td>
                                             <td className="px-8 py-5 text-center">
-                                                <span className="text-xs font-black text-slate-700">{emp.swap_frequency || 0}</span>
+                                                <span className="text-xs font-medium text-slate-700">{emp.swap_frequency || 0}</span>
                                             </td>
                                             <td className="px-8 py-5">
                                                 <div className="flex flex-col items-end gap-1">
-                                                    <span className={`text-xs font-black ${(emp.reliability_score || 0) > 80 ? 'text-emerald-500' :
+                                                    <span className={`text-xs font-medium ${(emp.reliability_score || 0) > 80 ? 'text-emerald-500' :
                                                             (emp.reliability_score || 0) > 60 ? 'text-amber-500' : 'text-rose-500'
                                                         }`}>
                                                         {Math.round(emp.reliability_score || 0)}%

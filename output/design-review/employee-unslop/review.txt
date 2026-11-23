@@ -1,0 +1,81 @@
+Employee interface review — 23 November 2026
+THE MAKEUP STORE WANGKHEI
+
+Direction
+Product: Staff shifts, attendance, requests, and everyday store work.
+Character: Calm, direct, slightly warm.
+World: The same working cosmetics store as the admin workspace.
+Moments: The shift calendar, selected shift times, and live attendance status.
+Signature: Store wordmark and restrained plum selection states.
+
+Audit
+The employee UI used 6–11px labels, heavily tracked uppercase text, large rounded
+panels, low-opacity metadata, decorative ghost headings and grid lines, and
+navigation labels that disappeared on inactive tabs. Shift and leave forms used
+animated overlays without complete dialog focus behaviour. The attendance
+summary included a large decorative activity icon. Profile settings used
+technical copy and an unverified version/authentication footer.
+
+Nine passes
+1. Spacing: Consistent page edges, section gaps, card padding, and compact profile
+   rows. Removed repeated page padding and large decorative header space.
+2. Colour: Reused the admin neutral/plum palette and semantic status colours.
+   Both workspaces now import one shared foundation in components/workspace.css.
+   The stylesheet applies only inside .store-ui; login styling is unaffected.
+3. Icons: Kept Lucide and the shared stroke treatment. Removed oversized icon
+   decoration and emoji from shift-change explanations.
+4. Copy: Page names and workflow language replace greetings and system labels.
+   Preserved request message formats used by existing server-side handlers.
+5. Type: Readable labels, ordinary weights, tabular figures, and 16px mobile form
+   fields. Every bottom-navigation destination keeps its label visible.
+6. Layout: A compact desktop navigation bar and mobile bottom bar. Calendar and
+   selected shift sit side by side on larger screens and stack in reading order
+   on mobile. Existing employee Store Operations routes now have consistent
+   navigation accessible from the home screen and module pages.
+7. Details: Calendar button names and selection semantics, clear icon-button
+   labels, field associations, skip link, focus rings, route loading/error UI,
+   and a reusable native dialog for leave and shift changes. The existing name
+   update handler now has an explicit Save name control. Leave end dates cannot
+   precede their start date. Payslip download controls have accessible names.
+8. Visuals: Existing shifts and attendance carry the emphasis. Removed ghost
+   typography, decorative grid lines, and the large activity illustration.
+   No images, claims, or data were generated for the application.
+9. Motion: Removed decorative entrances and scaling. Retained the existing
+   attendance-history swipe gesture and loading indicators, with shared
+   reduced-motion styling.
+
+Scope and reuse
+- No database schemas, migrations, permissions, payroll calculations, geofence
+  checks, attendance endpoints, request endpoints, or server actions changed.
+- Existing query filters, Realtime listeners, clock logic, haptic feedback,
+  profile updates, and PDF-generation logic remain in place.
+- Shared workspace skeleton and error components are reused by both sections.
+  Admin-only navigation/report styles remain in admin.css; report token names
+  were updated to refer to the extracted shared palette.
+- Existing incomplete workflows outside this visual scope were not expanded.
+- No dependencies, seed data, authentication bypass, or production fixture code
+  were added. Browser scripts and the fictional-data fixture lived in /tmp.
+
+Validation
+- npm run typecheck and npm run build pass with the normal workspace environment.
+  Existing generated public scripts were restored byte-for-byte afterward.
+- 17 employee routes, including four existing Store Operations creation forms,
+  returned 200 with no runtime errors or page-level horizontal overflow at
+  1440px, 768px, 390px, and 320px.
+- Tested clock-in pending/error/success, clock-out completion, month navigation,
+  shift-change dialog and payload, leave validation, profile name save and weak
+  password validation, a real PDF download from fictional pay data, empty
+  history, visible navigation labels, dark mode, and anonymous redirect.
+- Rechecked the admin sidebar, mobile menu, and chart accent after extracting
+  shared styles. The existing admin layout and navigation behaviour passed.
+- New core components, navigation, profile form, layout, loading, and error
+  files pass ESLint. No new lint regressions were found against saved source.
+  Employee lint findings decreased from 52 errors / 2 warnings to 47 errors /
+  2 warnings. Full source lint retains 235 errors and 29 warnings; these inherited
+  issues were not suppressed or hidden by changing ESLint configuration.
+- Screenshots use deliberately fictional Staff preview records. No live store
+  mutations or physical-device geolocation verification were performed.
+
+Attribution
+Unslop by Damir Sokolovsky (@heydamir), CC BY 4.0.
+https://github.com/heydamir/unslop

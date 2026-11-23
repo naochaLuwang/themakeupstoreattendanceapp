@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
     try {
@@ -9,6 +10,11 @@ export async function POST(request: Request) {
 
         if (!username || !password) {
             return NextResponse.json({ error: 'Please fill in all fields' }, { status: 400 });
+        }
+
+        const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+        if (!rateLimit(`login:${ip}`, 10, 60_000)) {
+            return NextResponse.json({ error: 'Too many attempts. Try again later.' }, { status: 429 })
         }
 
         const supabase = await createClient();

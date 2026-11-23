@@ -1,0 +1,8 @@
+Generated with the built-in image generation tool.
+Reference: /Users/somojitarambam/Documents/THE MAKEUP STORE/2.png
+
+Use case: logo-brand.
+Create one finished app logo symbol for THE MAKEUP STORE WANGKHEI's employee attendance app.
+Input image 1 is the parent brand logo and the primary identity reference. Preserve its distinctive black monogram: rounded, consistent heavy strokes; a left upright joining a descending diagonal; a second parallel long descending diagonal; a separate upper-right rising diagonal joining the right upright. Keep its precise recognizable silhouette, round caps, parallel diagonal spacing and overall proportions. Do not replace it with a generic M or invent a different monogram.
+Build a restrained attendance-specific extension around that original mark: a fine black circular clock arc surrounding it, with generous internal breathing room, a small twelve-o'clock tick, and a deliberate small opening at the lower right where a single small muted plum check mark (#704858) completes the visual rhythm. The monogram remains the dominant element. The clock arc should be substantially thinner than the original monogram strokes. Keep the clock cue abstract and minimal; no separate clock face, numerals, arrows, calendar, people, map pin, or floating badges.
+Output: one square high-resolution standalone logo, perfectly centered on pure white (#FFFFFF), generous balanced margin. Crisp flat vector-style geometry, black plus the one plum check, polished optical alignment, clear silhouette suitable for mobile app icons. No text, no wordmark, no presentation labels, no multiple concepts, no rounded app tile border, no mockup, no shadow, no gradient, no texture, no watermark.

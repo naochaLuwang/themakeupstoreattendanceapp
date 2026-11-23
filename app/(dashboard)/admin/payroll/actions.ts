@@ -13,8 +13,7 @@ export async function processPayroll(formData: FormData) {
     const net_pay = parseFloat(formData.get('netPay') as string) || 0;
     const gross_pay = parseFloat(formData.get('grossPay') as string) || 0;
 
-    // Capture the type (salary, advance, or bonus)
-    const type = (formData.get('type') as string) || 'salary';
+    const type = (formData.get('type') as 'salary' | 'advance' | 'bonus') || 'salary';
 
     const now = new Date();
     const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;

@@ -21,8 +21,8 @@ export default async function AdminLeavesPage() {
     return (
         <div className="space-y-6">
             <header>
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight">Leave Management</h1>
-                <p className="text-sm font-medium text-slate-400">Manage time-off requests across your entire staff</p>
+                <h1 className="text-3xl font-medium text-slate-900 tracking-normal">Leave requests</h1>
+                <p className="text-sm font-medium text-slate-500">Manage time-off requests across your entire staff</p>
             </header>
 
             {/* Now 'user' and 'employees' are defined and can be passed here */}

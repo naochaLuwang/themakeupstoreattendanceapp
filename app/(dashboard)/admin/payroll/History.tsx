@@ -24,7 +24,7 @@ export default function PayrollHistory({ history }: { history: any[] }) {
             doc.setFontSize(22);
             doc.setFont("times", "bold");
             doc.text("THE MAKEUP STORE WANGKHEI", 105, imgElement ? 45 : 25, { align: "center" });
-            
+
             doc.setFontSize(10);
             doc.setFont("helvetica", "normal");
             doc.setTextColor(100);
@@ -86,12 +86,12 @@ export default function PayrollHistory({ history }: { history: any[] }) {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-2xl font-black italic flex items-center gap-3">
-                <HistoryIcon /> Transaction History
+            <h2 className="text-2xl font-medium flex items-center gap-3">
+                <HistoryIcon /> Transaction history
             </h2>
-            <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl overflow-hidden">
-                <table className="w-full text-left text-sm">
-                    <thead className="bg-slate-50 text-[10px] font-black uppercase text-slate-400">
+            <div className="bg-white rounded-xl border border-slate-100 overflow-x-auto">
+                <table className="w-full min-w-[640px] text-left text-sm">
+                    <thead className="bg-slate-50 text-sm font-medium text-slate-500">
                         <tr>
                             <th className="px-8 py-4">Date</th>
                             <th className="px-6 py-4">Personnel</th>
@@ -103,21 +103,21 @@ export default function PayrollHistory({ history }: { history: any[] }) {
                     <tbody className="divide-y divide-slate-50">
                         {history.map((rec) => (
                             <tr key={rec.id} className="hover:bg-slate-50/50 transition-colors">
-                                <td className="px-8 py-4 font-bold text-slate-500">
+                                <td className="px-8 py-4 font-medium text-slate-500">
                                     {/* Only render date on client to avoid mismatch */}
                                     {mounted ? new Date(rec.created_at).toLocaleDateString('en-IN') : '---'}
                                 </td>
-                                <td className="px-6 py-4 font-black">{rec.profiles?.full_name}</td>
-                                <td className="px-6 py-4 italic text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                <td className="px-6 py-4 font-medium">{rec.profiles?.full_name}</td>
+                                <td className="px-6 py-4 text-sm font-medium tracking-normal text-slate-500">
                                     {rec.type}
                                 </td>
-                                <td className="px-6 py-4 text-center font-black text-slate-900">
+                                <td className="px-6 py-4 text-center font-medium text-slate-900">
                                     ₹{rec.net_pay.toLocaleString('en-IN')}
                                 </td>
                                 <td className="px-8 py-4 text-right">
                                     <button
-                                        onClick={() => downloadPDF(rec)}
-                                        className="p-2 hover:bg-slate-900 hover:text-white rounded-xl transition-all"
+                                        aria-label={`Download payslip for ${rec.profiles?.full_name || "staff member"}`} onClick={() => downloadPDF(rec)}
+                                        className="p-2 hover:bg-slate-900 hover:text-white rounded-xl transition-colors"
                                     >
                                         <FileText size={18} />
                                     </button>

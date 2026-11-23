@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import EmployeeShiftView from './EmployeeShiftView';
+import EmployeeStoreOpsNav from './EmployeeStoreOpsNav';
 
 export default async function EmployeeDashboardContent() {
     const supabase = await createClient();
@@ -16,20 +17,17 @@ export default async function EmployeeDashboardContent() {
         .single();
 
     return (
-        <div className="animate-in fade-in slide-in-from-bottom-3 duration-700 space-y-6">
-            <h2 className="text-xl font-bold text-slate-400 mt-4">
-                Welcome back, {profile?.full_name?.split(' ')[0]}
-            </h2>
-
+        <div className="space-y-6">
+            <header>
+                <h1 className="text-3xl font-medium text-slate-900">My shifts</h1>
+                <p className="mt-2 text-sm text-slate-500">{profile?.full_name || 'Your schedule'} · Shifts and attendance</p>
+            </header>
             <EmployeeShiftView userId={user.id} />
-
-            {/* <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm flex justify-between items-center">
-                <div>
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Store Status</p>
-                    <p className="text-sm font-bold text-slate-900">Makeup Store Main</p>
-                </div>
-                <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            </div> */}
+            <section className="rounded-xl border border-slate-200 bg-white p-5 space-y-3">
+                <h2 className="text-lg font-medium text-slate-900">Store operations</h2>
+                <p className="text-sm text-slate-500">Daily checks, reports, and assigned work</p>
+                <EmployeeStoreOpsNav />
+            </section>
         </div>
     );
 }

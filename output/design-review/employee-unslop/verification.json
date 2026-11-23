@@ -1,0 +1,488 @@
+{
+  "date": "2026-11-23",
+  "scope": "Employee UI with shared workspace design foundation; all store data and test mutations use local fictional fixtures.",
+  "routes": [
+    {
+      "route": "/employee",
+      "status": 200,
+      "title": [
+        "My shifts"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440
+        },
+        {
+          "width": 768,
+          "scroll": 768
+        },
+        {
+          "width": 390,
+          "scroll": 390
+        },
+        {
+          "width": 320,
+          "scroll": 320
+        }
+      ]
+    },
+    {
+      "route": "/employee/logs",
+      "status": 200,
+      "title": [
+        "My attendance"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440
+        },
+        {
+          "width": 768,
+          "scroll": 768
+        },
+        {
+          "width": 390,
+          "scroll": 390
+        },
+        {
+          "width": 320,
+          "scroll": 320
+        }
+      ]
+    },
+    {
+      "route": "/employee/inbox",
+      "status": 200,
+      "title": [
+        "Inbox"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440
+        },
+        {
+          "width": 768,
+          "scroll": 768
+        },
+        {
+          "width": 390,
+          "scroll": 390
+        },
+        {
+          "width": 320,
+          "scroll": 320
+        }
+      ]
+    },
+    {
+      "route": "/employee/leave",
+      "status": 200,
+      "title": [
+        "Leave requests"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440
+        },
+        {
+          "width": 768,
+          "scroll": 768
+        },
+        {
+          "width": 390,
+          "scroll": 390
+        },
+        {
+          "width": 320,
+          "scroll": 320
+        }
+      ]
+    },
+    {
+      "route": "/employee/profile",
+      "status": 200,
+      "title": [
+        "Profile"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440
+        },
+        {
+          "width": 768,
+          "scroll": 768
+        },
+        {
+          "width": 390,
+          "scroll": 390
+        },
+        {
+          "width": 320,
+          "scroll": 320
+        }
+      ]
+    },
+    {
+      "route": "/employee/payslips",
+      "status": 200,
+      "title": [
+        "Payslips"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440
+        },
+        {
+          "width": 768,
+          "scroll": 768
+        },
+        {
+          "width": 390,
+          "scroll": 390
+        },
+        {
+          "width": 320,
+          "scroll": 320
+        }
+      ]
+    },
+    {
+      "route": "/employee/store-operations/shelf-inspection",
+      "status": 200,
+      "title": [
+        "Shelf Inspections"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440
+        },
+        {
+          "width": 768,
+          "scroll": 768
+        },
+        {
+          "width": 390,
+          "scroll": 390
+        },
+        {
+          "width": 320,
+          "scroll": 320
+        }
+      ]
+    },
+    {
+      "route": "/employee/store-operations/shelf-inspection/new",
+      "status": 200,
+      "title": [
+        "New Shelf Inspection"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440
+        },
+        {
+          "width": 768,
+          "scroll": 768
+        },
+        {
+          "width": 390,
+          "scroll": 390
+        },
+        {
+          "width": 320,
+          "scroll": 320
+        }
+      ]
+    },
+    {
+      "route": "/employee/store-operations/damage-reports",
+      "status": 200,
+      "title": [
+        "Damage Reports"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440
+        },
+        {
+          "width": 768,
+          "scroll": 768
+        },
+        {
+          "width": 390,
+          "scroll": 390
+        },
+        {
+          "width": 320,
+          "scroll": 320
+        }
+      ]
+    },
+    {
+      "route": "/employee/store-operations/damage-reports/new",
+      "status": 200,
+      "title": [
+        "New Damage Report"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440
+        },
+        {
+          "width": 768,
+          "scroll": 768
+        },
+        {
+          "width": 390,
+          "scroll": 390
+        },
+        {
+          "width": 320,
+          "scroll": 320
+        }
+      ]
+    },
+    {
+      "route": "/employee/store-operations/testers",
+      "status": 200,
+      "title": [
+        "Testers"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440
+        },
+        {
+          "width": 768,
+          "scroll": 768
+        },
+        {
+          "width": 390,
+          "scroll": 390
+        },
+        {
+          "width": 320,
+          "scroll": 320
+        }
+      ]
+    },
+    {
+      "route": "/employee/store-operations/daily-checklist",
+      "status": 200,
+      "title": [
+        "Daily Checklist"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440
+        },
+        {
+          "width": 768,
+          "scroll": 768
+        },
+        {
+          "width": 390,
+          "scroll": 390
+        },
+        {
+          "width": 320,
+          "scroll": 320
+        }
+      ]
+    },
+    {
+      "route": "/employee/store-operations/tasks",
+      "status": 200,
+      "title": [
+        "Tasks"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440
+        },
+        {
+          "width": 768,
+          "scroll": 768
+        },
+        {
+          "width": 390,
+          "scroll": 390
+        },
+        {
+          "width": 320,
+          "scroll": 320
+        }
+      ]
+    },
+    {
+      "route": "/employee/store-operations/incidents",
+      "status": 200,
+      "title": [
+        "Incidents"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440
+        },
+        {
+          "width": 768,
+          "scroll": 768
+        },
+        {
+          "width": 390,
+          "scroll": 390
+        },
+        {
+          "width": 320,
+          "scroll": 320
+        }
+      ]
+    },
+    {
+      "route": "/employee/store-operations/incidents/new",
+      "status": 200,
+      "title": [
+        "New Incident"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440
+        },
+        {
+          "width": 768,
+          "scroll": 768
+        },
+        {
+          "width": 390,
+          "scroll": 390
+        },
+        {
+          "width": 320,
+          "scroll": 320
+        }
+      ]
+    },
+    {
+      "route": "/employee/store-operations/restocking",
+      "status": 200,
+      "title": [
+        "Restocking"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440
+        },
+        {
+          "width": 768,
+          "scroll": 768
+        },
+        {
+          "width": 390,
+          "scroll": 390
+        },
+        {
+          "width": 320,
+          "scroll": 320
+        }
+      ]
+    },
+    {
+      "route": "/employee/store-operations/restocking/new",
+      "status": 200,
+      "title": [
+        "New Restock Request"
+      ],
+      "errors": [],
+      "viewports": [
+        {
+          "width": 1440,
+          "scroll": 1440
+        },
+        {
+          "width": 768,
+          "scroll": 768
+        },
+        {
+          "width": 390,
+          "scroll": 390
+        },
+        {
+          "width": 320,
+          "scroll": 320
+        }
+      ]
+    }
+  ],
+  "interaction_checks": [
+    "All five navigation labels stay visible",
+    "Calendar month navigation and selected-day details",
+    "Shift-change native dialog, focus containment, Escape, and unchanged request payload",
+    "Clock-in rejected response, pending disabled state, success, and unchanged request payload",
+    "Clock-out success, completed state, and re-entry control",
+    "Leave dialog labels, required validation, and end-date minimum",
+    "Profile disclosures, name save, and password length validation",
+    "Existing payslip downloader produces a real PDF",
+    "Empty attendance history",
+    "Automatic dark theme and reduced motion",
+    "Admin sidebar width and native mobile menu regression check",
+    "Admin report chart shared colour resolution",
+    "Anonymous employee request redirects to login"
+  ],
+  "not_exercised": [
+    "Live store records",
+    "Actual store writes",
+    "Remote Realtime event delivery",
+    "Physical device location accuracy"
+  ],
+  "typecheck": "pass",
+  "build": "pass: npm run build with the normal workspace environment",
+  "lint": {
+    "employee_before": {
+      "errors": 52,
+      "warnings": 2
+    },
+    "employee_after": {
+      "errors": 47,
+      "warnings": 2
+    },
+    "admin_regressions": 0,
+    "new_core_files": "pass",
+    "full_source": {
+      "errors": 235,
+      "warnings": 29,
+      "status": "Inherited failures remain; ESLint configuration unchanged."
+    }
+  }
+}

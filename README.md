@@ -33,6 +33,22 @@
 - Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
   - Environment variables automatically assigned to Vercel project
 
+## Color theme
+
+Use the Light/Dark buttons on the sign-in page or in the workspace navigation. Admins can find them in the sidebar on desktop and the **More** menu on mobile. Employees can use the workspace header on mobile and the navigation bar on desktop.
+
+The app follows the device theme until a selection is made. The selection is saved in this browser and synced across open tabs. The shared provider in `components/ThemeProvider.tsx` uses the existing `next-themes` dependency; workspace colors remain in `components/workspace.css`. No database changes are required.
+
+## Swipe attendance
+
+On **My shifts**, drag the arrow to the right edge and release to clock in or out. Taps and incomplete swipes do not submit. Keyboard and screen reader users can activate the arrow to confirm. The control stays locked while a request is in progress, and completion is shown after the server confirms attendance.
+
+Clock-in first checks a recent location (up to 15 seconds old) with a four-second acquisition timeout. If that fix is unavailable, inaccurate, or outside the store area, it requests fresh, high-accuracy updates for up to 21 more seconds. Tracking stops after a usable fix, failure, or navigation away. Location errors remain visible with recovery instructions. The existing server geofence remains in force; clock-out does not request location. Browser permissions and the device's location services must still be enabled.
+
+Attendance days use `Asia/Kolkata`. Existing attendance endpoints, the re-entry approval flow, and database schema are retained. An active employee can clock out even while viewing another date or a pending shift-change request.
+
+Run the location and date regression checks with `node --test tests/attendance-location.test.mjs`.
+
 ## Demo
 
 You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).

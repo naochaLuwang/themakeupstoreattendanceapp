@@ -27,7 +27,7 @@ export default async function PayrollPage() {
     const accurateData = profilesData?.map(profile => {
         const empAttendance = attendanceData?.filter(a => a.employee_id === profile.id) || [];
         const empShifts = shiftsData?.filter(s => s.employee_id === profile.id) || [];
-        
+
         let totalWorkedHours = 0;
         let totalOvertimeHours = 0;
 
@@ -41,8 +41,8 @@ export default async function PayrollPage() {
                     const checkOutTime = new Date(att.check_out).getTime();
                     const dateStr = att.check_in.split('T')[0];
                     const shiftEndMs = (() => {
-                        const d = new Date(dateStr + 'T00:00:00'); 
-                        const sD = new Date(shift.end_time);
+                        const d = new Date(dateStr + 'T00:00:00');
+                        const sD = new Date(shift.end_time || '');
                         d.setHours(sD.getUTCHours(), sD.getUTCMinutes(), 0, 0);
                         return d.getTime();
                     })();
@@ -64,11 +64,11 @@ export default async function PayrollPage() {
     }) || [];
 
     return (
-        <div className="p-8 max-w-7xl mx-auto space-y-10 pb-20">
+        <div className="space-y-8">
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h1 className="text-6xl font-black tracking-tighter italic text-slate-900">Payroll.</h1>
-                    <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em] mt-3">Compensation Management</p>
+                    <h1 className="text-3xl font-medium tracking-normal text-slate-900">Payroll</h1>
+                    <p className="text-sm font-medium text-slate-500 tracking-normal mt-3">Staff pay, advances, and settlement history</p>
                 </div>
                 <div className="w-full md:w-96">
                     <AdvanceForm profiles={profilesData || []} />
@@ -77,11 +77,11 @@ export default async function PayrollPage() {
 
             <section>
                 <div className="flex items-center gap-4 mb-6">
-                    <h2 className="text-xs font-black uppercase text-indigo-500 tracking-widest flex items-center gap-2">
-                        <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" /> Pending Settlements
+                    <h2 className="text-xs font-medium text-indigo-500 tracking-normal flex items-center gap-2">
+                        <span className="w-2 h-2 bg-indigo-500 rounded-full" /> Pending settlements
                     </h2>
-                    <span className="text-[8px] font-black tracking-widest uppercase bg-indigo-50 text-indigo-400 px-2 py-1 rounded-md">
-                        Dynamic Engine
+                    <span className="text-xs font-medium tracking-normal bg-indigo-50 text-indigo-400 px-2 py-1 rounded-md">
+                        Current month
                     </span>
                 </div>
                 <PayrollTable initialData={accurateData} history={historyData || []} />

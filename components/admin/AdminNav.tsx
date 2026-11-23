@@ -1,149 +1,164 @@
 'use client';
-import { useState } from 'react';
+
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import ThemeToggle from '@/components/ThemeToggle';
 import {
-    Zap, Calendar, Palmtree, AlertOctagon, LogOut, Search,
-    RefreshCcw, Eye, CreditCard, BarChart3, Clock, ShieldCheck,
-    MoreHorizontal, ChevronRight, X, MapPin
+    Activity, Calendar, Palmtree, LogOut, Search, RefreshCcw,
+    CreditCard, BarChart3, ShieldCheck, MoreHorizontal, X, MapPin, Store,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+
+const links = [
+    { href: '/admin', label: 'Live presence', mobileLabel: 'Live', icon: Activity },
+    { href: '/admin/logs', label: 'Attendance', mobileLabel: 'Attendance', icon: Search },
+    { href: '/admin/schedule', label: 'Shift planner', mobileLabel: 'Planner', icon: Calendar },
+    { href: '/admin/store-operations', label: 'Store operations', mobileLabel: 'Store', icon: Store },
+    { href: '/admin/weekoff-request', label: 'Swap requests', icon: RefreshCcw },
+    { href: '/admin/reports/consolidated', label: 'Consolidated report', icon: BarChart3 },
+    { href: '/admin/reports/graphs', label: 'Attendance graphs', icon: BarChart3 },
+    { href: '/admin/reports/geotag', label: 'Location audit', icon: MapPin },
+    { href: '/admin/leaves', label: 'Leave requests', icon: Palmtree },
+    { href: '/admin/oversight', label: 'Attendance oversight', icon: ShieldCheck },
+    { href: '/admin/payroll', label: 'Payroll', icon: CreditCard },
+    { href: '/admin/roaster', label: 'Shift calendar', icon: Calendar },
+];
+
+const primaryLinks = links.slice(0, 4);
+const secondaryLinks = links.slice(4);
+
+function isCurrentPath(pathname: string, href: string) {
+    return pathname === href || (href !== '/admin' && pathname.startsWith(`${href}/`));
+}
 
 export default function AdminNav() {
     const pathname = usePathname();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const dialogRef = useRef<HTMLDialogElement>(null);
+    const moreIsActive = secondaryLinks.some(link => isCurrentPath(pathname, link.href));
 
-    const links = [
-        { href: '/admin', label: 'Live', icon: <Zap size={18} />, mobile: true },
-        { href: '/admin/logs', label: 'Attendance', icon: <Search size={18} />, mobile: true },
-        { href: '/admin/schedule', label: 'Planner', icon: <Calendar size={18} />, mobile: true },
-        { href: '/admin/weekoff-request', label: 'Swap Reqs', icon: <RefreshCcw size={18} />, mobile: true },
-        { href: '/admin/reports/consolidated', label: 'Consolidated', icon: <BarChart3 size={18} />, mobile: true },
-        { href: '/admin/reports/graphs', label: 'Graphs', icon: <BarChart3 size={18} />, mobile: true },
-        { href: '/admin/reports/geotag', label: 'Geo Audit', icon: <MapPin size={18} />, mobile: false },
-        { href: '/admin/leaves', label: 'Leaves', icon: <Palmtree size={18} />, mobile: false },
-        { href: '/admin/oversight', label: 'Oversight', icon: <ShieldCheck size={18} />, mobile: false },
-        { href: '/admin/payroll', label: 'Payroll', icon: <CreditCard size={18} />, mobile: false },
-        { href: '/admin/roaster', label: 'Calendar', icon: <Calendar size={18} />, mobile: false },
-    ];
+    useEffect(() => {
+        const dialog = dialogRef.current;
+        if (!dialog) return;
+        if (isMenuOpen && !dialog.open) dialog.showModal();
+        if (!isMenuOpen && dialog.open) dialog.close();
+        if (!isMenuOpen) return;
 
-    const primaryLinks = links.filter(l => l.mobile);
-    const secondaryLinks = links.filter(l => !l.mobile);
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        // A sheet opened on mobile must not trap focus after resizing to desktop.
+        const desktop = window.matchMedia('(min-width: 1024px)');
+        const closeOnDesktop = () => { if (desktop.matches) setIsMenuOpen(false); };
+        desktop.addEventListener('change', closeOnDesktop);
+        return () => {
+            document.body.style.overflow = previousOverflow;
+            desktop.removeEventListener('change', closeOnDesktop);
+        };
+    }, [isMenuOpen]);
 
     return (
         <>
-            {/* --- DESKTOP SIDEBAR --- */}
-            <aside className="hidden lg:flex w-80 bg-white border-r border-slate-200 p-8 flex-col sticky top-0 h-screen shrink-0 overflow-y-auto">
-                <div className="mb-10 px-2">
-                    <div className="w-14 h-14 bg-slate-900 rounded-[1.2rem] flex items-center justify-center mb-6 shadow-2xl shadow-slate-200 overflow-hidden">
-                        {/* Custom MUS Icon overrides the standard Zap SVG */}
-                        <img src="/icon-512x512.png" alt="MUS Logo" className="w-full h-full object-cover" />
-                    </div>
-                    <h2 className="text-3xl font-black tracking-tighter text-slate-900 leading-none">ADMIN</h2>
-                    <p className="text-[10px] font-black text-rose-500 uppercase tracking-[0.3em] mt-2">The Makeup Store</p>
-                </div>
+            <aside className="admin-sidebar">
+                <Link href="/admin" className="admin-brand" aria-label="The Makeup Store — admin home">
+                    <span>
+                        <span className="admin-brand-name">The Makeup Store</span>
+                        <span className="admin-brand-location">Wangkhei · Administration</span>
+                    </span>
+                </Link>
 
-                <nav className="flex flex-col gap-1 w-full">
-                    {links.map((link) => {
-                        const isActive = pathname === link.href;
+                <nav aria-label="Admin navigation" className="admin-sidebar-links">
+                    <p className="admin-nav-label">Workspace</p>
+                    {links.map((link, index) => {
+                        const Icon = link.icon;
+                        const active = isCurrentPath(pathname, link.href);
                         return (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                className={`flex items-center gap-4 px-5 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all group
-                                    ${isActive ? 'bg-slate-900 text-white shadow-xl shadow-slate-200' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-900'}`}
-                            >
-                                <span className={isActive ? 'text-blue-400' : 'text-slate-300 group-hover:text-slate-900'}>
-                                    {link.icon}
-                                </span>
-                                {link.label}
-                            </Link>
+                            <div key={link.href}>
+                                {index === 4 && <p className="admin-nav-label admin-nav-label-separated">Management & reports</p>}
+                                <Link href={link.href} aria-current={active ? 'page' : undefined}
+                                    className={`admin-nav-link ${active ? 'admin-nav-link-active' : ''}`}>
+                                    <Icon size={18} strokeWidth={1.5} aria-hidden="true" />
+                                    {link.label}
+                                </Link>
+                            </div>
                         );
                     })}
                 </nav>
 
-                <div className="mt-auto pt-6 border-t border-slate-50">
+                <div className="admin-sidebar-footer">
+                    <p className="admin-nav-label">Store workspace</p>
+                    <div className="mb-3"><ThemeToggle /></div>
                     <form action="/signout" method="post">
-                        <button className="flex items-center gap-4 px-5 py-4 text-rose-500 font-black text-[10px] uppercase tracking-widest hover:bg-rose-50 w-full rounded-2xl transition-all">
-                            <LogOut size={18} />
-                            Sign Out
+                        <button type="submit" className="admin-nav-link w-full">
+                            <LogOut size={18} strokeWidth={1.5} aria-hidden="true" /> Sign out
                         </button>
                     </form>
                 </div>
             </aside>
 
-            {/* --- MOBILE BOTTOM TAB BAR --- */}
-            <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 px-6 pb-8 pt-3 flex justify-between items-center z-[100] shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
-                {primaryLinks.map((link) => {
-                    const isActive = pathname === link.href;
+            <nav aria-label="Mobile admin navigation" className="admin-mobile-nav">
+                {primaryLinks.map(link => {
+                    const Icon = link.icon;
+                    const active = isCurrentPath(pathname, link.href);
                     return (
-                        <Link key={link.href} href={link.href} className={`flex flex-col items-center gap-1 ${isActive ? 'text-slate-900' : 'text-slate-300'}`}>
-                            <div className={`p-2 rounded-xl transition-all ${isActive ? 'bg-slate-900 text-white shadow-md' : ''}`}>
-                                {link.icon}
-                            </div>
-                            <span className="text-[7px] font-black uppercase tracking-tighter">{link.label}</span>
+                        <Link key={link.href} href={link.href} aria-current={active ? 'page' : undefined}
+                            className={`admin-mobile-link ${active ? 'admin-mobile-link-active' : ''}`}>
+                            <Icon size={20} strokeWidth={1.5} aria-hidden="true" />
+                            <span>{link.mobileLabel}</span>
                         </Link>
                     );
                 })}
-
-                {/* Mobile "More" Trigger */}
-                <button
-                    onClick={() => setIsMenuOpen(true)}
-                    className="flex flex-col items-center gap-1 text-slate-300"
-                >
-                    <div className="p-2 rounded-xl">
-                        <MoreHorizontal size={18} />
-                    </div>
-                    <span className="text-[7px] font-black uppercase tracking-tighter">More</span>
+                <button type="button" onClick={() => setIsMenuOpen(true)}
+                    aria-haspopup="dialog" aria-expanded={isMenuOpen} aria-controls="admin-more-navigation"
+                    className={`admin-mobile-link ${moreIsActive ? 'admin-mobile-link-active' : ''}`}>
+                    <MoreHorizontal size={20} strokeWidth={1.5} aria-hidden="true" />
+                    <span>More</span>
                 </button>
             </nav>
 
-            {/* --- MOBILE MORE DRAWER --- */}
-            <AnimatePresence>
-                {isMenuOpen && (
-                    <div className="fixed inset-0 z-[200] lg:hidden">
-                        <motion.div
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            onClick={() => setIsMenuOpen(false)}
-                            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-                        />
-                        <motion.div
-                            initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[3rem] p-8 pb-12 shadow-2xl"
-                        >
-                            <div className="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-8" />
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Management</h3>
-                                <button onClick={() => setIsMenuOpen(false)} className="p-2 bg-slate-50 rounded-full text-slate-400"><X size={20} /></button>
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-2">
-                                {secondaryLinks.map((link) => (
-                                    <Link
-                                        key={link.href}
-                                        href={link.href}
-                                        onClick={() => setIsMenuOpen(false)}
-                                        className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl group active:bg-slate-100 transition-all"
-                                    >
-                                        <div className="flex items-center gap-4">
-                                            <div className="text-slate-400 group-active:text-slate-900">{link.icon}</div>
-                                            <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">{link.label}</span>
-                                        </div>
-                                        <ChevronRight size={14} className="text-slate-300" />
-                                    </Link>
-                                ))}
-                            </div>
-
-                            <form action="/signout" method="post" className="mt-6 pt-6 border-t border-slate-100">
-                                <button className="w-full flex items-center justify-center gap-3 py-4 bg-rose-50 text-rose-500 rounded-2xl text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all">
-                                    <LogOut size={16} /> Sign Out of Admin
-                                </button>
-                            </form>
-                        </motion.div>
+            <dialog ref={dialogRef} id="admin-more-navigation" aria-labelledby="admin-more-title"
+                className="admin-nav-dialog" onCancel={() => setIsMenuOpen(false)} onClose={() => setIsMenuOpen(false)}
+                onKeyDown={event => {
+                    if (event.key !== 'Tab') return;
+                    const controls = event.currentTarget.querySelectorAll<HTMLElement>('a[href], button:not(:disabled)');
+                    const first = controls[0];
+                    const last = controls[controls.length - 1];
+                    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+                    if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+                }}
+                onClick={event => { if (event.target === event.currentTarget) setIsMenuOpen(false); }}>
+                <div className="admin-nav-sheet">
+                    <div className="flex items-center justify-between gap-4 mb-4">
+                        <div>
+                            <h2 id="admin-more-title" className="text-lg font-medium">Management & reports</h2>
+                            <p className="admin-sheet-description">The Makeup Store · Wangkhei</p>
+                        </div>
+                        <button type="button" onClick={() => setIsMenuOpen(false)} aria-label="Close navigation" className="admin-icon-button">
+                            <X size={20} strokeWidth={1.5} aria-hidden="true" />
+                        </button>
                     </div>
-                )}
-            </AnimatePresence>
+                    <nav aria-label="More admin navigation" className="grid gap-1">
+                        {secondaryLinks.map(link => {
+                            const Icon = link.icon;
+                            const active = isCurrentPath(pathname, link.href);
+                            return (
+                                <Link key={link.href} href={link.href} onClick={() => setIsMenuOpen(false)}
+                                    aria-current={active ? 'page' : undefined}
+                                    className={`admin-nav-link ${active ? 'admin-nav-link-active' : ''}`}>
+                                    <Icon size={18} strokeWidth={1.5} aria-hidden="true" /> {link.label}
+                                </Link>
+                            );
+                        })}
+                    </nav>
+                    <div className="admin-sheet-footer">
+                        <ThemeToggle />
+                    </div>
+                    <form action="/signout" method="post" className="mt-3">
+                        <button type="submit" className="admin-nav-link w-full">
+                            <LogOut size={18} strokeWidth={1.5} aria-hidden="true" /> Sign out
+                        </button>
+                    </form>
+                </div>
+            </dialog>
         </>
     );
 }

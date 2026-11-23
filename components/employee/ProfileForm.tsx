@@ -13,19 +13,22 @@ export function PersonalDataForm({ initialName, userId }: { initialName: string,
         setLoading(true);
         const { error } = await supabase.from('profiles').update({ full_name: name }).eq('id', userId);
         if (error) alert(error.message);
-        else alert("Personnel record synced.");
+        else alert("Name updated.");
         setLoading(false);
     }
 
     return (
         <form onSubmit={handleUpdate} className="pt-2 pb-6 space-y-4">
             <div className="space-y-2">
-                <label className="text-[9px] font-black uppercase tracking-[0.2em] text-black/40 ml-4">Legal_Full_Name</label>
+                <label htmlFor="profile-full-name" className="text-sm text-slate-500">Full name</label>
                 <input
-                    type="text" value={name} onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-neutral-50 border-none rounded-2xl px-6 py-4 text-xs font-bold focus:ring-1 focus:ring-black outline-none transition-all"
+                    id="profile-full-name" autoComplete="name" disabled={loading} type="text" value={name} onChange={(e) => setName(e.target.value)}
+                    className="w-full bg-white border border-slate-200 rounded-xl px-6 py-4 text-sm font-medium focus:ring-1 focus:ring-black outline-none transition-colors"
                 />
             </div>
+            <button type="submit" disabled={loading} className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-3 text-sm font-medium text-white">
+                {loading && <Loader2 size={16} className="animate-spin" />} Save name
+            </button>
         </form>
     );
 }
@@ -37,12 +40,12 @@ export function SecurityForm() {
 
     async function handleUpdate(e: React.FormEvent) {
         e.preventDefault();
-        if (password.length < 6) return alert("Security Error: Minimum 6 characters required.");
+        if (password.length < 6) return alert("Use at least 6 characters for your password.");
         setLoading(true);
         const { error } = await supabase.auth.updateUser({ password });
         if (error) alert(error.message);
         else {
-            alert("Security Protocol: Password Updated.");
+            alert("Password updated.");
             setPassword('');
         }
         setLoading(false);
@@ -51,15 +54,15 @@ export function SecurityForm() {
     return (
         <form onSubmit={handleUpdate} className="pt-2 pb-6 space-y-4">
             <div className="space-y-2">
-                <label className="text-[9px] font-black uppercase tracking-[0.2em] text-black/40 ml-4">New Password</label>
+                <label htmlFor="profile-new-password" className="text-sm text-slate-500">New password</label>
                 <input
-                    type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                    id="profile-new-password" autoComplete="new-password" minLength={6} required disabled={loading} type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full bg-neutral-50 border-none rounded-2xl px-6 py-4 text-xs font-bold focus:ring-1 focus:ring-black outline-none transition-all"
+                    className="w-full bg-white border border-slate-200 rounded-xl px-6 py-4 text-sm font-medium focus:ring-1 focus:ring-black outline-none transition-colors"
                 />
             </div>
-            <button disabled={loading} className="w-full bg-black text-white text-[10px] font-black uppercase tracking-widest py-4 rounded-2xl hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-                {loading && <Loader2 size={14} className="animate-spin" />} Update Credentials
+            <button disabled={loading} className="w-full bg-black text-white text-sm font-medium tracking-normal py-4 rounded-xl hover:opacity-90 transition-colors flex items-center justify-center gap-2">
+                {loading && <Loader2 size={14} className="animate-spin" />} Update password
             </button>
         </form>
     );

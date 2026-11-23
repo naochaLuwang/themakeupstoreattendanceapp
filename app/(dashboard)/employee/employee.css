@@ -1,0 +1,80 @@
+/* Employee workspace: shared palette and controls are in components/workspace.css.
+   Design pass using Unslop by Damir Sokolovsky (@heydamir), CC BY 4.0.
+   https://github.com/heydamir/unslop */
+.employee-shell { display: block; }
+.employee-content { max-width: 1120px; margin: 0 auto; padding: 24px 16px calc(104px + env(safe-area-inset-bottom)); }
+.employee-content-inner { min-width: 0; }
+.employee-brand-mobile { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--store-border); }
+.employee-theme-desktop { display: none; }
+.employee-wordmark { font-size: 15px; font-weight: 600; color: var(--store-ink); }
+.employee-brand-location { margin-top: 4px; font-size: 12px; color: var(--store-muted); }
+.employee-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 80; background: var(--store-surface); border-top: 1px solid var(--store-border); }
+.employee-nav-inner { display: flex; align-items: center; max-width: 1120px; margin: 0 auto; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); }
+.employee-nav-brand { display: none; }
+.employee-nav-links { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 4px; width: 100%; }
+.employee-nav-link { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 52px; padding: 4px; border-radius: 8px; font-size: 12px; color: var(--store-muted); transition: background-color 150ms ease-out, color 150ms ease-out; }
+.employee-nav-link:hover { background: var(--store-raised); }
+.employee-nav-link[aria-current='page'] { color: var(--store-accent-ink); background: var(--store-accent-soft); font-weight: 500; }
+.employee-nav-icon { position: relative; }
+.employee-nav-count { position: absolute; top: -8px; right: -12px; display: grid; place-items: center; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 6px; background: var(--store-accent); color: var(--store-on-solid); font-size: 11px; }
+.employee-skip-link { position: fixed; top: 12px; left: 12px; transform: translateY(-120px); padding: 12px 16px; z-index: 300; background: var(--store-surface); color: var(--store-ink); border: 1px solid var(--store-border); border-radius: 8px; }
+.employee-skip-link:focus { transform: translateY(0); }
+.employee-icon-button { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 8px; color: var(--store-secondary); }
+.employee-icon-button:hover { background: var(--store-raised); }
+.employee-schedule-layout { display: grid; gap: 20px; }
+.employee-calendar-panel, .employee-shift-panel { min-width: 0; padding: 20px; border-radius: 12px; border: 1px solid var(--store-border); background: var(--store-surface); }
+.employee-calendar-day { min-width: 0; min-height: 40px; aspect-ratio: 1; border: 1px solid transparent; border-radius: 8px; color: var(--store-secondary); background: var(--store-canvas); font-size: 13px; transition: background-color 150ms ease-out, border-color 150ms ease-out; }
+.employee-calendar-day:hover:not(:disabled) { border-color: var(--store-muted); }
+.employee-calendar-day[aria-pressed='true'] { background: var(--store-accent); color: var(--store-on-solid); border-color: var(--store-accent); }
+.employee-calendar-day[aria-current='date']:not([aria-pressed='true']) { border-color: var(--store-accent); }
+.employee-calendar-day:disabled { background: transparent; }
+.employee-calendar-day-off { color: var(--store-muted); }
+.employee-calendar-day-work { background: var(--store-positive-soft); color: var(--store-positive); }
+.employee-calendar-day-leave { background: var(--store-warning-soft); color: var(--store-warning); }
+.employee-shift-time { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; color: var(--store-ink); font-size: clamp(22px, 6vw, 32px); line-height: 1.2; font-weight: 400; }
+.employee-shift-time > span { white-space: nowrap; }
+.employee-shift-time small { font-size: 13px; color: var(--store-muted); margin-left: 4px; }
+.employee-calendar-legend { display: flex; flex-wrap: wrap; gap: 16px; padding-top: 16px; font-size: 12px; color: var(--store-muted); }
+.employee-calendar-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.employee-calendar-legend i { display: inline-block; width: 6px; height: 6px; border-radius: 50%; }
+.employee-toast { position: fixed; left: 16px; right: 16px; top: 16px; z-index: 200; max-width: 560px; margin: 0 auto; padding: 16px; border-radius: 12px; background: var(--store-surface); border: 1px solid var(--store-border); box-shadow: 0 4px 16px rgb(0 0 0 / 8%); }
+.employee-profile-avatar { display: grid; place-items: center; width: 56px; height: 56px; flex-shrink: 0; border-radius: 12px; background: var(--store-accent-soft); color: var(--store-accent-ink); font-size: 24px; }
+.employee-shell :where(button, summary) { min-height: 44px; }
+.employee-shell :where(summary):focus-visible { outline: 2px solid var(--store-accent); outline-offset: -3px; }
+.employee-shell :where(.font-sans) { font-family: inherit; }
+.employee-shell [class~='bg-neutral-50'], .employee-shell [class~='bg-[#FBFBFE]'] { background: var(--store-canvas); }
+.employee-shell [class~='border-neutral-50'], .employee-shell [class~='border-neutral-100'], .employee-shell [class~='border-black/5'] { border-color: var(--store-border); }
+.employee-shell [class~='text-black/30'], .employee-shell [class~='text-black/40'], .employee-shell [class~='text-black/20'] { color: var(--store-muted); }
+.employee-shell [class~='bg-fuchsia-50'] { background: var(--store-accent-soft); }
+.employee-shell [class~='text-fuchsia-700'], .employee-shell [class~='text-fuchsia-400'] { color: var(--store-accent-ink); }
+.workspace-dialog { border: 0; padding: 0; color: var(--store-ink); background: transparent; }
+.workspace-dialog:not([open]) { display: none; }
+.workspace-dialog[open] { position: fixed; inset: 0; display: flex; align-items: flex-end; justify-content: center; width: 100%; height: 100dvh; max-width: none; max-height: none; margin: 0; }
+.workspace-dialog::backdrop { background: rgb(20 24 21 / 45%); }
+.workspace-dialog-panel { width: 100%; max-height: 90dvh; overflow-y: auto; padding: 24px 20px calc(24px + env(safe-area-inset-bottom)); border: 1px solid var(--store-border); border-radius: 20px 20px 0 0; background: var(--store-surface); box-shadow: 0 8px 24px rgb(0 0 0 / 8%); }
+@media (max-width: 639px) {
+  .employee-shell :where(input:not([type='checkbox']):not([type='radio']), textarea, select) { font-size: 16px; }
+  .employee-calendar-panel { padding: 12px; }
+  .employee-calendar-day { min-height: 36px; }
+}
+@media (min-width: 640px) {
+  .employee-content { padding: 32px 24px calc(112px + env(safe-area-inset-bottom)); }
+  .workspace-dialog[open] { align-items: center; padding: 24px; }
+  .workspace-dialog-panel { max-width: 560px; border-radius: 16px; padding: 24px; }
+  .employee-schedule-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+}
+@media (min-width: 1024px) {
+  .employee-nav { position: sticky; top: 0; bottom: auto; border-top: 0; border-bottom: 1px solid var(--store-border); }
+  .employee-nav-inner { padding: 16px 24px; gap: 16px; }
+  .employee-theme-desktop { display: flex; flex-shrink: 0; }
+  .employee-nav-brand { display: block; flex-shrink: 0; }
+  .employee-nav-links { display: flex; flex: 1; width: auto; justify-content: flex-end; gap: 4px; }
+  .employee-nav-link { flex-direction: row; gap: 8px; min-height: 40px; padding: 8px 12px; font-size: 14px; }
+  .employee-brand-mobile { display: none; }
+  .employee-content { padding: 40px 24px 64px; }
+  .employee-schedule-layout { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 32px; }
+}
+.employee-ops-nav { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 12px; border-bottom: 1px solid var(--store-border); }
+.employee-ops-link { display: flex; align-items: center; flex-shrink: 0; gap: 8px; padding: 12px; min-height: 44px; border-radius: 8px; font-size: 13px; color: var(--store-secondary); }
+.employee-ops-link:hover { background: var(--store-raised); }
+.employee-ops-link[aria-current='page'] { color: var(--store-accent-ink); background: var(--store-accent-soft); }

@@ -46,47 +46,47 @@ export default function PresetManager() {
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             {/* Header */}
             <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
-                <h3 className="text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Shift Library</h3>
+                <h3 className="text-sm font-medium tracking-normal text-slate-500">Shift Library</h3>
             </div>
 
             <div className="p-4">
                 {/* Compact Form */}
                 <form onSubmit={handleAdd} className="space-y-3 mb-6">
                     <div className="space-y-1">
-                        <label className="text-[9px] font-bold text-slate-400 uppercase ml-1">Preset Label</label>
+                        <label className="text-xs font-medium text-slate-500 ml-1">Preset Label</label>
                         <input
                             type="text"
                             placeholder="e.g. Morning Shift"
                             value={label}
                             onChange={(e) => setLabel(e.target.value)}
-                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold outline-none focus:border-slate-900 transition-colors"
+                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium outline-none focus:border-slate-900 transition-colors"
                         />
                     </div>
 
                     <div className="grid grid-cols-2 gap-2">
                         <div className="space-y-1">
-                            <label className="text-[9px] font-bold text-slate-400 uppercase ml-1">Start</label>
+                            <label className="text-xs font-medium text-slate-500 ml-1">Start</label>
                             <input
                                 type="time"
                                 value={start}
                                 onChange={(e) => setStart(e.target.value)}
-                                className="w-full px-2 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold outline-none"
+                                className="w-full px-2 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium outline-none"
                             />
                         </div>
                         <div className="space-y-1">
-                            <label className="text-[9px] font-bold text-slate-400 uppercase ml-1">End</label>
+                            <label className="text-xs font-medium text-slate-500 ml-1">End</label>
                             <input
                                 type="time"
                                 value={end}
                                 onChange={(e) => setEnd(e.target.value)}
-                                className="w-full px-2 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold outline-none"
+                                className="w-full px-2 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium outline-none"
                             />
                         </div>
                     </div>
 
                     <button
                         disabled={loading || !label}
-                        className="w-full bg-slate-900 text-white text-[10px] font-black uppercase py-2.5 rounded-lg hover:bg-slate-800 transition-all disabled:opacity-20 active:scale-[0.98]"
+                        className="w-full bg-slate-900 text-white text-sm font-medium py-2.5 rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-20"
                     >
                         {loading ? 'Saving...' : 'Add to Library'}
                     </button>
@@ -94,23 +94,23 @@ export default function PresetManager() {
 
                 {/* Compact List */}
                 <div className="space-y-2">
-                    <label className="text-[9px] font-bold text-slate-400 uppercase ml-1">Active Presets</label>
+                    <label className="text-xs font-medium text-slate-500 ml-1">Active Presets</label>
                     <div className="grid grid-cols-1 gap-2">
                         {presets.length === 0 && (
-                            <p className="text-[10px] text-slate-400 italic py-2 text-center border border-dashed border-slate-100 rounded-lg">No presets defined</p>
+                            <p className="text-sm text-slate-500 py-2 text-center border border-dashed border-slate-100 rounded-lg">No presets defined</p>
                         )}
                         {presets.map((p) => (
                             <div
                                 key={p.id}
-                                className="group flex items-center justify-between p-2 bg-slate-50 border border-slate-100 rounded-lg hover:border-slate-300 transition-all"
+                                className="group flex items-center justify-between p-2 bg-slate-50 border border-slate-100 rounded-lg hover:border-slate-300 transition-colors"
                             >
                                 <div className="flex flex-col">
-                                    <span className="text-[10px] font-black text-slate-900 uppercase leading-tight">{p.label}</span>
-                                    <span className="text-[9px] font-medium text-slate-500">{p.start_time.slice(0, 5)} — {p.end_time.slice(0, 5)}</span>
+                                    <span className="text-sm font-medium text-slate-900 leading-tight">{p.label}</span>
+                                    <span className="text-xs font-medium text-slate-500">{p.start_time.slice(0, 5)} — {p.end_time.slice(0, 5)}</span>
                                 </div>
                                 <button
                                     onClick={() => handleDelete(p.id)}
-                                    className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-md transition-all opacity-0 group-hover:opacity-100"
+                                    className="p-1.5 text-slate-500 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors opacity-0 group-hover:opacity-100"
                                 >
                                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />

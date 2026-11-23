@@ -1,0 +1,265 @@
+<style>
+  #mus-directions .mus-product {
+    --mus-bg: light-dark(#f5f3f7, #18151c);
+    --mus-surface: light-dark(#ffffff, #211d26);
+    --mus-ink: light-dark(#241c2a, #f1eaf4);
+    --mus-muted: light-dark(#6a6070, #b7acbf);
+    --mus-line: light-dark(#e5dfe9, #3c3343);
+    --mus-accent: light-dark(#603a66, #d9ade0);
+    --mus-on-accent: light-dark(#ffffff, #241729);
+    --mus-soft: light-dark(#eee6f0, #392c40);
+    --mus-warning: light-dark(#87520a, #f2cc82);
+    --mus-warning-bg: light-dark(#fcf1de, #3c301d);
+    --mus-danger: light-dark(#a23745, #ffacb7);
+    --mus-danger-bg: light-dark(#fcebee, #41272e);
+    --mus-success: light-dark(#286246, #a4d5b8);
+    background: var(--mus-bg);
+    color: var(--mus-ink);
+    font: 14px/1.5 'Segoe UI', system-ui, sans-serif;
+    min-height: 740px;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+  }
+  #mus-directions .mus-product *, #mus-directions .mus-product *::before, #mus-directions .mus-product *::after { box-sizing: border-box; }
+  #mus-directions .mus-product h1, #mus-directions .mus-product h2, #mus-directions .mus-product h3, #mus-directions .mus-product p { margin: 0; color: inherit; }
+  #mus-directions .mus-product h1 { font: 600 30px/1.2 'Segoe UI', system-ui, sans-serif; letter-spacing: -.8px; }
+  #mus-directions .mus-product h2 { font: 600 16px/1.4 'Segoe UI', system-ui, sans-serif; letter-spacing: -.2px; }
+  #mus-directions .mus-product h3 { font: 600 14px/1.4 'Segoe UI', system-ui, sans-serif; }
+  #mus-directions .mus-product small, #mus-directions .mus-note { font-size: 12px; color: var(--mus-muted); }
+  #mus-directions .mus-product svg { width: 17px; height: 17px; flex-shrink: 0; }
+  #mus-directions .mus-product button { font: inherit; color: inherit; }
+  #mus-directions .mus-studio { display: grid; grid-template-columns: 196px minmax(0, 1fr); }
+  #mus-directions .mus-sidebar { background: var(--mus-surface); border-right: 1px solid var(--mus-line); padding: 28px 16px; display: flex; flex-direction: column; gap: 25px; }
+  #mus-directions .mus-wordmark { font-size: 14px; line-height: 1.35; font-weight: 650; letter-spacing: -.2px; padding: 0 10px; }
+  #mus-directions .mus-wordmark small { display: block; margin-top: 5px; font-weight: 400; letter-spacing: 0; }
+  #mus-directions .mus-nav-group { display: grid; gap: 3px; }
+  #mus-directions .mus-nav-label { padding: 0 10px 6px; font-size: 12px; color: var(--mus-muted); }
+  #mus-directions .mus-nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 6px; color: var(--mus-muted); font-size: 13px; }
+  #mus-directions .mus-nav-item[aria-current] { color: var(--mus-accent); background: var(--mus-soft); font-weight: 600; }
+  #mus-directions .mus-sidebar-footer { margin-top: auto; padding: 12px 10px 0; border-top: 1px solid var(--mus-line); }
+  #mus-directions .mus-main { min-width: 0; }
+  #mus-directions .mus-topbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 18px 28px; border-bottom: 1px solid var(--mus-line); color: var(--mus-muted); font-size: 12px; }
+  #mus-directions .mus-topbar strong { font-weight: 600; color: var(--mus-ink); }
+  #mus-directions .mus-content { padding: 30px 28px; }
+  #mus-directions .mus-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 24px; flex-wrap: wrap; }
+  #mus-directions .mus-heading p { margin-top: 7px; color: var(--mus-muted); }
+  #mus-directions .mus-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--mus-surface); border: 1px solid var(--mus-line); border-radius: 8px; margin-bottom: 24px; }
+  #mus-directions .mus-summary > div { padding: 16px 18px; }
+  #mus-directions .mus-summary > div + div { border-left: 1px solid var(--mus-line); }
+  #mus-directions .mus-value { display: block; font-size: 26px; line-height: 1.3; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 6px; }
+  #mus-directions .mus-workspace { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(185px, 1fr); gap: 20px; }
+  #mus-directions .mus-panel { background: var(--mus-surface); border: 1px solid var(--mus-line); border-radius: 8px; padding: 18px; min-width: 0; }
+  #mus-directions .mus-panel-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
+  #mus-directions .mus-count { color: var(--mus-accent); background: var(--mus-soft); padding: 1px 7px; border-radius: 4px; font-size: 12px; }
+  #mus-directions .mus-queue-row { display: flex; align-items: start; gap: 12px; padding: 15px 0; border-top: 1px solid var(--mus-line); }
+  #mus-directions .mus-queue-row > div { flex: 1; min-width: 0; }
+  #mus-directions .mus-queue-row p { color: var(--mus-muted); font-size: 12px; margin: 4px 0 8px; }
+  #mus-directions .mus-queue-row > svg { margin-top: 3px; color: var(--mus-muted); }
+  #mus-directions .mus-badge { display: inline-flex; align-items: center; padding: 2px 7px; border-radius: 4px; font-size: 12px; white-space: nowrap; color: var(--mus-warning); background: var(--mus-warning-bg); }
+  #mus-directions .mus-badge.danger { color: var(--mus-danger); background: var(--mus-danger-bg); }
+  #mus-directions .mus-action { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 36px; padding: 7px 12px; background: var(--mus-surface); border: 1px solid var(--mus-line); border-radius: 6px; font-size: 12px !important; font-weight: 600 !important; }
+  #mus-directions .mus-action.primary { background: var(--mus-accent); color: var(--mus-on-accent); border-color: var(--mus-accent); }
+  #mus-directions .mus-action:hover { filter: brightness(.96); }
+  #mus-directions .mus-checks { display: grid; gap: 15px; margin-top: 18px; }
+  #mus-directions .mus-check { display: flex; gap: 10px; align-items: center; font-size: 13px; }
+  #mus-directions .mus-check input { accent-color: var(--mus-accent); width: 17px; height: 17px; margin: 0; flex-shrink: 0; }
+  #mus-directions .mus-check:has(input:checked) span { color: var(--mus-muted); text-decoration: line-through; }
+  #mus-directions .mus-panel-foot { border-top: 1px solid var(--mus-line); margin-top: 20px; padding-top: 13px; color: var(--mus-muted); font-size: 12px; }
+  #mus-directions .mus-mobile-nav { display: none; }
+  #mus-directions .mus-feedback { color: var(--mus-accent); font-size: 13px; margin-top: 18px; min-height: 20px; }
+  #mus-directions .mus-ledger {
+    --mus-bg: light-dark(#f3f6f5, #141c1a);
+    --mus-surface: light-dark(#ffffff, #1c2723);
+    --mus-ink: light-dark(#18352b, #e5f1eb);
+    --mus-muted: light-dark(#54685f, #acbfb4);
+    --mus-line: light-dark(#d8e3dd, #33473c);
+    --mus-accent: light-dark(#23624c, #9bd2b5);
+    --mus-on-accent: light-dark(#ffffff, #123223);
+    --mus-soft: light-dark(#e4eee7, #2c4434);
+    padding: 0 28px 24px;
+  }
+  #mus-directions .mus-ledger-top { display: flex; align-items: center; flex-wrap: wrap; gap: 20px; padding: 22px 0; border-bottom: 1px solid var(--mus-line); }
+  #mus-directions .mus-ledger-top .mus-wordmark { padding: 0; margin-right: 22px; }
+  #mus-directions .mus-ledger-tabs { display: flex; gap: 23px; font-size: 13px; flex-wrap: wrap; color: var(--mus-muted); }
+  #mus-directions .mus-ledger-tabs strong { color: var(--mus-accent); font-weight: 600; }
+  #mus-directions .mus-ledger .mus-heading { padding-top: 28px; }
+  #mus-directions .mus-ledger .mus-summary { border-radius: 3px; margin-bottom: 24px; }
+  #mus-directions .mus-ledger .mus-action { border-radius: 3px; }
+  #mus-directions .mus-ledger-layout { display: grid; grid-template-columns: minmax(0, 1fr) 228px; gap: 24px; }
+  #mus-directions .mus-ledger-table { width: 100%; border-collapse: collapse; background: var(--mus-surface); font-size: 13px; }
+  #mus-directions .mus-ledger-table th { text-align: left; font-size: 12px; color: var(--mus-muted); font-weight: 500; padding: 12px; border-bottom: 1px solid var(--mus-line); }
+  #mus-directions .mus-ledger-table td { padding: 18px 12px; border-bottom: 1px solid var(--mus-line); vertical-align: middle; }
+  #mus-directions .mus-ledger-table td:first-child { font-weight: 600; }
+  #mus-directions .mus-ledger-table small { display: block; margin-top: 3px; font-weight: 400; }
+  #mus-directions .mus-ledger-side { border-left: 1px solid var(--mus-line); padding-left: 24px; }
+  #mus-directions .mus-shift { margin-top: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--mus-line); }
+  #mus-directions .mus-shift p { font-size: 13px; }
+  #mus-directions .mus-ledger .mus-panel-title { margin-top: 8px; }
+  #mus-directions .mus-status-detail { padding: 14px 16px; margin-top: 16px; background: var(--mus-soft); border-radius: 3px; font-size: 13px; }
+  @media (max-width: 850px) {
+    #mus-directions .mus-product { min-height: 1040px; }
+    #mus-directions .mus-studio { grid-template-columns: 172px minmax(0, 1fr); }
+    #mus-directions .mus-content { padding: 24px 20px; }
+    #mus-directions .mus-workspace { grid-template-columns: minmax(0, 1fr); }
+    #mus-directions .mus-ledger-layout { grid-template-columns: minmax(0, 1fr); }
+    #mus-directions .mus-ledger-side { border-left: 0; padding-left: 0; }
+    #mus-directions .mus-ledger-side .mus-shift { display: inline-block; margin-right: 24px; }
+  }
+  @media (max-width: 600px) {
+    #mus-directions .mus-product { min-height: 1140px; }
+    #mus-directions .mus-studio { display: block; }
+    #mus-directions .mus-sidebar { display: none; }
+    #mus-directions .mus-content { padding: 22px 16px; }
+    #mus-directions .mus-topbar { padding: 18px 16px; }
+    #mus-directions .mus-product h1 { font-size: 26px; }
+    #mus-directions .mus-summary > div { padding: 13px 10px; }
+    #mus-directions .mus-value { font-size: 23px; }
+    #mus-directions .mus-summary small { font-size: 11px; }
+    #mus-directions .mus-mobile-nav { display: flex; justify-content: space-around; gap: 10px; padding: 15px 8px; background: var(--mus-surface); border-top: 1px solid var(--mus-line); font-size: 12px; color: var(--mus-muted); }
+    #mus-directions .mus-mobile-nav strong { color: var(--mus-accent); }
+    #mus-directions .mus-ledger { padding: 0 16px 24px; }
+    #mus-directions .mus-ledger-tabs { gap: 18px; }
+    #mus-directions .mus-ledger-table th:nth-child(2), #mus-directions .mus-ledger-table td:nth-child(2) { display: none; }
+    #mus-directions .mus-ledger-table td { padding: 16px 8px; }
+    #mus-directions .mus-panel { padding: 16px; }
+    #mus-directions .mus-check { min-height: 34px; }
+  }
+  @media (pointer: coarse) {
+    #mus-directions .mus-action { min-height: 44px; }
+    #mus-directions .mus-check { min-height: 44px; }
+  }
+</style>
+<div id="mus-directions" class="viz-carousel" aria-label="Store operations design directions">
+  <section data-variant="Studio" aria-label="Studio design">
+    <div class="mus-product mus-studio" id="mus-studio" aria-label="Studio workspace">
+      <aside class="mus-sidebar" aria-label="Proposed navigation">
+        <div class="mus-wordmark">THE MAKEUP STORE<small>Wangkhei · Staff workspace</small></div>
+        <div class="mus-nav-group">
+          <p class="mus-nav-label">Store Operations</p>
+          <div class="mus-nav-item" aria-current="page"><i data-lucide="layout-dashboard" aria-hidden="true"></i>Dashboard</div>
+          <div class="mus-nav-item"><i data-lucide="clipboard-check" aria-hidden="true"></i>Shelf Inspection</div>
+          <div class="mus-nav-item"><i data-lucide="triangle-alert" aria-hidden="true"></i>Damage Reports</div>
+          <div class="mus-nav-item"><i data-lucide="flask-conical" aria-hidden="true"></i>Tester Management</div>
+          <div class="mus-nav-item"><i data-lucide="list-checks" aria-hidden="true"></i>Daily Checklist</div>
+          <div class="mus-nav-item"><i data-lucide="list-todo" aria-hidden="true"></i>Tasks</div>
+          <div class="mus-nav-item"><i data-lucide="store" aria-hidden="true"></i>Store Audits</div>
+          <div class="mus-nav-item"><i data-lucide="flag" aria-hidden="true"></i>Incidents</div>
+          <div class="mus-nav-item"><i data-lucide="package" aria-hidden="true"></i>Restocking</div>
+          <div class="mus-nav-item"><i data-lucide="chart-no-axes-combined" aria-hidden="true"></i>Reports</div>
+          <div class="mus-nav-item"><i data-lucide="settings" aria-hidden="true"></i>Settings</div>
+        </div>
+        <div class="mus-sidebar-footer"><strong>Manager workspace</strong><br><small>Attendance · Planner · Payroll</small></div>
+      </aside>
+      <div class="mus-main">
+        <div class="mus-topbar"><strong>Store Operations</strong><span>/</span><span>Dashboard</span></div>
+        <div class="mus-content">
+          <header class="mus-heading"><div><h1>A clear view of today.</h1><p>Wangkhei · Friday, 20 November</p></div><small>Preview · example records</small></header>
+          <div class="mus-summary">
+            <div><small>Needs attention</small><span class="mus-value">3</span></div>
+            <div><small>Pending approvals</small><span class="mus-value">2</span></div>
+            <div><small>Opening checklist</small><span class="mus-value" id="mus-progress">2 / 5</span></div>
+          </div>
+          <div class="mus-workspace">
+            <section class="mus-panel" aria-label="Attention queue">
+              <div class="mus-panel-title"><h2>Needs your attention</h2><span class="mus-count">3</span></div>
+              <div class="mus-queue-row"><i data-lucide="triangle-alert" aria-hidden="true"></i><div><h3>Damaged foundation bottle</h3><p>Damage report · 2 units · ₹1,600</p><span class="mus-badge">Approval pending</span></div></div>
+              <div class="mus-queue-row"><i data-lucide="flask-conical" aria-hidden="true"></i><div><h3>Lip colour tester expired</h3><p>Tester Management · Lip display</p><span class="mus-badge danger">Replace today</span></div></div>
+              <div class="mus-queue-row"><i data-lucide="package" aria-hidden="true"></i><div><h3>Restock compact powder</h3><p>Restocking · 6 units requested</p><span class="mus-badge">Approval pending</span></div></div>
+            </section>
+            <section class="mus-panel" aria-label="Interactive opening checklist">
+              <div class="mus-panel-title"><h2>Opening checklist</h2></div><small>Complete before the floor opens</small>
+              <div class="mus-checks">
+                <label class="mus-check"><input type="checkbox" checked><span>Unlock store</span></label>
+                <label class="mus-check"><input type="checkbox" checked><span>Switch on lights</span></label>
+                <label class="mus-check"><input type="checkbox"><span>Count cash</span></label>
+                <label class="mus-check"><input type="checkbox"><span>Sanitize testers</span></label>
+                <label class="mus-check"><input type="checkbox"><span>Upload shelf photos</span></label>
+              </div>
+              <div class="mus-panel-foot" id="mus-check-status" aria-live="polite">3 items remaining</div>
+            </section>
+          </div>
+        </div>
+        <div class="mus-mobile-nav" aria-label="Proposed mobile navigation"><strong>Home</strong><span>Tasks</span><span>Store Ops</span><span>More</span></div>
+      </div>
+    </div>
+  </section>
+  <section data-variant="Ledger" aria-label="Ledger design" hidden>
+    <div class="mus-product mus-ledger" id="mus-ledger" aria-label="Ledger workspace">
+      <header class="mus-ledger-top"><div class="mus-wordmark">THE MAKEUP STORE<small>Wangkhei</small></div><div class="mus-ledger-tabs"><span>Attendance</span><span>Planner</span><strong>Store Operations</strong><span>Payroll</span></div></header>
+      <div class="mus-heading"><div><h1>Store Operations</h1><p>Friday, 20 November · Daily work queue</p></div><small>Preview · example records</small></div>
+      <div class="mus-summary"><div><small>Awaiting approval</small><span class="mus-value">2</span></div><div><small>Due today</small><span class="mus-value">3</span></div><div><small>Overdue</small><span class="mus-value">1</span></div></div>
+      <div class="mus-ledger-layout">
+        <section aria-label="Work queue">
+          <div class="mus-panel-title"><h2>Today's work</h2><small>Priority order</small></div>
+          <table class="mus-ledger-table"><thead><tr><th scope="col">Item</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead><tbody>
+            <tr><td>Expired lip tester<small>Tester Management · Lip display</small></td><td><span class="mus-badge danger">Overdue</span></td><td><button type="button" class="mus-action cursor-interaction" data-work="tester">View</button></td></tr>
+            <tr><td>Damaged foundation<small>Damage Reports · 2 units</small></td><td><span class="mus-badge">Pending</span></td><td><button type="button" class="mus-action cursor-interaction" data-work="damage">Review</button></td></tr>
+            <tr><td>Compact powder<small>Restocking · 6 units</small></td><td><span class="mus-badge">Pending</span></td><td><button type="button" class="mus-action cursor-interaction" data-work="restock">Review</button></td></tr>
+            <tr><td>Clean display mirrors<small>Tasks · Before opening</small></td><td><span class="mus-note">In progress</span></td><td><button type="button" class="mus-action cursor-interaction" data-work="clean">View</button></td></tr>
+          </tbody></table>
+          <div class="mus-status-detail" aria-live="polite" id="mus-selected-work">Select an item to see its next action.</div>
+        </section>
+        <aside class="mus-ledger-side" aria-label="Daily checkpoints"><h2>Daily checkpoints</h2><div class="mus-shift"><p>Opening checklist</p><small>2 of 5 completed</small></div><div class="mus-shift"><p>Shelf inspection</p><small>Awaiting photo proof</small></div><div class="mus-shift"><p>Closing checklist</p><small>Due before leaving</small></div><div class="mus-shift"><p>Store audit</p><small>Scheduled this week</small></div></aside>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+  (() => {
+    const root = document.getElementById('mus-directions');
+    const studio = document.getElementById('mus-studio');
+    const ledger = document.getElementById('mus-ledger');
+    const checks = Array.from(studio.querySelectorAll('input[type="checkbox"]'));
+    const progress = document.getElementById('mus-progress');
+    const checkStatus = document.getElementById('mus-check-status');
+    const selectedWork = document.getElementById('mus-selected-work');
+    const messages = {
+      tester: 'Expired lip tester: remove from display and record its replacement.',
+      damage: 'Damaged foundation: review photos and confirm the 2 reported units.',
+      restock: 'Compact powder: review the request for 6 units and add supplier notes.',
+      clean: 'Display mirrors: assigned staff can add photo proof and complete this task.'
+    };
+    function renderChecks() {
+      const done = checks.filter(input => input.checked).length;
+      progress.textContent = done + ' / ' + checks.length;
+      checkStatus.textContent = done === checks.length ? 'Opening checklist complete' : (checks.length - done) + ' items remaining';
+    }
+    function restore(saved) {
+      const value = saved && saved.privateContent;
+      if (!value) return;
+      if (Array.isArray(value.checked) && value.checked.length === checks.length) checks.forEach((input, i) => input.checked = Boolean(value.checked[i]));
+      if (messages[value.selected]) { selected = value.selected; selectedWork.textContent = messages[value.selected]; }
+      renderChecks();
+    }
+    let selected = '';
+    function save() {
+      if (window.openai && window.openai.setWidgetState) {
+        window.openai.setWidgetState({modelContent: null, privateContent: {checked: checks.map(input => input.checked), selected}}).catch(() => {});
+      }
+    }
+    checks.forEach(input => input.addEventListener('change', () => {renderChecks(); save();}));
+    ledger.querySelectorAll('[data-work]').forEach(button => button.addEventListener('click', () => {
+      selected = button.dataset.work;
+      selectedWork.textContent = messages[selected];
+      save();
+    }));
+    restore(window.openai && window.openai.widgetState);
+    window.addEventListener('openai:set_globals', event => { if (event.detail && event.detail.globals) restore(event.detail.globals.widgetState); });
+    if (globalThis.Tweak) {
+      const studioState = {radius: 8, accent: '#603a66'};
+      const tweak = new Tweak({container: studio, onChange: () => {
+        studio.querySelectorAll('.mus-panel, .mus-summary').forEach(panel => panel.style.borderRadius = studioState.radius + 'px');
+        studio.style.setProperty('--mus-accent', studioState.accent);
+        studio.style.setProperty('--mus-on-accent', '#ffffff');
+      }});
+      tweak.addSlider(studioState, 'radius', {label: 'Panel corners', min: 2, max: 14, unit: 'px'});
+      tweak.addColorPicker(studioState, 'accent', {label: 'Brand accent', reference: '--mus-accent'});
+      const ledgerState = {roomy: true};
+      const ledgerTweak = new Tweak({container: ledger, onChange: () => {
+        ledger.querySelectorAll('td').forEach(cell => cell.style.paddingBlock = ledgerState.roomy ? '18px' : '12px');
+      }});
+      ledgerTweak.addToggle(ledgerState, 'roomy', {label: 'Comfortable row spacing'});
+    }
+  })();
+</script>

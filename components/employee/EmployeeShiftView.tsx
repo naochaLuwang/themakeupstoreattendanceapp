@@ -2,34 +2,63 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { motion, AnimatePresence } from 'framer-motion';
+import WorkspaceDialog from '@/components/WorkspaceDialog';
+import SwipeToConfirm from '@/components/SwipeToConfirm';
+import { calculateDistance } from '@/lib/geofence';
+import { getClockInLocation } from '@/lib/attendance/location';
+import { getAttendanceDate } from '@/lib/attendance/date';
+import type { Database } from '@/lib/supabase/database.types';
 import {
     ChevronLeft, ChevronRight, CheckCircle2, Clock, X,
-    Navigation, Loader2, AlertCircle,
-    MapPin, Ban, RefreshCcw, ArrowRight, ArrowLeftRight, ShieldCheck, Timer, XCircle
+    Loader2, AlertCircle,
+    MapPin, Ban, RefreshCcw, ArrowLeftRight, XCircle
 } from 'lucide-react';
+
+type Store = Database['public']['Tables']['stores']['Row'];
+type ShiftPreset = Database['public']['Tables']['shift_presets']['Row'];
+type SwapRequest = Database['public']['Tables']['swap_requests']['Row'];
+type FormattedTime = { time: string; period: string };
+type CalendarDay = {
+    id?: string;
+    day: number | null;
+    active: boolean;
+    isLeave: boolean;
+    start: FormattedTime | null;
+    end: FormattedTime | null;
+    startRaw: string | null;
+    endRaw: string | null;
+    label: string | null;
+    fullDate: string;
+    request: SwapRequest | null;
+};
 
 export default function EmployeeShiftView({ userId }: { userId: string }) {
     const supabase = createClient();
     const [viewDate, setViewDate] = useState(new Date());
-    const [schedule, setSchedule] = useState<any[]>([]);
+    const [schedule, setSchedule] = useState<CalendarDay[]>([]);
     const [selectedDay, setSelectedDay] = useState<number>(new Date().getDate());
-    const [storeInfo, setStoreInfo] = useState<any>(null);
+    const [storeInfo, setStoreInfo] = useState<Store | null>(null);
     const [toast, setToast] = useState<{ msg: string; type: 'error' | 'success' } | null>(null);
 
     // Interchange & Request States
     const [isInterchangeModalOpen, setIsInterchangeModalOpen] = useState(false);
-    const [sourceDay, setSourceDay] = useState<any>(null);
-    const [targetDay, setTargetDay] = useState<any>(null);
-    const [shiftPresets, setShiftPresets] = useState<any[]>([]);
-    const [selectedNewShift, setSelectedNewShift] = useState<any>(null);
+    const [sourceDay, setSourceDay] = useState<CalendarDay | null>(null);
+    const [targetDay, setTargetDay] = useState<CalendarDay | null>(null);
+    const [shiftPresets, setShiftPresets] = useState<ShiftPreset[]>([]);
+    const [selectedNewShift, setSelectedNewShift] = useState<ShiftPreset | null>(null);
     const [cancellingRequestId, setCancellingRequestId] = useState<string | null>(null);
     const [interchangeMode, setInterchangeMode] = useState<'shift_type' | 'swap_date'>('shift_type');
     const [interchangeNote, setInterchangeNote] = useState('');
 
     // Attendance & Timer
     const [elapsedTime, setElapsedTime] = useState('00:00:00');
-    const [attendanceStatus, setAttendanceStatus] = useState<'idle' | 'loading' | 'active' | 'completed'>('idle');
+    const [attendanceStatus, setAttendanceStatus] = useState<'checking' | 'idle' | 'active' | 'completed'>('checking');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [attendanceMessage, setAttendanceMessage] = useState('');
+    const [attendanceError, setAttendanceError] = useState<string | null>(null);
+    const attendanceOperationRef = useRef(false);
+    const attendanceVersionRef = useRef(0);
+    const attendanceAbortRef = useRef<AbortController | null>(null);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     const currentMonth = viewDate.getMonth();
@@ -50,16 +79,6 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
         return { time: `${hours12}:${minutes.toString().padStart(2, '0')}`, period };
     };
 
-    const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-        const R = 6371e3;
-        const φ1 = lat1 * Math.PI / 180;
-        const φ2 = lat2 * Math.PI / 180;
-        const Δφ = (lat2 - lat1) * Math.PI / 180;
-        const Δλ = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-        return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
-    };
-
     const fetchEverything = useCallback(async () => {
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
         const firstDayIdx = new Date(currentYear, currentMonth, 1).getDay();
@@ -78,7 +97,10 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
         const requests = requestsRes.data || [];
         setShiftPresets(presetsRes.data || []);
 
-        const blanks = Array.from({ length: firstDayIdx }, () => ({ day: null }));
+        const blanks: CalendarDay[] = Array.from({ length: firstDayIdx }, () => ({
+            day: null, active: false, isLeave: false, start: null, end: null,
+            startRaw: null, endRaw: null, label: null, fullDate: '', request: null,
+        }));
         const days = Array.from({ length: daysInMonth }, (_, i) => {
             const dayNum = i + 1;
             const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
@@ -86,7 +108,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
             const shift = shifts.find(s => s.start_time.startsWith(dateStr));
             const leave = leaves.find(l => currentDate >= new Date(l.start_date) && currentDate <= new Date(l.end_date));
             const request = requests.find(r =>
-                (r.shift_id === shift?.id || r.message.includes(dateStr)) &&
+                (r.shift_id === shift?.id || r.message?.includes(dateStr)) &&
                 r.status === 'pending'
             );
 
@@ -102,7 +124,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                         return null;
                     }
                     return formatTo12H(timePart);
-                } catch (e) {
+                } catch {
                     return null;
                 }
             };
@@ -112,8 +134,8 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                 day: dayNum,
                 active: !!shift,
                 isLeave: !!leave,
-                start: extractLocalTime(shift?.start_time),
-                end: extractLocalTime(shift?.end_time),
+                start: extractLocalTime(shift?.start_time || undefined),
+                end: extractLocalTime(shift?.end_time || undefined),
                 startRaw: shift?.start_time ? shift.start_time.split('T')[1]?.substring(0, 5) : null,
                 endRaw: shift?.end_time ? shift.end_time.split('T')[1]?.substring(0, 5) : null,
                 label: leave ? 'LEAVE' : (shift?.shift_label || null),
@@ -125,12 +147,28 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
         setSchedule([...blanks, ...days]);
     }, [userId, currentMonth, currentYear, supabase]);
 
+    const startTimer = useCallback((startTimeISO: string) => {
+        if (timerRef.current) clearInterval(timerRef.current);
+        const updateCounter = () => {
+            const diff = Math.max(0, Date.now() - new Date(startTimeISO).getTime());
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            setElapsedTime(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
+        };
+        updateCounter();
+        timerRef.current = setInterval(updateCounter, 1000);
+    }, []);
+
     const init = useCallback(async () => {
-        const { data: profile } = await supabase.from('profiles').select('*, stores(*)').eq('id', userId).single();
+        if (attendanceOperationRef.current) return;
+        const version = ++attendanceVersionRef.current;
+        const { data: profile } = await supabase.from('profiles').select('stores(*)').eq('id', userId)
+            .single().overrideTypes<{ stores: Store | null }, { merge: false }>();
         if (profile?.stores) setStoreInfo(profile.stores);
 
-        // 1. Check for ANY active session 
-        const { data: activeRecord } = await supabase
+        // 1. Check for ANY active session
+        const { data: activeRecord, error: activeError } = await supabase
             .from('attendance')
             .select('*')
             .eq('employee_id', userId)
@@ -139,39 +177,61 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
             .limit(1)
             .maybeSingle();
 
+        if (version !== attendanceVersionRef.current || attendanceOperationRef.current) return;
+        if (activeError) {
+            setAttendanceError('Could not load your attendance. Check your connection and retry.');
+            setAttendanceStatus('checking');
+            return;
+        }
         if (activeRecord) {
+            setAttendanceError(null);
             setAttendanceStatus('active');
             startTimer(activeRecord.check_in);
             return;
         }
 
         // 2. If no active session, check if there was a completed session TODAY
-        const now = new Date();
-        const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-        const { data: completedToday } = await supabase
+        const today = getAttendanceDate();
+        const { data: completedToday, error: completedError } = await supabase
             .from('attendance')
             .select('*')
             .eq('employee_id', userId)
-            .gte('check_in', `${today}T00:00:00Z`)
+            .gte('check_in', `${today}T00:00:00+05:30`)
             .not('check_out', 'is', null)
             .limit(1)
             .maybeSingle();
 
+        if (version !== attendanceVersionRef.current || attendanceOperationRef.current) return;
+        if (completedError) {
+            setAttendanceError('Could not load your attendance. Check your connection and retry.');
+            setAttendanceStatus('checking');
+            return;
+        }
+        setAttendanceError(null);
         if (completedToday) {
             setAttendanceStatus('completed');
             if (timerRef.current) clearInterval(timerRef.current);
         } else {
             setAttendanceStatus('idle');
+            if (timerRef.current) clearInterval(timerRef.current);
         }
-    }, [userId, supabase]);
+    }, [userId, supabase, startTimer]);
 
     useEffect(() => { fetchEverything(); }, [fetchEverything]);
-    useEffect(() => { init(); return () => { if (timerRef.current) clearInterval(timerRef.current); }; }, [init]);
+    useEffect(() => {
+        void init();
+        return () => {
+            attendanceVersionRef.current += 1;
+            attendanceAbortRef.current?.abort();
+            if (timerRef.current) clearInterval(timerRef.current);
+        };
+    }, [init]);
 
     // REAL-TIME LISTENER
     useEffect(() => {
         const channel = supabase.channel('roster_sync_v2')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'shifts' }, () => fetchEverything())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'attendance', filter: `employee_id=eq.${userId}` }, () => { void init(); })
             .on('postgres_changes', { event: '*', schema: 'public', table: 'swap_requests', filter: `requestor_id=eq.${userId}` }, async (payload) => {
                 await fetchEverything();
                 if (payload.eventType === 'UPDATE' && payload.new.status === 'approved' && payload.new.message?.includes('OVERRIDE REQUEST')) {
@@ -182,56 +242,50 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
         return () => { supabase.removeChannel(channel); };
     }, [userId, supabase, fetchEverything, init]);
 
-    const startTimer = (startTimeISO: string) => {
-        if (timerRef.current) clearInterval(timerRef.current);
-        const updateCounter = () => {
-            const diff = new Date().getTime() - new Date(startTimeISO).getTime();
-            const h = Math.floor(diff / 3600000);
-            const m = Math.floor((diff % 3600000) / 60000);
-            const s = Math.floor((diff % 60000) / 1000);
-            setElapsedTime(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
-        };
-        updateCounter();
-        timerRef.current = setInterval(updateCounter, 1000);
-    };
-
     const handleClockIn = async () => {
-        if (attendanceStatus === 'loading') return;
-        const now = new Date();
-        const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        if (attendanceOperationRef.current || attendanceStatus !== 'idle') return;
+        const todayStr = getAttendanceDate();
+        setAttendanceError(null);
 
         if (!activeDayData || activeDayData.fullDate !== todayStr || !activeDayData.active) {
-            showToast("No scheduled shift found for today.");
+            setAttendanceError('No scheduled shift found for today.');
             return;
         }
-        if (!storeInfo?.lat || !storeInfo?.lng) {
-            showToast("Store location data missing.");
+        if (storeInfo?.lat == null || storeInfo?.lng == null) {
+            setAttendanceError('Store location is missing. Ask your manager to update it.');
             return;
         }
 
-        setAttendanceStatus('loading');
+        if (!navigator.onLine) {
+            setAttendanceError('You are offline. Connect to the internet, then swipe again.');
+            return;
+        }
+        attendanceOperationRef.current = true;
+        attendanceVersionRef.current += 1;
+        const controller = new AbortController();
+        attendanceAbortRef.current = controller;
+        setIsSubmitting(true);
+        setAttendanceMessage('Finding your location…');
 
         try {
-            const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(resolve, reject, {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                });
-            });
+            const pos = await getClockInLocation(
+                { lat: storeInfo.lat, lng: storeInfo.lng, radius_meters: storeInfo.radius_meters },
+                () => setAttendanceMessage('Refining your location…'),
+                controller.signal,
+            );
 
             const dist = calculateDistance(pos.coords.latitude, pos.coords.longitude, storeInfo.lat, storeInfo.lng);
             const radius = storeInfo.radius_meters || 100;
             if (dist > radius) {
-                setAttendanceStatus('idle');
-                showToast(`Too far (${Math.round(dist)}m). Required within ${radius}m.`);
+                setAttendanceError(`You are ${Math.round(dist)}m from the store. Move within ${radius}m, then swipe again.`);
                 return;
             }
 
-            // Using stable API route instead of Server Action
+            setAttendanceMessage('Saving clock-in…');
             const response = await fetch('/api/attendance/clock-in', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                signal: controller.signal,
                 body: JSON.stringify({
                     userId,
                     storeId: storeInfo.id,
@@ -244,30 +298,42 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
             const result = await response.json();
 
             if (response.ok && result.success) {
-                await init();
-                showToast("Clocked in successfully!", "success");
+                if (typeof result.data?.check_in !== 'string') throw new Error('Could not confirm your clock-in. Refresh your attendance before retrying.');
+                startTimer(result.data.check_in);
+                setAttendanceStatus('active');
+                showToast("Clocked in", "success");
             } else {
-                setAttendanceStatus('idle');
-                showToast(result.error || "Clock-in failed.");
+                setAttendanceError(result.error || 'Clock-in failed. Please swipe again.');
             }
-        } catch (err: any) {
-            console.error("Clock-in error:", err);
-            setAttendanceStatus('idle');
-            let msg = "Clock-in failed.";
-            if (err.code === 1) msg = "Location permission denied.";
-            else if (err.code === 2) msg = "Location unavailable.";
-            else if (err.code === 3) msg = "Location request timed out.";
-            showToast(msg);
+        } catch (error: unknown) {
+            if (controller.signal.aborted) return;
+            setAttendanceError(error instanceof Error && !(error instanceof TypeError)
+                ? error.message : 'Could not confirm clock-in. Check your connection and refresh attendance before retrying.');
+        } finally {
+            attendanceOperationRef.current = false;
+            setIsSubmitting(false);
+            setAttendanceMessage('');
         }
     };
 
     const handleClockOut = async () => {
-        if (attendanceStatus !== 'active') return;
-        setAttendanceStatus('loading');
+        if (attendanceOperationRef.current || attendanceStatus !== 'active') return;
+        setAttendanceError(null);
+        if (!navigator.onLine) {
+            setAttendanceError('You are offline. Connect to the internet, then swipe again.');
+            return;
+        }
+        attendanceOperationRef.current = true;
+        attendanceVersionRef.current += 1;
+        const controller = new AbortController();
+        attendanceAbortRef.current = controller;
+        setIsSubmitting(true);
+        setAttendanceMessage('Saving clock-out…');
         try {
             const response = await fetch('/api/attendance/clock-out', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                signal: controller.signal,
                 body: JSON.stringify({ userId })
             });
 
@@ -277,16 +343,17 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                 if (timerRef.current) clearInterval(timerRef.current);
                 setAttendanceStatus('completed');
                 showToast("Shift Ended", "success");
-                await init();
-                await fetchEverything();
+                void fetchEverything();
             } else {
-                setAttendanceStatus('active');
-                showToast(result.error || "Clock-out failed.");
+                setAttendanceError(result.error || 'Clock-out failed. Please swipe again.');
             }
-        } catch (err: any) {
-            console.error("Clock-out error:", err);
-            setAttendanceStatus('active');
-            showToast("Clock-out failed.");
+        } catch {
+            if (controller.signal.aborted) return;
+            setAttendanceError('Could not confirm clock-out. Check your connection and refresh attendance before retrying.');
+        } finally {
+            attendanceOperationRef.current = false;
+            setIsSubmitting(false);
+            setAttendanceMessage('');
         }
     };
 
@@ -310,18 +377,18 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
 
         if (interchangeMode === 'shift_type' && sourceDay?.active && selectedNewShift) {
             message = `Shift Change: Move from ${sourceDay.label} to ${selectedNewShift.label} for ${sourceDay.fullDate}`;
-            shiftIdToUpdate = sourceDay.id;
+            shiftIdToUpdate = sourceDay.id || null;
         }
         else if (interchangeMode === 'swap_date' && sourceDay && targetDay) {
             if (sourceDay.active && !targetDay.active) {
                 message = `Request day off on ${sourceDay.fullDate} (working day) and instead work on my off day ${targetDay.fullDate}.`;
-                shiftIdToUpdate = sourceDay.id;
+                shiftIdToUpdate = sourceDay.id || null;
             } else if (!sourceDay.active && targetDay.active) {
                 message = `Request to work on my off day ${targetDay.fullDate} and take ${sourceDay.fullDate} off instead.`;
-                shiftIdToUpdate = targetDay.id;
+                shiftIdToUpdate = targetDay.id || null;
             } else if (sourceDay.active && targetDay.active) {
                 message = `Swap my shift on ${sourceDay.fullDate} with shift on ${targetDay.fullDate}.`;
-                shiftIdToUpdate = sourceDay.id;
+                shiftIdToUpdate = sourceDay.id || null;
             } else {
                 showToast("Invalid swap: both days are off.", "error");
                 return;
@@ -360,7 +427,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
             } else {
                 showToast(result.error || "Submission failed.");
             }
-        } catch (err) {
+        } catch {
             showToast("Submission failed.");
         }
     };
@@ -377,7 +444,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
         setCancellingRequestId(null);
     };
 
-    const getTheme = (d: any) => {
+    const getTheme = (d: CalendarDay) => {
         if (!d.day) return { bg: 'bg-transparent', text: 'text-transparent' };
         if (d.isLeave) return { bg: 'bg-amber-50', text: 'text-amber-700', label: 'Leave', dot: 'bg-amber-400' };
         if (!d.active) return { bg: 'bg-rose-50/50', text: 'text-rose-400', label: 'Off', dot: 'bg-rose-400' };
@@ -390,41 +457,41 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
     };
 
     const activeDayData = schedule.find(d => d.day === selectedDay);
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = getAttendanceDate();
 
     return (
-        <div className="max-w-auto mx-auto space-y-8 font-sans pb-20">
-            <AnimatePresence>{toast && (
-                <motion.div initial={{ y: -50 }} animate={{ y: 20 }} exit={{ y: -50 }} className={`fixed top-0 left-6 right-6 z-[200] p-4 rounded-2xl shadow-xl border bg-white flex items-center gap-3 ${toast.type === 'error' ? 'text-rose-600 border-rose-100' : 'text-emerald-600 border-emerald-100'}`}>
+        <div className="space-y-6">
+            <>{toast && (
+                <div role="status" aria-live="polite" className={`employee-toast flex items-center gap-3 ${toast.type === 'error' ? 'text-rose-600 border-rose-100' : 'text-emerald-600 border-emerald-100'}`}>
                     {toast.type === 'error' ? <AlertCircle size={18} /> : <CheckCircle2 size={18} />}
-                    <span className="text-[10px] font-black uppercase tracking-widest">{toast.msg}</span>
-                </motion.div>
-            )}</AnimatePresence>
-
-            <header className="flex justify-between items-center px-2">
-                <div className="space-y-1">
-                    <h2 className="text-3xl font-medium text-slate-900 tracking-tight">{new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(viewDate)}</h2>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1"><MapPin size={10} /> {storeInfo?.name || 'Roster'}</p>
+                    <span className="text-sm font-medium tracking-normal">{toast.msg}</span>
                 </div>
-                <div className="flex bg-slate-50 rounded-full p-1 border border-slate-100">
-                    <button onClick={() => setViewDate(new Date(currentYear, currentMonth - 1))} className="p-2 hover:bg-white rounded-full transition-all shadow-sm"><ChevronLeft size={16} /></button>
-                    <button onClick={() => setViewDate(new Date(currentYear, currentMonth + 1))} className="p-2 hover:bg-white rounded-full transition-all shadow-sm"><ChevronRight size={16} /></button>
+            )}</>
+
+            <div className="employee-schedule-layout">
+            <section className="employee-calendar-panel" aria-label="Shift calendar">
+            <header className="flex justify-between items-center gap-3 mb-6">
+                <div className="space-y-1">
+                    <h2 className="text-xl font-medium text-slate-900">{new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(viewDate)}</h2>
+                    <p className="text-sm font-medium text-slate-500 tracking-normal flex items-center gap-1"><MapPin size={10} /> {storeInfo?.name || 'Roster'}</p>
+                </div>
+                <div className="flex shrink-0 gap-1">
+                    <button aria-label="Previous month" onClick={() => setViewDate(new Date(currentYear, currentMonth - 1))} className="employee-icon-button"><ChevronLeft size={16} /></button>
+                    <button aria-label="Next month" onClick={() => setViewDate(new Date(currentYear, currentMonth + 1))} className="employee-icon-button"><ChevronRight size={16} /></button>
                 </div>
             </header>
 
             <div className="grid grid-cols-7 gap-1">
-                {weekDays.map((day, i) => <div key={i} className="text-center text-[9px] font-black text-slate-300 pb-2 uppercase tracking-widest">{day}</div>)}
+                {weekDays.map((day, i) => <div key={i} className="text-center text-xs font-medium text-slate-500 pb-2 tracking-normal">{day}</div>)}
                 {schedule.map((d, i) => {
                     const isSelected = selectedDay === d.day;
-                    const theme = getTheme(d);
                     const hasRequest = !!d.request;
                     const isToday = d.fullDate === todayStr;
                     return (
                         <button key={i} disabled={!d.day} onClick={() => d.day && setSelectedDay(d.day)}
-                            className={`aspect-square relative flex items-center justify-center rounded-xl text-[11px] font-bold transition-all
-                                ${d.day ? theme.bg : ''} ${d.day ? theme.text : ''}
-                                ${isSelected ? 'ring-2 ring-slate-900 ring-offset-2 scale-90 z-10 !bg-slate-900 !text-white' : 'hover:scale-95'}
-                                ${isToday && !isSelected ? 'ring-1 ring-blue-400 ring-offset-1' : ''}`}>
+                            aria-label={d.day ? `${d.fullDate}, ${d.isLeave ? 'Leave' : d.active ? d.label || 'Working day' : 'Day off'}${hasRequest ? ', change requested' : ''}` : undefined}
+                            aria-pressed={d.day ? isSelected : undefined} aria-current={isToday ? 'date' : undefined}
+                            className={`employee-calendar-day relative ${d.isLeave ? 'employee-calendar-day-leave' : d.active ? 'employee-calendar-day-work' : 'employee-calendar-day-off'}`}>
                             {d.day}
                             {hasRequest && !isSelected && <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-blue-500 rounded-full border border-white shadow-sm" />}
                         </button>
@@ -432,76 +499,79 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                 })}
             </div>
 
-            <div className="relative px-2">
-                <AnimatePresence mode="wait">
+            <div className="employee-calendar-legend" aria-label="Calendar legend">
+                <span><i className="bg-emerald-500" />Working</span>
+                <span><i className="bg-slate-200" />Off</span>
+                <span><i className="bg-amber-500" />Leave</span>
+            </div>
+            </section>
+            <section aria-label="Selected shift" className="min-w-0 space-y-4">
+                <>
                     {activeDayData?.request ? (
-                        <motion.div key="request-status" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-slate-900 text-white rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
-                            <div className="absolute -right-4 -top-4 opacity-10 rotate-12"><RefreshCcw size={120} /></div>
+                        <div key="request-status" className="bg-white border border-slate-200 rounded-xl p-5 relative overflow-hidden">
                             <div className="relative z-10 space-y-6">
                                 <div className="flex justify-between items-center">
                                     <div className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 rounded-full">
-                                        <span className="text-[8px] font-black uppercase tracking-widest text-blue-400">Request Sent</span>
+                                        <span className="text-xs font-medium tracking-normal text-blue-400">Request sent</span>
                                     </div>
-                                    <span className="px-3 py-1 rounded-full text-[8px] font-black uppercase border bg-amber-500/20 border-amber-500/30 text-amber-400">Awaiting Admin</span>
+                                    <span className="px-3 py-1 rounded-full text-xs font-medium border bg-amber-500/20 border-amber-500/30 text-amber-400">Awaiting approval</span>
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Request Details</p>
-                                    <p className="text-sm font-medium leading-relaxed italic text-slate-200">"{activeDayData.request.message}"</p>
+                                    <p className="text-sm font-medium text-slate-500 tracking-normal leading-none">Request details</p>
+                                    <p className="text-sm font-medium leading-relaxed text-slate-200">&ldquo;{activeDayData.request.message}&rdquo;</p>
                                 </div>
                                 <div className="pt-4 border-t border-white/10 flex items-center justify-between">
                                     <div className="flex items-center gap-2 text-slate-500">
                                         <Clock size={12} />
-                                        <p className="text-[8px] font-black uppercase">Sent: {new Date(activeDayData.request.created_at).toLocaleDateString()}</p>
+                                        <p className="text-xs font-medium">Sent: {activeDayData.request.created_at ? new Date(activeDayData.request.created_at).toLocaleDateString() : '—'}</p>
                                     </div>
                                     <button
-                                        onClick={() => handleCancelRequest(activeDayData.request.id)}
+                                        onClick={() => { if (activeDayData.request) void handleCancelRequest(activeDayData.request.id); }}
                                         disabled={cancellingRequestId === activeDayData.request.id}
-                                        className="flex items-center gap-2 px-4 py-2 bg-rose-500/20 border border-rose-500/30 rounded-full text-rose-400 hover:bg-rose-500/30 transition-all active:scale-95"
+                                        className="flex items-center gap-2 px-4 py-2 bg-rose-500/20 border border-rose-500/30 rounded-full text-rose-400 hover:bg-rose-500/30 transition-colors"
                                     >
                                         {cancellingRequestId === activeDayData.request.id ? (
                                             <Loader2 size={12} className="animate-spin" />
                                         ) : (
                                             <XCircle size={12} />
                                         )}
-                                        <span className="text-[8px] font-black uppercase tracking-widest">Cancel</span>
+                                        <span className="text-xs font-medium tracking-normal">Cancel</span>
                                     </button>
                                 </div>
                             </div>
-                        </motion.div>
+                        </div>
                     ) : activeDayData?.day ? (
-                        <motion.div key="shift-detail" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-                            <div className={`border rounded-[2.5rem] p-8 shadow-sm ${!activeDayData.active ? 'bg-rose-50 border-rose-100' : 'bg-white border-slate-100'}`}>
+                        <div key="shift-detail" className="space-y-4">
+                            <div className={`border rounded-xl p-5 ${!activeDayData.active ? 'bg-rose-50 border-rose-100' : 'bg-white border-slate-100'}`}>
                                 <div className="space-y-8">
                                     <div className="flex justify-between items-start">
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Daily Schedule</p>
+                                            <p className="text-sm font-medium text-slate-500 tracking-normal">Selected day</p>
                                             <div className="flex items-center gap-2">
                                                 <span className={`w-2 h-2 rounded-full ${getTheme(activeDayData).dot}`} />
-                                                <h4 className={`text-sm font-black italic uppercase ${!activeDayData.active ? 'text-rose-600' : 'text-slate-900'}`}>{getTheme(activeDayData).label}</h4>
+                                                <h4 className={`text-sm font-medium   ${!activeDayData.active ? 'text-rose-600' : 'text-slate-900'}`}>{getTheme(activeDayData).label}</h4>
                                             </div>
                                         </div>
                                         {attendanceStatus === 'active' && activeDayData.active && (
                                             <div className="flex items-center gap-2 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 shadow-sm">
-                                                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                                                <span className="text-[10px] font-black text-emerald-600 font-mono">{elapsedTime}</span>
+                                                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                                                <span className="text-sm font-medium text-emerald-600 font-mono">{elapsedTime}</span>
                                             </div>
                                         )}
                                     </div>
                                     {activeDayData.active ? (
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-2">Shift Timing</p>
-                                            <div className="flex items-baseline gap-2">
-                                                <span className="text-4xl font-light tracking-tighter text-slate-900">{activeDayData.start.time}</span>
-                                                <span className="text-[10px] font-black text-slate-300 uppercase">{activeDayData.start.period}</span>
-                                                <span className="text-slate-100 text-2xl mx-1">—</span>
-                                                <span className="text-4xl font-light tracking-tighter text-slate-900">{activeDayData.end.time}</span>
-                                                <span className="text-[10px] font-black text-slate-300 uppercase">{activeDayData.end.period}</span>
+                                            <p className="text-sm font-medium text-slate-500 tracking-normal leading-none mb-2">Shift time</p>
+                                            <div className="employee-shift-time">
+                                                <span>{activeDayData.start?.time || '—'}<small>{activeDayData.start?.period}</small></span>
+                                                <span aria-hidden="true" className="text-slate-500">–</span><span className="sr-only">to</span>
+                                                <span>{activeDayData.end?.time || '—'}<small>{activeDayData.end?.period}</small></span>
                                             </div>
                                         </div>
                                     ) : (
                                         <div className="flex flex-col items-center py-4 space-y-3">
-                                            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm text-rose-400"><Ban size={24} /></div>
-                                            <p className="text-[10px] font-bold text-rose-700/60 uppercase tracking-widest">No Work Scheduled</p>
+                                            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm text-rose-400"><Ban size={24} /></div>
+                                            <p className="text-sm font-medium text-rose-700/60 tracking-normal">No shift scheduled</p>
                                         </div>
                                     )}
 
@@ -514,94 +584,111 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                                                 setInterchangeNote('');
                                                 setInterchangeMode(activeDayData.active ? 'shift_type' : 'swap_date');
                                                 setIsInterchangeModalOpen(true);
-                                            }} className={`text-[9px] font-black uppercase tracking-widest flex items-center gap-2 px-6 py-3 rounded-full border transition-all active:scale-95
-                                                ${!activeDayData.active
-                                                    ? 'bg-white text-rose-600 border-rose-100 hover:bg-rose-50'
-                                                    : 'bg-slate-900 text-white border-slate-900 shadow-lg hover:bg-slate-800'}`}>
-                                                <RefreshCcw size={12} /> Request Change
+                                            }} className="text-sm font-medium flex items-center gap-2 px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition-colors">
+                                                <RefreshCcw size={12} /> Request a change
                                             </button>
                                         </div>
                                     )}
                                 </div>
                             </div>
 
-                            {activeDayData.active && activeDayData.fullDate === todayStr && (
-                                <div className="space-y-4">
-                                    <button
-                                        onClick={attendanceStatus === 'active' ? handleClockOut : handleClockIn}
-                                        disabled={attendanceStatus === 'loading' || attendanceStatus === 'completed'}
-                                        className={`w-full py-6 rounded-[2rem] flex items-center justify-center gap-3 border transition-all active:scale-95
-                                            ${attendanceStatus === 'active' ? 'bg-rose-500 border-rose-400 text-white shadow-lg'
-                                                : attendanceStatus === 'completed' ? 'bg-slate-100 border-slate-200 text-slate-400 opacity-50'
-                                                    : 'bg-slate-900 border-slate-800 text-white shadow-xl shadow-slate-200'}`}>
-                                        {attendanceStatus === 'loading' ? <Loader2 className="animate-spin" size={18} /> : attendanceStatus === 'completed' ? <CheckCircle2 size={18} /> : <Navigation size={18} />}
-                                        <span className="text-[11px] font-black uppercase tracking-[0.2em]">{attendanceStatus === 'active' ? 'End Shift' : attendanceStatus === 'completed' ? 'Shift Locked' : 'Start Shift'}</span>
-                                    </button>
-                                    {attendanceStatus === 'completed' && (
-                                        <button onClick={handleRequestReEntry} className="w-full text-center text-[10px] font-bold text-slate-400 hover:text-rose-500 transition-colors uppercase tracking-widest underline decoration-dotted underline-offset-4">
-                                            Clocked out by accident? Request Re-Entry
-                                        </button>
-                                    )}
-                                </div>
-                            )}
-                        </motion.div>
+                        </div>
                     ) : null}
-                </AnimatePresence>
+                </>
+                {(attendanceStatus === 'active' || (activeDayData?.active && activeDayData.fullDate === todayStr)) && (
+                    <div className="space-y-4" aria-label="Attendance">
+                        {attendanceStatus === 'completed' ? (
+                            <>
+                                <p role="status" className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-100 p-5 text-slate-600">
+                                    <CheckCircle2 size={18} aria-hidden="true" /> Shift completed
+                                </p>
+                                <button onClick={handleRequestReEntry} className="w-full text-center text-sm font-medium text-slate-500 hover:text-rose-500 underline decoration-dotted underline-offset-4">
+                                    Clocked out by accident? Request re-entry
+                                </button>
+                            </>
+                        ) : attendanceStatus === 'checking' ? (
+                            <p role="status" className="flex items-center gap-2 text-sm text-slate-500">
+                                {attendanceError ? 'Attendance could not be loaded.' : <><Loader2 size={16} className="animate-spin" aria-hidden="true" /> Checking attendance…</>}
+                            </p>
+                        ) : (
+                            <>
+                                <SwipeToConfirm key={attendanceStatus}
+                                    label={attendanceStatus === 'active' ? 'Swipe to clock out' : 'Swipe to clock in'}
+                                    variant={attendanceStatus === 'active' ? 'end' : 'start'}
+                                    busy={isSubmitting} busyLabel={attendanceMessage || 'Saving attendance…'}
+                                    onConfirm={attendanceStatus === 'active' ? handleClockOut : handleClockIn} />
+                                <p className="text-xs text-slate-500">
+                                    {attendanceStatus === 'active' ? 'You are clocked in. Location is not required to clock out.' : 'Your location will be checked after you swipe.'}
+                                </p>
+                            </>
+                        )}
+                        {attendanceError && (
+                            <div role="alert" className="rounded-lg border border-rose-100 bg-rose-50 p-4 text-sm text-rose-700">
+                                <p>{attendanceError}</p>
+                                <button type="button" disabled={isSubmitting} className="mt-2 min-h-11 underline underline-offset-4"
+                                    onClick={() => { setAttendanceError(null); setAttendanceStatus('checking'); void init(); }}>
+                                    Refresh attendance
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </section>
             </div>
 
-            <AnimatePresence>
-                {isInterchangeModalOpen && sourceDay && (
-                    <div className="fixed inset-0 z-[100] flex items-end justify-center px-4">
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsInterchangeModalOpen(false)} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" />
-                        <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} className="relative w-full max-w-md bg-white rounded-t-[3rem] p-8 pb-12 overflow-hidden shadow-2xl">
-                            <div className="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-6" />
+            <>
+                {sourceDay && (
+                    <WorkspaceDialog open={isInterchangeModalOpen} onClose={() => setIsInterchangeModalOpen(false)} labelledBy="shift-change-title">
                             <div className="space-y-6">
-                                <div className="text-center space-y-1">
-                                    <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Request Change</h3>
-                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Admin approval required</p>
+                                <div className="flex items-start justify-between gap-4">
+                                    <div>
+                                        <h3 id="shift-change-title" className="text-xl font-medium text-slate-900">Request a change</h3>
+                                        <p className="text-sm text-slate-500 mt-1">Admin approval required</p>
+                                    </div>
+                                    <button type="button" onClick={() => setIsInterchangeModalOpen(false)} aria-label="Close shift change" className="employee-icon-button"><X size={20} /></button>
                                 </div>
-                                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
-                                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-2">Current</p>
+                                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                                    <p className="text-xs font-medium text-slate-500 tracking-normal mb-2">Current</p>
                                     <div className="flex items-center gap-3">
                                         <span className={`w-2.5 h-2.5 rounded-full ${getTheme(sourceDay).dot}`} />
                                         <div>
-                                            <p className="text-sm font-bold text-slate-900">{new Date(sourceDay.fullDate).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
-                                            <p className="text-[10px] text-slate-400 font-bold">{getTheme(sourceDay).label} {sourceDay.active && sourceDay.start ? `• ${sourceDay.start.time} ${sourceDay.start.period}` : ''}</p>
+                                            <p className="text-sm font-medium text-slate-900">{new Date(sourceDay.fullDate).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
+                                            <p className="text-sm text-slate-500 font-medium">{getTheme(sourceDay).label} {sourceDay.active && sourceDay.start ? `• ${sourceDay.start.time} ${sourceDay.start.period}` : ''}</p>
                                         </div>
                                     </div>
                                 </div>
                                 {sourceDay.active && (
-                                    <div className="flex bg-slate-100 p-1 rounded-2xl">
-                                        <button onClick={() => { setInterchangeMode('shift_type'); setTargetDay(null); setSelectedNewShift(null); }} className={`flex-1 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${interchangeMode === 'shift_type' ? 'bg-white text-slate-900 shadow-md' : 'text-slate-400'}`}>
-                                            <RefreshCcw size={12} /> Change Shift
+                                    <div className="flex bg-slate-100 p-1 rounded-xl">
+                                        <button onClick={() => { setInterchangeMode('shift_type'); setTargetDay(null); setSelectedNewShift(null); }} className={`flex-1 py-3 rounded-xl text-xs font-medium  tracking-normal transition-colors flex items-center justify-center gap-2 ${interchangeMode === 'shift_type' ? 'bg-white text-slate-900 ' : 'text-slate-500'}`}>
+                                            <RefreshCcw size={12} /> Change shift
                                         </button>
-                                        <button onClick={() => { setInterchangeMode('swap_date'); setSelectedNewShift(null); }} className={`flex-1 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${interchangeMode === 'swap_date' ? 'bg-white text-slate-900 shadow-md' : 'text-slate-400'}`}>
-                                            <ArrowLeftRight size={12} /> Swap Date
+                                        <button onClick={() => { setInterchangeMode('swap_date'); setSelectedNewShift(null); }} className={`flex-1 py-3 rounded-xl text-xs font-medium  tracking-normal transition-colors flex items-center justify-center gap-2 ${interchangeMode === 'swap_date' ? 'bg-white text-slate-900 ' : 'text-slate-500'}`}>
+                                            <ArrowLeftRight size={12} /> Swap date
                                         </button>
                                     </div>
                                 )}
                                 {interchangeMode === 'shift_type' && sourceDay.active && (
                                     <div className="space-y-4">
-                                        <p className="text-[9px] font-black text-slate-400 uppercase text-center tracking-widest">Select new shift type</p>
+                                        <p className="text-xs font-medium text-slate-500 text-center tracking-normal">Select new shift type</p>
                                         <div className="flex gap-3 justify-center flex-wrap">
                                             {shiftPresets.filter(p => p.label !== sourceDay.label).map(preset => (
-                                                <button key={preset.id} onClick={() => setSelectedNewShift(preset)} className={`px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-wider border-2 transition-all ${selectedNewShift?.id === preset.id ? 'bg-blue-600 border-blue-600 text-white shadow-lg scale-105' : 'bg-white border-slate-100 text-slate-500 hover:border-blue-200 hover:text-blue-600'}`}>
+                                                <button key={preset.id} onClick={() => setSelectedNewShift(preset)} className={`px-6 py-4 rounded-xl text-sm font-medium  tracking-normal border transition-colors ${selectedNewShift?.id === preset.id ? 'bg-slate-900 border-slate-900 text-white ' : 'bg-white border-slate-100 text-slate-500 hover:border-blue-200 hover:text-blue-600'}`}>
                                                     {preset.label}
                                                 </button>
                                             ))}
                                         </div>
                                         {selectedNewShift && (
-                                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
-                                                <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest mb-2">Change To</p>
-                                                <p className="text-sm font-bold text-slate-900">{selectedNewShift.label}</p>
-                                                <p className="text-[10px] text-slate-500 font-bold">on {new Date(sourceDay.fullDate).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
-                                            </motion.div>
+                                            <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                                                <p className="text-xs font-medium text-blue-600 tracking-normal mb-2">Change To</p>
+                                                <p className="text-sm font-medium text-slate-900">{selectedNewShift.label}</p>
+                                                <p className="text-sm text-slate-500 font-medium">on {new Date(sourceDay.fullDate).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
+                                            </div>
                                         )}
                                     </div>
                                 )}
                                 {interchangeMode === 'swap_date' && (
                                     <div className="space-y-4">
-                                        <p className="text-[9px] font-black text-slate-400 uppercase text-center tracking-widest">
+                                        <p className="text-xs font-medium text-slate-500 text-center tracking-normal">
                                             {sourceDay.active ? 'Select a date to swap with (working or off day)' : 'Select a working day to swap with'}
                                         </p>
                                         <div className="grid grid-cols-5 gap-2 max-h-36 overflow-y-auto p-1 custom-scrollbar">
@@ -613,42 +700,41 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                                             }).map(d => {
                                                 const dTheme = getTheme(d);
                                                 return (
-                                                    <button key={d.day} onClick={() => { setTargetDay(d); setSelectedNewShift(null); }} className={`aspect-square rounded-xl text-[10px] font-black border-2 transition-all flex flex-col items-center justify-center gap-0.5 ${targetDay?.day === d.day ? 'bg-slate-900 border-slate-900 text-white shadow-xl scale-95' : `bg-white border-slate-100 hover:border-slate-300 ${dTheme.text}`}`}>
+                                                    <button key={d.day} onClick={() => { setTargetDay(d); setSelectedNewShift(null); }} className={`aspect-square rounded-xl text-sm font-medium border transition-colors flex flex-col items-center justify-center gap-0.5 ${targetDay?.day === d.day ? 'bg-slate-900 border-slate-900 text-white ' : `bg-white border-slate-100 hover:border-slate-300 ${dTheme.text}`}`}>
                                                         <span>{d.day}</span>
-                                                        <span className={`text-[6px] uppercase ${targetDay?.day === d.day ? 'text-white/60' : 'opacity-50'}`}>{d.active ? 'WORK' : 'OFF'}</span>
+                                                        <span className={`text-xs  ${targetDay?.day === d.day ? 'text-white/60' : ''}`}>{d.active ? 'Work' : 'Off'}</span>
                                                     </button>
                                                 );
                                             })}
                                         </div>
                                         {targetDay && (
-                                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
-                                                <p className="text-[8px] font-black text-emerald-600 uppercase tracking-widest mb-2">Swap To</p>
+                                            <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
+                                                <p className="text-xs font-medium text-emerald-600 tracking-normal mb-2">Swap To</p>
                                                 <div className="flex items-center gap-3 mb-2">
                                                     <span className={`w-2.5 h-2.5 rounded-full ${getTheme(targetDay).dot}`} />
                                                     <div>
-                                                        <p className="text-sm font-bold text-slate-900">{new Date(targetDay.fullDate).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
-                                                        <p className="text-[10px] text-slate-500 font-bold">{getTheme(targetDay).label}{targetDay.active && targetDay.start ? ` • ${targetDay.start.time} ${targetDay.start.period}` : ''}</p>
+                                                        <p className="text-sm font-medium text-slate-900">{new Date(targetDay.fullDate).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
+                                                        <p className="text-sm text-slate-500 font-medium">{getTheme(targetDay).label}{targetDay.active && targetDay.start ? ` • ${targetDay.start.time} ${targetDay.start.period}` : ''}</p>
                                                     </div>
                                                 </div>
-                                                <div className="text-[9px] font-medium text-slate-600 bg-white p-2 rounded-xl">
-                                                    {sourceDay.active && !targetDay.active ? <>🔁 You will have <strong>{sourceDay.fullDate}</strong> off and work on <strong>{targetDay.fullDate}</strong> instead.</> : !sourceDay.active && targetDay.active ? <>🔁 You will work on <strong>{targetDay.fullDate}</strong> and take <strong>{sourceDay.fullDate}</strong> off.</> : sourceDay.active && targetDay.active ? <>🔄 Swap your shift from <strong>{sourceDay.fullDate}</strong> to <strong>{targetDay.fullDate}</strong>.</> : <>⚠️ Both days are off – no change possible.</>}
+                                                <div className="text-xs font-medium text-slate-600 bg-white p-2 rounded-xl">
+                                                    {sourceDay.active && !targetDay.active ? <>You will have <strong>{sourceDay.fullDate}</strong> off and work on <strong>{targetDay.fullDate}</strong> instead.</> : !sourceDay.active && targetDay.active ? <>You will work on <strong>{targetDay.fullDate}</strong> and take <strong>{sourceDay.fullDate}</strong> off.</> : sourceDay.active && targetDay.active ? <>Swap your shift from <strong>{sourceDay.fullDate}</strong> to <strong>{targetDay.fullDate}</strong>.</> : <>Both days are off – no change possible.</>}
                                                 </div>
-                                            </motion.div>
+                                            </div>
                                         )}
                                     </div>
                                 )}
                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-2">Reason for Change (Optional)</label>
-                                    <textarea value={interchangeNote} onChange={(e) => setInterchangeNote(e.target.value)} placeholder="E.g., Doctor appointment, Family emergency..." className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 text-xs font-medium text-slate-700 placeholder:text-slate-300 outline-none focus:border-slate-300 focus:bg-white transition-all resize-none h-20" />
+                                    <label htmlFor="shift-change-reason" className="text-xs font-medium text-slate-500">Reason for change (optional)</label>
+                                    <textarea id="shift-change-reason" value={interchangeNote} onChange={(e) => setInterchangeNote(e.target.value)} placeholder="E.g., Doctor appointment, Family emergency..." className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs font-medium text-slate-700 placeholder:text-slate-500 outline-none focus:border-slate-300 focus:bg-white transition-colors resize-none h-20" />
                                 </div>
-                                <button disabled={(interchangeMode === 'shift_type' && !selectedNewShift) || (interchangeMode === 'swap_date' && !targetDay)} onClick={handleInterchangeRequest} className="w-full bg-slate-900 text-white py-5 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl active:scale-95 disabled:opacity-20 transition-all">
-                                    Submit to Admin
+                                <button disabled={(interchangeMode === 'shift_type' && !selectedNewShift) || (interchangeMode === 'swap_date' && !targetDay)} onClick={handleInterchangeRequest} className="w-full bg-slate-900 text-white py-5 rounded-xl text-sm font-medium tracking-normal disabled:opacity-20 transition-colors">
+                                    Send request
                                 </button>
                             </div>
-                        </motion.div>
-                    </div>
+                    </WorkspaceDialog>
                 )}
-            </AnimatePresence>
+            </>
         </div>
     );
 }

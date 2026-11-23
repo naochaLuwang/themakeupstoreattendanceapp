@@ -1,7 +1,7 @@
 // app/(dashboard)/admin/page.tsx
 import { Suspense } from 'react';
 import LiveStatusList from '@/components/admin/LiveStatusList';
-import HomeSkeleton from '@/components/HomeSkeleton';
+import AdminPageSkeleton from '@/components/admin/AdminPageSkeleton';
 import AdminPushManager from '@/components/admin/AdminPushManager';
 import { createClient } from '@/lib/supabase/server';
 
@@ -10,22 +10,23 @@ export default async function AdminLivePage() {
     const { data: { user } } = await supabase.auth.getUser();
 
     return (
-        <div className="max-w-6xl space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-32">
-            <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div className="space-y-8">
+            <header className="flex flex-col xl:flex-row justify-between items-start gap-6">
                 <div>
-                    <h1 className="text-5xl font-black text-slate-900 tracking-tighter">Live Presence</h1>
-                    <p className="text-sm font-bold text-slate-400 uppercase tracking-[0.2em] mt-2">Active Floor Personnel</p>
+                    <p className="text-xs text-slate-500 mb-3">The Makeup Store · Wangkhei</p>
+                    <h1 className="text-3xl font-medium text-slate-900">Live presence</h1>
+                    <p className="text-sm text-slate-500 mt-2">Who’s on the floor, their shifts, and attendance updates</p>
                 </div>
-                
+
                 {user && (
-                    <div className="w-full md:w-auto">
+                    <div className="w-full xl:w-80 shrink-0">
                         <AdminPushManager userId={user.id} />
                     </div>
                 )}
             </header>
 
-            <div className="bg-white border border-slate-100 rounded-[3.5rem] p-10 min-h-[600px] shadow-2xl shadow-slate-200/50">
-                <Suspense fallback={<HomeSkeleton />}>
+            <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-6">
+                <Suspense fallback={<AdminPageSkeleton />}>
                     <LiveStatusList />
                 </Suspense>
             </div>

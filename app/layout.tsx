@@ -2,7 +2,7 @@ import InstallPWA from "@/components/InstallPWA";
 import "./globals.css";
 import NextTopLoader from 'nextjs-toploader';
 import { Metadata } from "next";
-import { Toaster } from 'sonner';
+import ThemeProvider from '@/components/ThemeProvider';
 
 export const metadata: Metadata = {
   title: {
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: "%s | THE MAKEUP STORE WANGKHEI",
   },
   description: "Attendance tracking app for THE MAKEUP STORE WANGKHEI employees.",
-  // manifest: "/manifest.webmanifest",
+  manifest: "/manifest.webmanifest",
   other: {
     "mobile-web-app-capable": "yes",
   },
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: `
           window.selfHeal = async () => {
@@ -76,22 +76,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         ` }} />
       </head>
       <body className="antialiased">
-        <NextTopLoader
-          color="#0f172a" // Matches your slate-900 color
-          initialPosition={0.08}
-          crawlSpeed={200}
-          height={3}
-          crawl={true}
-          showSpinner={false}
-          easing="ease"
-          speed={200}
-          shadow="0 0 10px #0f172a,0 0 5px #0f172a"
-        />
-        <main>
-          {children}
-        </main>
-        <Toaster position="top-center" richColors />
-        <InstallPWA />
+        <ThemeProvider>
+          <NextTopLoader
+            color="#0f172a" // Matches your slate-900 color
+            initialPosition={0.08}
+            crawlSpeed={200}
+            height={3}
+            crawl={true}
+            showSpinner={false}
+            easing="ease"
+            speed={200}
+            shadow="0 0 10px #0f172a,0 0 5px #0f172a"
+          />
+          <main>
+            {children}
+          </main>
+          <InstallPWA />
+        </ThemeProvider>
       </body>
     </html>
   );

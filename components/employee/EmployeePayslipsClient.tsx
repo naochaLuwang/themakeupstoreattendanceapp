@@ -23,7 +23,7 @@ export default function EmployeePayslipsClient({ history }: { history: any[] }) 
             doc.setFontSize(22);
             doc.setFont("times", "bold");
             doc.text("THE MAKEUP STORE WANGKHEI", 105, imgElement ? 45 : 25, { align: "center" });
-            
+
             doc.setFontSize(10);
             doc.setFont("helvetica", "normal");
             doc.setTextColor(100);
@@ -83,34 +83,34 @@ export default function EmployeePayslipsClient({ history }: { history: any[] }) 
 
     if (history.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center p-12 bg-white rounded-[2rem] border border-black/5 mt-4 text-center">
+            <div className="flex flex-col items-center justify-center p-12 bg-white rounded-xl border border-black/5 mt-4 text-center">
                 <CalendarDays size={32} className="text-black/20 mb-4" />
-                <p className="text-sm font-black text-slate-800 tracking-tighter uppercase">No Records Found</p>
-                <p className="text-[10px] font-bold text-slate-400 mt-2">Your historical payslips will securely appear here once generated.</p>
+                <p className="text-sm font-medium text-slate-800 tracking-normal">No payslips yet</p>
+                <p className="text-sm font-medium text-slate-500 mt-2">Your payslips will appear here once they are generated.</p>
             </div>
         );
     }
 
     return (
-        <div className="grid grid-cols-1 gap-4 mt-4">
+        <div className="grid grid-cols-1 gap-4">
             {history.map((rec) => (
-                <div key={rec.id} className="bg-white p-6 rounded-[2rem] border border-black/5 flex items-center justify-between shadow-sm">
+                <div key={rec.id} className="bg-white p-6 rounded-xl border border-black/5 flex items-center justify-between gap-4">
                     <div>
-                        <p className="text-lg font-black text-slate-900 tracking-tighter">
+                        <p className="text-lg font-medium text-slate-900 tracking-normal">
                             {mounted ? new Date(rec.month_year).toLocaleString('en-IN', { month: 'long', year: 'numeric' }) : '---'}
                         </p>
                         <div className="flex items-center gap-2 mt-2">
-                            <span className="text-[8px] font-black tracking-widest uppercase bg-indigo-50 text-indigo-500 px-2 py-1 rounded-[4px]">
+                            <span className="text-xs font-medium tracking-normal bg-indigo-50 text-indigo-500 px-2 py-1 rounded-[4px]">
                                 {rec.type}
                             </span>
-                            <span className="text-xs font-bold text-slate-500">
+                            <span className="text-xs font-medium text-slate-500">
                                 ₹{Math.round(rec.net_pay).toLocaleString('en-IN')}
                             </span>
                         </div>
                     </div>
-                    <button 
-                        onClick={() => downloadPDF(rec)}
-                        className="w-12 h-12 flex items-center justify-center bg-slate-900 text-white rounded-2xl hover:bg-slate-800 active:scale-95 transition-all shadow-md"
+                    <button
+                        aria-label={`Download payslip for ${mounted ? new Date(rec.month_year).toLocaleString("en-IN", { month: "long", year: "numeric" }) : "pay period"}`} onClick={() => downloadPDF(rec)}
+                        className="w-12 h-12 flex items-center justify-center bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-colors"
                     >
                         <FileDown size={18} />
                     </button>

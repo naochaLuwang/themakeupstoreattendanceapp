@@ -60,7 +60,7 @@ export default function AdminPushManager({ userId }: { userId: string }) {
             setError(null);
 
             const registration = await navigator.serviceWorker.ready;
-            
+
             if (!VAPID_PUBLIC_KEY) {
                 throw new Error('VAPID Public Key is missing. Please check your .env.local and restart the server.');
             }
@@ -89,9 +89,9 @@ export default function AdminPushManager({ userId }: { userId: string }) {
             if (dbError) throw dbError;
 
             setIsSubscribed(true);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Subscription failed:', err);
-            setError(err.message || 'Push registration failed.');
+            setError(err instanceof Error ? err.message : 'Push registration failed.');
         } finally {
             setLoading(false);
         }
@@ -122,22 +122,22 @@ export default function AdminPushManager({ userId }: { userId: string }) {
     };
 
     if (loading && !isSubscribed) return (
-        <div className="flex items-center gap-2 p-4 bg-slate-50 rounded-2xl animate-pulse">
-            <Loader2 className="animate-spin text-slate-300" size={16} />
-            <span className="text-[10px] font-black uppercase text-slate-300">Checking Push...</span>
+        <div className="flex items-center gap-2 p-4 bg-slate-50 rounded-xl">
+            <Loader2 className="animate-spin text-slate-500" size={16} />
+            <span className="text-sm font-medium text-slate-500">Checking notifications</span>
         </div>
     );
 
     return (
-        <div className="bg-white border border-slate-100 rounded-[2.5rem] p-6 shadow-sm flex flex-col gap-4">
+        <div className="bg-white border border-slate-100 rounded-xl p-4 flex flex-col gap-3">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className={`p-2.5 rounded-xl ${isSubscribed ? 'bg-emerald-50 text-emerald-500' : 'bg-slate-50 text-slate-400'}`}>
+                    <div className={`p-2.5 rounded-xl ${isSubscribed ? 'bg-emerald-50 text-emerald-500' : 'bg-slate-50 text-slate-500'}`}>
                         {isSubscribed ? <Bell size={18} /> : <BellOff size={18} />}
                     </div>
                     <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Push Notifications</p>
-                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">
+                        <p className="text-sm font-medium tracking-normal text-slate-900">Notifications</p>
+                        <p className="text-xs text-slate-500 font-medium tracking-normal">
                             {isSubscribed ? 'Active on this device' : 'Disabled'}
                         </p>
                     </div>
@@ -149,18 +149,18 @@ export default function AdminPushManager({ userId }: { userId: string }) {
 
             {error && (
                 <div className="space-y-2">
-                    <p className="text-[9px] font-bold text-rose-500 bg-rose-50 p-2 rounded-lg text-center uppercase tracking-widest">
+                    <p className="text-xs font-medium text-rose-500 bg-rose-50 p-2 rounded-lg text-center tracking-normal">
                         {error.includes('AbortError') ? 'Push Service Error: Try refreshing the page or checking your internet connection.' : error}
                     </p>
-                    <button 
+                    <button
                         onClick={() => {
                             if (window.confirm('This will refresh the app to fix caching issues. Continue?')) {
-                                (window as any).selfHeal?.();
+                                (window as Window & { selfHeal?: () => Promise<void> }).selfHeal?.();
                             }
                         }}
-                        className="w-full py-2 text-[8px] font-black uppercase text-slate-400 hover:text-slate-600 transition-colors underline"
+                        className="w-full py-2 text-xs font-medium text-slate-500 hover:text-slate-600 transition-colors underline"
                     >
-                        Troubleshoot / Reset App
+                        Refresh notification settings
                     </button>
                 </div>
             )}
@@ -169,12 +169,12 @@ export default function AdminPushManager({ userId }: { userId: string }) {
                 <button
                     onClick={isSubscribed ? unsubscribe : subscribe}
                     disabled={loading}
-                    className={`w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-[0.98] flex items-center justify-center gap-2
-                        ${isSubscribed 
-                            ? 'bg-rose-50 text-rose-600 border border-rose-100' 
-                            : 'bg-slate-900 text-white shadow-xl shadow-slate-200'}`}
+                    className={`w-full py-2 rounded-lg text-sm font-medium  tracking-normal transition-colors  flex items-center justify-center gap-2
+                        ${isSubscribed
+                            ? 'bg-rose-50 text-rose-600 border border-rose-100'
+                            : 'bg-slate-900 text-white  '}`}
                 >
-                    {loading ? <Loader2 className="animate-spin" size={14} /> : isSubscribed ? 'Disable Alerts' : 'Enable Alerts'}
+                    {loading ? <Loader2 className="animate-spin" size={14} /> : isSubscribed ? 'Disable alerts' : 'Enable alerts'}
                 </button>
 
                 {isSubscribed && (
@@ -184,17 +184,17 @@ export default function AdminPushManager({ userId }: { userId: string }) {
                             try {
                                 const res = await fetch('/api/admin/test-push', { method: 'POST' });
                                 if (!res.ok) throw new Error('Test failed');
-                                alert('Test Notification Sent! Check your device.');
-                            } catch (e) {
+                                alert('Test notification sent. Check your device.');
+                            } catch {
                                 alert('Failed to send test push.');
                             } finally {
                                 setLoading(false);
                             }
                         }}
                         disabled={loading}
-                        className="w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] bg-emerald-50 text-emerald-600 border border-emerald-100 transition-all active:scale-[0.95] flex items-center justify-center gap-2"
+                        className="w-full py-2 rounded-lg text-sm font-medium tracking-normal bg-emerald-50 text-emerald-600 border border-emerald-100 transition-colors flex items-center justify-center gap-2"
                     >
-                        {loading ? <Loader2 className="animate-spin" size={14} /> : 'Send Test Push'}
+                        {loading ? <Loader2 className="animate-spin" size={14} /> : 'Send test notification'}
                     </button>
                 )}
             </div>

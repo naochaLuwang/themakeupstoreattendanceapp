@@ -16,7 +16,7 @@ export default async function AuthRedirectWrapper() {
         .single();
 
     // Route logic
-    if (profile?.role === 'admin') {
+    if (profile?.role === 'admin' || profile?.role === 'manager') {
         redirect('/admin');
     } else {
         redirect('/employee');

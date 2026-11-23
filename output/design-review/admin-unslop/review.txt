@@ -1,0 +1,89 @@
+Admin interface review — 23 November 2026
+THE MAKEUP STORE WANGKHEI
+
+Direction
+Product: A daily workspace for the store's administrators and managers.
+Character: Calm, precise, slightly warm.
+World: A working cosmetics store: understated surfaces and a restrained plum accent.
+Moments: Actual attendance states, report charts, and uploaded store photographs.
+Signature: The store wordmark and a consistent plum selection treatment.
+
+Audit
+- AdminNav: 7–10px uppercase labels, heavy tracking, a wide sidebar, strong
+  shadows, eight mobile navigation items, and a spring-driven menu.
+- Live Presence: oversized heading, 56px panel corners, a fixed minimum panel
+  height, tiny shift metadata, and no visible attendance query error state.
+- Attendance logs: decorative gradient, “System_Archive” copy, pulsing status,
+  and server/client filter markup that differed by browser width.
+- Payroll: decorative headline, low-opacity labels, and clipped mobile tables.
+- Reports: heavily weighted labels, inconsistent colours, and a chart that
+  could overflow when resizing to a mobile viewport.
+- Store Operations: very small tracked labels, equally prominent quick actions,
+  and a dashboard tab that remained active on every nested module page.
+- Navigation referenced a logo file absent from public/. The store name remains
+  as a text wordmark rather than showing a broken image.
+
+Nine passes
+1. Spacing: Reused the existing screen structure, established a 256px sidebar,
+   shared page insets, consistent panels, and smaller internal gaps. Removed
+   duplicate bottom padding and large empty planner space before staff selection.
+2. Colour: Added admin-only neutral, plum, and semantic status tokens. Both
+   system preference and the existing .dark/.light classes are supported.
+3. Icons: Kept Lucide, standardised stroke treatment, removed dashboard-tab
+   emoji and decorative statistic-card icons, and added labels to icon controls.
+4. Copy: Replaced technical decoration with store workflow language. Preserved
+   the product name, existing actions, routes, content order, and calculations.
+5. Type: Removed tiny uppercase tracked labels and heavy display weights.
+   Added readable metadata and tabular figures; mobile inputs use 16px text.
+6. Layout: Four primary mobile destinations plus More. The native dialog supports
+   keyboard focus, Escape, and desktop-resize cleanup. Dense calendars and payroll
+   tables scroll within their own containers; shared grids can shrink correctly.
+7. Details: Added current-page semantics, keyboard-operated attendance tabs,
+   field labels, focus rings, a skip link, consistent radii, route skeletons,
+   a route error boundary, and visible attendance errors with Retry.
+8. Visuals: Let real store data and report charts carry the visual emphasis.
+   Statistics now use compact numbers and labels. No images were generated.
+9. Motion: Removed decorative page/list motion and pulsing status decoration.
+   Retained small colour transitions and functional loading indicators, with
+   reduced-motion CSS support. Admin UI files no longer import Framer Motion.
+
+Scope and maintenance
+- The shared presentation is in app/(dashboard)/admin/admin.css and is scoped
+  to .admin-shell. Existing Tailwind utilities in shared Store Operations
+  components map to these tokens only inside the admin area.
+- Existing employee/login styling, database schemas, migrations, server actions,
+  payroll calculations, role checks, storage operations, and route destinations
+  were not changed by this work.
+- The attendance query and Realtime subscription are retained; the live list
+  now has explicit types, loading/error presentation, and Retry handling.
+- No dependencies, production fixtures, authentication bypass, or seed data
+  were added. The development fixture server and browser scripts lived in /tmp.
+- Inherited incomplete Store Operations destinations, including the existing
+  audits route nesting and missing Settings page, are outside this visual pass.
+
+Validation
+- TypeScript: npm run typecheck passes.
+- Production build: npm run build passes with the normal workspace environment.
+  Existing generated public scripts were restored byte-for-byte afterward.
+- Browser: 28 existing admin routes rendered against local fictional Supabase
+  responses, including six Store Operations creation forms. Final responsive
+  checks passed at 1440px, 390px, and 320px with no page-level horizontal overflow
+  and no JavaScript runtime errors. Changed screens were checked again after
+  fixing the filter hydration and chart-resize issues.
+- Interactions: Keyboard attendance tabs, form labels, required-field validation,
+  modal focus containment, Escape, resize cleanup, nested active navigation,
+  attendance empty/error/retry states, dark mode, reduced motion, and anonymous
+  redirect were checked. See verification.json for the route evidence.
+- Core new/reworked navigation, skeleton, error, tab, and live-list files pass
+  ESLint. Comparison with saved pre-edit source found no new lint regressions.
+  Existing admin lint findings fell from 128 errors / 12 warnings to 111 errors /
+  10 warnings. Full source lint still fails on inherited findings; those were
+  not suppressed or hidden by changing the ESLint configuration. Full source
+  lint (excluding generated bundles) reports 240 errors and 29 warnings.
+- Screenshots contain deliberately fictional “Staff preview” records. Live
+  database mutations, actual push delivery, and remote Realtime delivery were
+  not exercised.
+
+Attribution
+This design pass used Unslop by Damir Sokolovsky (@heydamir), CC BY 4.0.
+https://github.com/heydamir/unslop

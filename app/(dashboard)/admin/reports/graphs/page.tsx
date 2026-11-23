@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { Fragment, useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { motion } from 'framer-motion';
 import { Calendar, Loader2, BarChart3, PieChart, TrendingUp, Grid3x3, Clock } from 'lucide-react';
 import {
     BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid,
@@ -15,8 +14,8 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 const PUNCTUALLY_GRACE_MINUTES = 5;
 
 const COLORS = [
-    '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899',
-    '#06b6d4', '#f97316', '#22d3ee', '#a855f7', '#14b8a6', '#e11d48',
+    '#8f596e', '#527a67', '#527791', '#a67c44', '#7d7591', '#657b85',
+    '#9b6d5d', '#697d4c', '#7f6b77', '#547f7c', '#9a805f', '#777c64',
 ];
 
 export default function AttendanceGraphs() {
@@ -145,9 +144,9 @@ export default function AttendanceGraphs() {
 
         // --- 4. Donut ---
         setDonut([
-            { name: 'Present', value: presCount, color: '#10b981' },
-            { name: 'Absent', value: absCount, color: '#ef4444' },
-            { name: 'Off', value: offCount, color: '#cbd5e1' },
+            { name: 'Present', value: presCount, color: 'var(--store-positive)' },
+            { name: 'Absent', value: absCount, color: 'var(--store-negative)' },
+            { name: 'Off', value: offCount, color: 'var(--store-border)' },
         ].filter(d => d.value > 0));
 
         // --- 5. Weekly Trend ---
@@ -178,7 +177,7 @@ export default function AttendanceGraphs() {
                 const dateStr = `${selectedMonth}-${String(d).padStart(2, '0')}`;
                 cells.push({ day: d, hours: empDailyMap[emp.id][dateStr]?.hours ?? 0 });
             }
-            return { name: emp.full_name, cells };
+            return { id: emp.id, name: emp.full_name, cells };
         });
         setHeatmap(heatRows);
 
@@ -194,7 +193,7 @@ export default function AttendanceGraphs() {
     const maxHours = Math.max(...allHourVals, 1);
 
     const heatIntensity = (hours: number) => {
-        if (hours === 0) return 'bg-slate-100 text-slate-400';
+        if (hours === 0) return 'bg-slate-100 text-slate-500';
         const r = Math.min(hours / (maxHours || 1), 1);
         if (r < 0.25) return 'bg-indigo-200 text-slate-700';
         if (r < 0.5) return 'bg-indigo-400 text-white';
@@ -203,47 +202,47 @@ export default function AttendanceGraphs() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto p-6 space-y-8 font-sans pb-32">
+        <div className="space-y-8">
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-medium tracking-tight text-slate-900">Attendance Graphs</h1>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                        Per-employee color-coded analytics
+                    <h1 className="text-3xl font-medium tracking-normal text-slate-900">Attendance graphs</h1>
+                    <p className="text-sm font-medium text-slate-500 tracking-normal">
+                        Hours, punctuality, and attendance by employee
                     </p>
                 </div>
                 <div className="flex items-center gap-3 px-3 py-2 bg-white rounded-xl shadow-sm border border-slate-100">
-                    <Calendar size={16} className="text-slate-400" />
+                    <Calendar size={16} className="text-slate-500" />
                     <input
                         type="month"
                         value={selectedMonth}
                         onChange={(e) => setSelectedMonth(e.target.value)}
-                        className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer"
+                        className="bg-transparent text-xs font-medium text-slate-700 outline-none cursor-pointer"
                     />
                 </div>
             </header>
 
             {loading ? (
-                <div className="py-32 flex flex-col items-center justify-center gap-4 opacity-30">
+                <div className="py-32 flex flex-col items-center justify-center gap-4 ">
                     <Loader2 className="animate-spin text-slate-900" size={32} />
-                    <p className="text-[10px] font-black uppercase tracking-widest">Crunching Numbers...</p>
+                    <p className="text-sm font-medium tracking-normal">Loading attendance reports</p>
                 </div>
             ) : (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+                <div className="space-y-6">
 
                     {/* 1. Monthly Totals — Simple horizontal bar, one per employee */}
-                    <GraphCard icon={<BarChart3 size={18} />} title="Total Hours — This Month" subtitle="Easiest way to compare everyone at a glance">
+                    <GraphCard icon={<BarChart3 size={18} />} title="Total Hours — This Month" subtitle="Compare hours worked by employee">
                         <ResponsiveContainer width="100%" height={Math.max(200, employees.length * 40)}>
                             <BarChart data={monthlyTotals} layout="vertical" barCategoryGap={6}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
-                                <XAxis type="number" tick={{ fontSize: 10, fill: '#94a3b8' }} tickFormatter={v => `${v}h`} />
-                                <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#1e293b' }} width={140} />
+                                <XAxis type="number" tick={{ fontSize: 12, fill: '#94a3b8' }} tickFormatter={v => `${v}h`} />
+                                <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: '#1e293b' }} width={140} />
                                 <Tooltip
                                     formatter={(value: any) => [`${Number(value).toFixed(1)}h`, 'Total Hours']}
                                     contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 12 }}
                                 />
                                 <Bar dataKey="hours" radius={[0, 6, 6, 0]}>
                                     {monthlyTotals.map((_, idx) => (
-                                        <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
+                                        <Cell key={idx} fill="var(--store-accent)" />
                                     ))}
                                 </Bar>
                             </BarChart>
@@ -255,13 +254,13 @@ export default function AttendanceGraphs() {
                         <ResponsiveContainer width="100%" height={320}>
                             <LineChart data={dailyTrend}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                                <XAxis dataKey="day" tick={{ fontSize: 10, fill: '#94a3b8' }} interval={3} />
-                                <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} tickFormatter={v => `${v}h`} />
+                                <XAxis dataKey="day" tick={{ fontSize: 12, fill: '#94a3b8' }} interval={3} />
+                                <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} tickFormatter={v => `${v}h`} />
                                 <Tooltip
                                     contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 12 }}
                                 />
                                 <Legend
-                                    wrapperStyle={{ fontSize: 11 }}
+                                    wrapperStyle={{ fontSize: 12 }}
                                     formatter={(value: string) => employees.find(e => e.id === value)?.full_name || value}
                                 />
                                 {empKeys.map((key, idx) => (
@@ -285,13 +284,13 @@ export default function AttendanceGraphs() {
                         <ResponsiveContainer width="100%" height={Math.max(200, employees.length * 36)}>
                             <BarChart data={punctuality} layout="vertical" barCategoryGap={6}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
-                                <XAxis type="number" tick={{ fontSize: 10, fill: '#94a3b8' }} />
-                                <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#1e293b' }} width={140} />
+                                <XAxis type="number" tick={{ fontSize: 12, fill: '#94a3b8' }} />
+                                <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: '#1e293b' }} width={140} />
                                 <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 12 }} />
-                                <Legend wrapperStyle={{ fontSize: 11 }} />
-                                <Bar dataKey="Early" fill="#10b981" radius={[0, 0, 0, 0]} />
-                                <Bar dataKey="On Time" fill="#6366f1" />
-                                <Bar dataKey="Late" fill="#f59e0b" radius={[0, 4, 4, 0]} />
+                                <Legend wrapperStyle={{ fontSize: 12 }} />
+                                <Bar dataKey="Early" fill="var(--store-positive)" radius={[0, 0, 0, 0]} />
+                                <Bar dataKey="On Time" fill="var(--store-accent)" />
+                                <Bar dataKey="Late" fill="var(--store-warning)" radius={[0, 4, 4, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
                     </GraphCard>
@@ -302,11 +301,11 @@ export default function AttendanceGraphs() {
                             <ResponsiveContainer width="100%" height={280}>
                                 <LineChart data={weeklyTrend}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                                    <XAxis dataKey="week" tick={{ fontSize: 10, fill: '#94a3b8' }} />
-                                    <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} tickFormatter={v => `${v}h`} />
+                                    <XAxis dataKey="week" tick={{ fontSize: 12, fill: '#94a3b8' }} />
+                                    <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} tickFormatter={v => `${v}h`} />
                                     <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 12 }} />
                                     <Legend
-                                        wrapperStyle={{ fontSize: 11 }}
+                                        wrapperStyle={{ fontSize: 12 }}
                                         formatter={(value: string) => employees.find(e => e.id === value)?.full_name || value}
                                     />
                                     {empKeys.map((key, idx) => (
@@ -341,7 +340,7 @@ export default function AttendanceGraphs() {
                                     </Pie>
                                     <Tooltip formatter={(value, name) => [value ?? 0, name]} contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 12 }} />
                                     <Legend
-                                        wrapperStyle={{ fontSize: 11 }}
+                                        wrapperStyle={{ fontSize: 12 }}
                                         formatter={(value: string) => {
                                             const entry = donut.find(d => d.name === value);
                                             const total = donut.reduce((s: number, d: any) => s + d.value, 0);
@@ -356,34 +355,34 @@ export default function AttendanceGraphs() {
 
                     {/* 5. Hours Heatmap */}
                     <GraphCard icon={<Grid3x3 size={18} />} title="Hours Heatmap" subtitle="Rows = employees, Columns = days — darker cell = more hours worked">
-                        <div className="overflow-x-auto p-2">
+                        <div className="admin-hours-heatmap overflow-x-auto p-2">
                             <div className="inline-grid gap-1" style={{
                                 gridTemplateColumns: `130px repeat(${dailyTrend.length}, 36px)`,
                             }}>
-                                <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest pb-1 flex items-end" />
+                                <div className="text-xs font-medium text-slate-500 tracking-normal pb-1 flex items-end" />
                                 {dailyTrend.map((d, ci) => (
-                                    <div key={ci} className="text-[8px] font-black text-slate-400 uppercase tracking-widest text-center pb-1">
+                                    <div key={ci} className="text-xs font-medium text-slate-500 tracking-normal text-center pb-1">
                                         {d.day}
                                     </div>
                                 ))}
-                                {heatmap.map((row, ri) => (
-                                    <>
-                                        <div className="text-[10px] font-bold text-slate-600 truncate pr-2 flex items-center">
+                                {heatmap.map((row) => (
+                                    <Fragment key={row.id}>
+                                        <div className="text-sm font-medium text-slate-600 truncate pr-2 flex items-center">
                                             {row.name}
                                         </div>
                                         {row.cells.map((cell: any, ci: number) => (
                                             <div
                                                 key={ci}
-                                                className={`aspect-square rounded flex items-center justify-center text-[9px] font-bold ${heatIntensity(cell.hours)}`}
+                                                className={`aspect-square rounded flex items-center justify-center text-xs font-medium ${heatIntensity(cell.hours)}`}
                                                 title={`${row.name} — Day ${cell.day}: ${cell.hours.toFixed(1)}h`}
                                             >
                                                 {cell.hours > 0 ? cell.hours.toFixed(1) : ''}
                                             </div>
                                         ))}
-                                    </>
+                                    </Fragment>
                                 ))}
                             </div>
-                            <div className="flex items-center gap-2 mt-3 text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+                            <div className="flex items-center gap-2 mt-3 text-xs font-medium text-slate-500 tracking-normal">
                                 <span>0h</span>
                                 <div className="w-4 h-4 rounded bg-slate-100" />
                                 <div className="w-4 h-4 rounded bg-indigo-200" />
@@ -395,7 +394,7 @@ export default function AttendanceGraphs() {
                         </div>
                     </GraphCard>
 
-                </motion.div>
+                </div>
             )}
         </div>
     );
@@ -403,14 +402,14 @@ export default function AttendanceGraphs() {
 
 function GraphCard({ icon, title, subtitle, children }: { icon: React.ReactNode; title: string; subtitle: string; children: React.ReactNode }) {
     return (
-        <div className="bg-white border border-slate-100 rounded-[2rem] shadow-sm overflow-hidden">
+        <div className="bg-white border border-slate-100 rounded-xl shadow-sm overflow-hidden">
             <div className="flex items-center gap-3 p-6 pb-4 border-b border-slate-100 bg-slate-50/50">
                 <div className="p-2.5 bg-slate-900 text-white rounded-xl shadow-sm">
                     {icon}
                 </div>
                 <div>
-                    <h3 className="text-sm font-black uppercase tracking-wider text-slate-800">{title}</h3>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{subtitle}</p>
+                    <h3 className="text-sm font-medium tracking-normal text-slate-800">{title}</h3>
+                    <p className="text-xs font-medium text-slate-500 tracking-normal mt-0.5">{subtitle}</p>
                 </div>
             </div>
             <div className="p-4">

@@ -12,13 +12,13 @@ export default async function RoasterPage() {
     if (!user) redirect('/login');
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-700 pb-32">
+        <div className="space-y-8">
             <header>
-                <h1 className="text-4xl font-black text-slate-900 tracking-tighter">System Overrides</h1>
-                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mt-1">Critical alerts & clock-in fixes</p>
+                <h1 className="text-3xl font-medium text-slate-900 tracking-normal">Shift calendar</h1>
+                <p className="text-sm font-medium text-slate-500 tracking-normal mt-1">Review assigned shifts and staff availability</p>
             </header>
 
-            <section className="bg-white border border-slate-200 rounded-[3rem] p-8 md:p-12 min-h-[400px] shadow-xl shadow-slate-100/50">
+            <section className="bg-white border border-slate-200 rounded-xl p-4 sm:p-6">
                 <Suspense fallback={<HomeSkeleton />}>
                     <AdminShiftCalendar />
                 </Suspense>

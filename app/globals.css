@@ -78,3 +78,44 @@ body {
   user-select: none;
   /* Prevents text selection on UI elements */
 }
+
+.theme-toggle {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--store-border, var(--login-line, hsl(var(--border))));
+  border-radius: 8px;
+  background: var(--store-surface, var(--login-canvas, hsl(var(--card))));
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.theme-toggle button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border-radius: 5px;
+  color: var(--store-secondary, var(--login-muted, hsl(var(--muted-foreground))));
+}
+
+.theme-toggle button:hover:not(:disabled):not([aria-pressed='true']) {
+  color: var(--store-ink, var(--login-ink, hsl(var(--foreground))));
+}
+
+.theme-toggle button[aria-pressed='true'] {
+  background: var(--store-accent-soft, var(--login-ink, hsl(var(--primary))));
+  color: var(--store-accent-ink, var(--login-canvas, hsl(var(--primary-foreground))));
+}
+
+.theme-toggle button:focus-visible {
+  outline: 2px solid var(--store-accent, var(--login-focus, hsl(var(--ring))));
+  outline-offset: 2px;
+}
+
+.theme-toggle button:disabled { cursor: wait; }
