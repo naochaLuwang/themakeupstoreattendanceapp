@@ -1,0 +1,53 @@
+{
+  "note": "Search fields retain the inset for their leading icon across all employee operation modules.",
+  "checks": [
+    {
+      "screen": "tasks",
+      "theme": "light",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "tasks",
+      "theme": "dark",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "tasks",
+      "theme": "light",
+      "width": 320,
+      "height": 640,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "tasks",
+      "theme": "dark",
+      "width": 320,
+      "height": 640,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "tasks",
+      "theme": "light",
+      "width": 1280,
+      "height": 900,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "tasks",
+      "theme": "dark",
+      "width": 1280,
+      "height": 900,
+      "overflow": false,
+      "browserErrors": 0
+    }
+  ]
+}

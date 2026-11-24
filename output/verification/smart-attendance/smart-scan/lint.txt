@@ -1,0 +1,1 @@
+Module and integration ESLint passed with no findings. Full-repository lint retains previously documented unrelated failures.

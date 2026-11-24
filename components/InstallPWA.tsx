@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { Download, X } from 'lucide-react';
 import { isNativeWorkspace } from '@/lib/native/experience';
 
@@ -9,6 +10,7 @@ interface InstallPromptEvent extends Event {
 }
 
 export default function InstallPWA() {
+    const pathname = usePathname();
     const [supportsPWA, setSupportsPWA] = useState(false);
     const [promptInstall, setPromptInstall] = useState<InstallPromptEvent | null>(null);
     const [isVisible, setIsVisible] = useState(true);
@@ -38,7 +40,7 @@ export default function InstallPWA() {
         if (outcome === "accepted") setSupportsPWA(false);
     };
 
-    if (!supportsPWA || !isVisible) return null;
+    if (pathname.startsWith('/attendance-station') || !supportsPWA || !isVisible) return null;
 
     return (
         <div data-native-install className="fixed bottom-6 left-4 right-4 md:bottom-12 md:left-auto md:right-12 md:w-80 z-[100] animate-in slide-in-from-bottom-5 duration-700">

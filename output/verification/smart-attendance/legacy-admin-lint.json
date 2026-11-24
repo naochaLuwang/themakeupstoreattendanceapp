@@ -1,0 +1,20 @@
+[
+  {
+    "file": "components/admin/AdminDashboard.tsx",
+    "errors": 11,
+    "warnings": 1,
+    "newFindings": 0
+  },
+  {
+    "file": "components/admin/AttendanceOversight.tsx",
+    "errors": 8,
+    "warnings": 1,
+    "newFindings": 0
+  },
+  {
+    "file": "components/admin/OverridesList.tsx",
+    "errors": 2,
+    "warnings": 1,
+    "newFindings": 0
+  }
+]

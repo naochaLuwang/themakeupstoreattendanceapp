@@ -5,6 +5,10 @@ import type { Database } from '@/lib/supabase/database.types'
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // This page exposes only the display UI. Its API requires a separately paired
+  // station credential, so the store display never needs an admin login cookie.
+  if (pathname === '/attendance-station') return NextResponse.next();
+
   // --- PWA ESCAPE HATCH ---
   // If it's a PWA system file, let it through immediately without checking Auth
   if (

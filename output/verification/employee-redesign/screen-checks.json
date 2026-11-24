@@ -1,0 +1,403 @@
+{
+  "fixtures": "Real components; fictional local data; no production connection",
+  "checks": [
+    {
+      "screen": "home",
+      "theme": "light",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "home",
+      "theme": "dark",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "logs",
+      "theme": "light",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "logs",
+      "theme": "dark",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "inbox",
+      "theme": "light",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "inbox",
+      "theme": "dark",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "leave",
+      "theme": "light",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "leave",
+      "theme": "dark",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "profile",
+      "theme": "light",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "profile",
+      "theme": "dark",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "payslips",
+      "theme": "light",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "payslips",
+      "theme": "dark",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "tasks",
+      "theme": "light",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "tasks",
+      "theme": "dark",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "detail",
+      "theme": "light",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "detail",
+      "theme": "dark",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "incident",
+      "theme": "light",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "incident",
+      "theme": "dark",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "checklist",
+      "theme": "light",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "checklist",
+      "theme": "dark",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "catalog",
+      "theme": "light",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "catalog",
+      "theme": "dark",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "empty",
+      "theme": "light",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "empty",
+      "theme": "dark",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "loading",
+      "theme": "light",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "loading",
+      "theme": "dark",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "error",
+      "theme": "light",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "error",
+      "theme": "dark",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "home",
+      "theme": "light",
+      "width": 320,
+      "height": 640,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "logs",
+      "theme": "light",
+      "width": 320,
+      "height": 640,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "inbox",
+      "theme": "light",
+      "width": 320,
+      "height": 640,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "leave",
+      "theme": "light",
+      "width": 320,
+      "height": 640,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "profile",
+      "theme": "light",
+      "width": 320,
+      "height": 640,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "payslips",
+      "theme": "light",
+      "width": 320,
+      "height": 640,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "tasks",
+      "theme": "light",
+      "width": 320,
+      "height": 640,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "detail",
+      "theme": "light",
+      "width": 320,
+      "height": 640,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "incident",
+      "theme": "light",
+      "width": 320,
+      "height": 640,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "checklist",
+      "theme": "light",
+      "width": 320,
+      "height": 640,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "catalog",
+      "theme": "light",
+      "width": 320,
+      "height": 640,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "empty",
+      "theme": "light",
+      "width": 320,
+      "height": 640,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "loading",
+      "theme": "light",
+      "width": 320,
+      "height": 640,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "error",
+      "theme": "light",
+      "width": 320,
+      "height": 640,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "profile",
+      "theme": "light",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "leave",
+      "theme": "light",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "home",
+      "theme": "light",
+      "width": 1280,
+      "height": 900,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "logs",
+      "theme": "light",
+      "width": 1280,
+      "height": 900,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "tasks",
+      "theme": "light",
+      "width": 1280,
+      "height": 900,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "incident",
+      "theme": "light",
+      "width": 1280,
+      "height": 900,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "screen": "incident",
+      "theme": "dark",
+      "width": 360,
+      "height": 740,
+      "overflow": false,
+      "browserErrors": 0
+    },
+    {
+      "test": "Validation remains visually distinct in dark mode",
+      "border": "rgb(240, 162, 170)",
+      "background": "rgb(59, 37, 42)",
+      "negative": "#f0a2aa"
+    }
+  ]
+}

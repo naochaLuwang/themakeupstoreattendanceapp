@@ -1,0 +1,10 @@
+{
+  "environment": "Local production Next.js server; no credentials, database calls or hosted requests",
+  "checks": [
+    "Signed-out station page renders branding without redirect, with private no-store and frame/referrer headers",
+    "Actual route rejects missing display credentials before database access",
+    "Actual route accepts its own origin and rejects a foreign origin",
+    "Actual route safely clears an already-unpaired browser cookie",
+    "GET requests cannot issue QR codes"
+  ]
+}

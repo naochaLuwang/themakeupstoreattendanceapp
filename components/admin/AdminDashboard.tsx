@@ -2,6 +2,8 @@
 
 
 'use client';
+import { approveOverrideRequest } from '@/app/actions/attendance-override';
+import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import BulkScheduler from './BulkScheduler';
@@ -100,12 +102,10 @@ export default function AdminDashboard({ employees, liveAttendance, adminId }: a
         }
     };
 
-    const handleApproveOverride = async (request: any) => {
-        const now = new Date();
-        const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-        await supabase.from('attendance').delete().eq('employee_id', request.requestor_id).gte('check_in', `${today}T00:00:00Z`);
-        await supabase.from('swap_requests').update({ status: 'approved' }).eq('id', request.id);
-        fetchOverrides();
+    const handleApproveOverride = async (request: { id: string }) => {
+        const result = await approveOverrideRequest(request.id);
+        if (!result.success) { toast.error(result.error || 'Could not approve re-entry.'); return; }
+        await fetchOverrides();
     };
 
     return (

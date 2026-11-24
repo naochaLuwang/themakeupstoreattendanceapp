@@ -25,4 +25,15 @@ public class WorkspaceOriginTest {
         assertFalse(origin.isHome("https://attendance.example.com/employee/profile"));
         assertFalse(origin.isHome("https://attendance.example.com/admin/weekoff-request"));
     }
+
+    @Test public void cameraRequiresTheWorkspacePageAndOriginWithNoOtherResources() {
+        String page = "https://attendance.example.com/employee/smart-scan";
+        String[] camera = {"android.webkit.resource.VIDEO_CAPTURE"};
+        assertTrue(origin.allowsCamera("https://attendance.example.com", page, camera));
+        assertFalse(origin.allowsCamera("https://other.example.com", page, camera));
+        assertFalse(origin.allowsCamera("https://attendance.example.com", "https://other.example.com", camera));
+        assertFalse(origin.allowsCamera("https://attendance.example.com", page, new String[]{"android.webkit.resource.AUDIO_CAPTURE"}));
+        assertFalse(origin.allowsCamera("https://attendance.example.com", page, new String[]{"android.webkit.resource.VIDEO_CAPTURE", "unknown"}));
+        assertFalse(origin.allowsCamera("https://attendance.example.com", page, null));
+    }
 }

@@ -1,0 +1,18 @@
+{
+  "app/(dashboard)/employee/employee.css": "55e4757123f7154244167805dfe4873ab6cfbe6d6cfd876c9b6255c51e9f5b01",
+  "app/(dashboard)/employee/layout.tsx": "f7704b97c7fc0cdc54c3b06061c3ae77055db7932c00cd5980f31c2847c8e360",
+  "app/(dashboard)/employee/payslips/page.tsx": "4e54cbd383c79360f5cc8e7ea765ce75486e6112de5e54da3510e46a13b81ba0",
+  "app/(dashboard)/employee/store-operations/layout.tsx": "2c7fabb60df9ccab787f3f3500314ca5ec1072f5d2df5f2c10126c7025814dfb",
+  "components/employee/ActivityLogViews.tsx": "58b7e0d8376989bbdfa35f25c6d1dcd64b7ae43692c8715ed2a5821e34fcacbf",
+  "components/employee/BottomNav.tsx": "8a3dbca3048a564c3874b4a77982ce26d31839f38ef007689ec1154f3513323d",
+  "components/employee/EmployeeDashboardContent.tsx": "0a9af808eefadbd3095b018ee6450aaca4e63fef5440e5776faf137f99ff660b",
+  "components/employee/EmployeePayslipsClient.tsx": "81eb3b6017493580d7f28f59a60d527b3de8428847d5fdc207a5f411598aff40",
+  "components/employee/EmployeeShiftView.tsx": "13d2f01217b94694a37775f27f03189129bc75506bcb3250dd4e90b991e71094",
+  "components/employee/EmployeeStoreOpsNav.tsx": "ab7d30e32405bd6f5f9cca9e07c081dd53e5b53857d18b418619171c9bf9c3d7",
+  "components/employee/LeaveRequestView.tsx": "da4ee866be6bae467d994d0285aae4ea226fc6a18992b74e8f7c014909ca83a2",
+  "components/employee/ProfileWrapper.tsx": "58ef7f3dbdca5d84bb83f712ff4cc4f9cc58deafd65470fe05687769e8093fc3",
+  "components/employee/SwapInbox.tsx": "0ce29d70bc33565cb788ddd9f9885c4797b5d31dfe2e571f5eba0672af000f46",
+  "components/employee/EmployeeAttendanceCard.tsx": "b3d3e99a0c4eafaafdcd2eca395fb9a2c5a7bbfd75858f100a8813b8d68b6264",
+  "lib/attendance/schedule.ts": "606b6956b716c3cbed127ec1b94203295a987ebdefd661709b8c4b1a2b7bae6b",
+  "app/(dashboard)/employee/employee-design.css": "a4159de702a9ff8d94023ffe99f0f11ee6873541d84fb1c18a8ae54cf0cdb6d4"
+}

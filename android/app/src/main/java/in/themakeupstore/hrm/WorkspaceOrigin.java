@@ -27,5 +27,10 @@ final class WorkspaceOrigin {
         return path.isEmpty() || path.equals("/login") || path.equals("/employee") || path.equals("/admin");
     }
 
+    boolean allowsCamera(String requestingOrigin, String currentPage, String[] resources) {
+        return contains(requestingOrigin) && contains(currentPage) && resources != null && resources.length == 1
+            && "android.webkit.resource.VIDEO_CAPTURE".equals(resources[0]);
+    }
+
     private static int port(URI uri) { return uri.getPort() < 0 ? 443 : uri.getPort(); }
 }

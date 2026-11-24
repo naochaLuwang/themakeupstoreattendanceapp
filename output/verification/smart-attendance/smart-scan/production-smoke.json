@@ -1,0 +1,10 @@
+{
+  "environment": "Local production Next.js server with external fetch disabled; no user or station credentials",
+  "checks": [
+    "Unauthenticated GET is denied with private no-store response",
+    "Employee scanner remains behind login and cannot be framed",
+    "Actual route rejects foreign Origin before authentication or database access",
+    "Actual route accepts the public Host origin and rejects malformed scan input",
+    "Standalone station still renders unsigned while employee routes stay protected"
+  ]
+}

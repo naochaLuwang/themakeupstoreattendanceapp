@@ -1,0 +1,89 @@
+Employee visual redesign — 24 November 2026
+===========================================
+
+Brief
+-----
+Redesign the employee workspace, including navigation, while changing visual
+presentation only. Keep the approved logo, workspace name, existing page order,
+actions, forms, data access, attendance rules and request workflows.
+
+Direction
+---------
+Product: attendance and daily store work for THE MAKEUP STORE employees.
+Character: composed, assured, approachable.
+World: the existing makeup-store identity, burgundy and a legible staff workspace.
+Moments: a burgundy shift panel with condensed time figures; a compact tab dock.
+Signature: two opposing corner marks around the shift summary, echoing the
+approved logo. The original logo image itself is unchanged.
+
+Audit and response
+------------------
+The prior employee UI gave almost everything the same white outlined card,
+including navigation and secondary actions. Arial headings gave the workspace
+little connection to the logo. Large generic cards repeated across every page.
+
+Spacing: compact phone header, visible attendance action, grouped quick-action
+tray, consistent page edges, field heights and row spacing. Safe-area spacing
+reserves room below the floating tabs; existing native keyboard hiding remains.
+Color: quiet plum-tinted neutrals and the existing burgundy direction. Status,
+error and approval colors retain their meanings. Light and dark are designed
+as full palettes; validation inputs retain their error border/background.
+Icons: existing Lucide icons and route labels retained, with consistent weight,
+size and surfaces. Active tabs retain icon plus text and an unmistakable fill.
+Type: the already bundled Barlow Condensed brand font for headings, elapsed time
+and key figures; system sans for forms, labels, body text and navigation. No
+external font service or new package is required.
+Layout: attendance order is preserved. Logs, inbox, leave, profile and payslips
+receive their own hierarchy within the same system. Operations lists, tables,
+forms, details, checklists and photo overlays inherit employee-scoped styling.
+Details: opposing logo corners, avatar silhouette, grouped counters, consistent
+field focus, selected states, pending badges, loading/empty/error surfaces and
+modal corners. Photo viewers layer above employee tabs.
+Motion: restrained color/opacity feedback; no new entrance or looping animation.
+Reduced-motion preferences and existing swipe/haptic behavior are retained.
+
+Implementation and scope
+------------------------
+app/(dashboard)/employee/employee-design.css contains the new visual system and
+is imported only by the employee layout. All selectors are scoped to the employee
+workspace; shared admin pages keep their current styling.
+
+Eight existing TSX files receive CSS classes or the stylesheet import only.
+A TypeScript AST comparison against their prior committed source confirms the
+same executable code, text, fields, conditions and route targets after removing
+className attributes and the stylesheet import. Evidence:
+  output/verification/employee-redesign/visual-scope.json
+
+The earlier Today-first attendance implementation remains intact. This visual
+pass changes no API, server action, query, database schema, dependency, PDF
+export, permission, attendance calculation or native Android source.
+
+Verification and review
+-----------------------
+Production build and standalone TypeScript check pass. All 40 existing Node
+tests pass. The changed legacy TSX files retain seven pre-existing ESLint errors
+and two warnings; comparing their diagnostics against HEAD reports zero new
+findings. The existing errors concern any types, hook dependencies and quoted
+text; this visual-only pass intentionally preserves that code.
+
+The headless browser uses the actual components with fictional local fixtures,
+never production staff records. Screen checks cover 320px/360px widths, desktop,
+both themes, profile and leave forms, error fields, loading/empty/error states
+and the remaining store-operation card patterns. Attendance gesture checks
+also confirm the swipe remains above the dock and existing workflows still work.
+The review records 49 screen/theme/viewport renders plus a validation-color
+assertion. Search fields also retain a 44px leading-icon inset, checked in both
+themes at 320px, 360px and 1280px. Nine core text palette pairs meet 4.5:1 contrast. These checks do not
+constitute a complete accessibility audit.
+Screenshots and machine-readable results:
+  output/verification/employee-redesign/
+Visual review gallery:
+  output/verification/employee-redesign/preview.html
+
+No production deployment or physical-device test was performed. The Capacitor
+Android app loads the hosted web app, so the web changes must be deployed before
+this design appears in an installed APK. Existing deployment requirements in
+docs/shift-locking.txt still apply to the earlier shift-protection work.
+
+The design audit also used Unslop by Damir Sokolovsky (@heydamir), CC BY 4.0:
+https://github.com/heydamir/unslop

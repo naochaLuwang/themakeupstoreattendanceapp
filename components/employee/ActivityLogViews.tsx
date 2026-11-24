@@ -111,9 +111,9 @@ export default function ActivityLogView({ userId }: { userId: string }) {
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             onDragEnd={handleDragEnd}
-            className="space-y-6"
+            className="employee-screen employee-attendance-screen space-y-6"
         >
-            <header className="mb-8">
+            <header className="employee-page-heading mb-8">
                 <div className="flex items-center justify-between mb-4">
                     <div>
                         <p className="text-sm font-medium text-slate-500 tracking-normal mb-1">Attendance history</p>
@@ -149,10 +149,10 @@ export default function ActivityLogView({ userId }: { userId: string }) {
             <>
                 <div
                     key={searchDate}
-                    className="space-y-3 mb-8"
+                    className="employee-attendance-overview space-y-3 mb-8"
                 >
                     {/* TOTAL WORKING HOURS CARD */}
-                    <div className="bg-white border border-slate-200 p-6 rounded-xl text-slate-900">
+                    <div className="employee-hours-summary bg-white border border-slate-200 p-6 rounded-xl text-slate-900">
                         <div className="relative z-10">
                             <p className="text-sm font-medium tracking-normal mb-1">Total work hours</p>
                             <h3 className="text-3xl font-medium tracking-normal">
@@ -161,7 +161,7 @@ export default function ActivityLogView({ userId }: { userId: string }) {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="employee-stat-grid grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <StatCard label="Late arrival" value={formatDuration(dayStats.lateIn)} icon={<AlertCircle size={14} />} color="text-amber-600" bg="bg-amber-50" />
                         <StatCard label="Early arrival" value={formatDuration(dayStats.earlyIn)} icon={<UserCheck size={14} />} color="text-emerald-600" bg="bg-emerald-50" />
                         <StatCard label="Early departure" value={formatDuration(dayStats.earlyOut)} icon={<ArrowDownRight size={14} />} color="text-rose-600" bg="bg-rose-50" />
@@ -171,7 +171,7 @@ export default function ActivityLogView({ userId }: { userId: string }) {
             </>
 
             {/* LOGS LIST */}
-            <div className="space-y-4">
+            <div className="employee-log-list space-y-4">
                 {loading ? (
                     <div className="flex justify-center py-20"><Loader2 className="animate-spin" size={30} /></div>
                 ) : logs.length > 0 ? (
@@ -192,11 +192,11 @@ export default function ActivityLogView({ userId }: { userId: string }) {
                         return (
                             <div
                                 key={log.id}
-                                className="bg-white border border-slate-100 p-6 rounded-xl shadow-sm"
+                                className="employee-log-record bg-white border border-slate-100 p-6 rounded-xl shadow-sm"
                             >
                                 <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
                                     <div className="flex items-center gap-3 min-w-0">
-                                        <div className="w-12 h-14 bg-black rounded-xl flex flex-col items-center justify-center text-white">
+                                        <div className="employee-record-date w-12 h-14 bg-black rounded-xl flex flex-col items-center justify-center text-white">
                                             <span className="text-xs font-medium">{actualIn.toLocaleDateString('en-US', { month: 'short' })}</span>
                                             <span className="text-sm font-medium mt-1">{actualIn.getDate()}</span>
                                         </div>
@@ -251,7 +251,7 @@ export default function ActivityLogView({ userId }: { userId: string }) {
 
 function StatCard({ label, value, icon, color, bg }: any) {
     return (
-        <div className={`${bg} p-4 rounded-xl border border-black/5 shadow-sm`}>
+        <div className={`employee-stat ${bg} p-4 rounded-xl border border-black/5 shadow-sm`}>
             <div className={`flex items-center gap-2 ${color} mb-1`}>
                 {icon}
                 <span className="text-xs font-medium tracking-normal">{label}</span>

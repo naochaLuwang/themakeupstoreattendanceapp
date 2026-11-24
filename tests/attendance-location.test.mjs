@@ -120,3 +120,15 @@ test('store day is correct before UTC midnight', () => {
     vm.runInNewContext(`(function(module,exports) { ${source}\n})`, {})(compiledModule, compiledModule.exports);
     assert.equal(compiledModule.exports.getAttendanceDate(new Date('2026-11-22T19:00:00Z')), '2026-11-23');
 });
+
+test('a stricter branch accuracy policy refines an otherwise acceptable nearby fix', async () => {
+    let watches = 0;
+    const service = loadService({
+        getCurrentPosition: success => queueMicrotask(() => success(position({ accuracy: 60 }))),
+        watchPosition: success => { watches++; queueMicrotask(() => success(position({ accuracy: 12 }))); return 7; },
+    });
+    const result = await service.getClockInLocation(store, () => {}, undefined, { maxAccuracyMeters: 50, maxLocationAgeSeconds: 30 });
+    assert.equal(watches, 1);
+    assert.equal(result.coords.accuracy, 12);
+    assert.deepEqual(service.cleared, [7]);
+});

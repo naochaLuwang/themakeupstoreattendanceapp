@@ -1,0 +1,85 @@
+{
+  "fixtureData": "Fictional local records; no production database connection",
+  "checks": [
+    {
+      "test": "idle light swipe above navigation at 360x640",
+      "exists": true,
+      "top": 276.546875,
+      "bottom": 330.546875,
+      "navTop": 571,
+      "overflow": false
+    },
+    {
+      "test": "idle dark swipe above navigation at 360x640",
+      "exists": true,
+      "top": 276.546875,
+      "bottom": 330.546875,
+      "navTop": 571,
+      "overflow": false
+    },
+    {
+      "test": "active light swipe above navigation at 360x640",
+      "exists": true,
+      "top": 287.296875,
+      "bottom": 341.296875,
+      "navTop": 571,
+      "overflow": false
+    },
+    {
+      "test": "active dark swipe above navigation at 360x640",
+      "exists": true,
+      "top": 287.296875,
+      "bottom": 341.296875,
+      "navTop": 571,
+      "overflow": false
+    },
+    {
+      "test": "Swipe visible with 48px less WebView height",
+      "exists": true,
+      "top": 276.546875,
+      "bottom": 330.546875,
+      "navTop": 523,
+      "overflow": false
+    },
+    {
+      "test": "Partial swipe never submits attendance",
+      "passed": true
+    },
+    {
+      "test": "Clock-in uses today’s shift after browsing January",
+      "passed": true
+    },
+    {
+      "test": "Re-entry stays on completed shift and disables duplicate requests",
+      "passed": true
+    },
+    {
+      "test": "off does not offer clock-in",
+      "passed": true
+    },
+    {
+      "test": "leave does not offer clock-in",
+      "passed": true
+    },
+    {
+      "test": "Clock-out works during schedule failure and loads server completion time",
+      "passed": true
+    },
+    {
+      "test": "Previous-day active attendance remains accessible",
+      "passed": true
+    },
+    {
+      "test": "More operations expands and active Home returns to attendance",
+      "passed": true
+    },
+    {
+      "test": "Existing future shift-change form submits the selected future shift",
+      "passed": true
+    },
+    {
+      "test": "Attendance blocks changes to the worked shift",
+      "passed": true
+    }
+  ]
+}

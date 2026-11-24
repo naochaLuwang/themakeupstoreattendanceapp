@@ -79,3 +79,88 @@
 .employee-ops-link { display: flex; align-items: center; flex-shrink: 0; gap: 8px; padding: 12px; min-height: 44px; border-radius: 8px; font-size: 13px; color: var(--store-secondary); }
 .employee-ops-link:hover { background: var(--store-raised); }
 .employee-ops-link[aria-current='page'] { color: var(--store-accent-ink); background: var(--store-accent-soft); }
+
+/* Today comes before schedule browsing, including on the smallest phone screens. */
+.employee-home { color: var(--store-ink); }
+.employee-home-greeting { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.employee-home-greeting h1 { margin: 0; font-size: 20px; line-height: 1.3; font-weight: 500; overflow-wrap: anywhere; }
+.employee-home-greeting p { flex-shrink: 0; margin: 0; font-size: 12px; color: var(--store-muted); }
+.employee-home-grid, .employee-home-primary { display: grid; gap: 20px; min-width: 0; align-content: start; }
+.employee-today-card { padding: 18px; border: 1px solid var(--store-border); border-radius: 16px; background: var(--store-surface); scroll-margin-top: 16px; }
+.employee-today-heading, .employee-schedule-heading, .employee-selected-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.employee-today-heading h2, .employee-schedule-heading h2 { margin: 0; font-size: 15px; font-weight: 500; }
+.employee-attendance-status { display: inline-flex; align-items: center; gap: 6px; border-radius: 20px; padding: 4px 8px; font-size: 11px; color: var(--store-secondary); background: var(--store-raised); white-space: nowrap; }
+.employee-attendance-status i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.employee-today-card[data-status='active'] .employee-attendance-status, .employee-today-card[data-status='completed'] .employee-attendance-status { background: var(--store-positive-soft); color: var(--store-positive); }
+.employee-attendance-summary { padding: 18px 0 16px; }
+.employee-attendance-summary p { margin: 6px 0 0; color: var(--store-muted); font-size: 12px; }
+.employee-today-shift-time { display: flex; align-items: baseline; flex-wrap: wrap; gap: 9px; font-size: clamp(25px, 7.5vw, 34px); line-height: 1.15; font-variant-numeric: tabular-nums; letter-spacing: -1px; }
+.employee-today-shift-time > span { white-space: nowrap; }
+.employee-today-shift-time > span:nth-child(2) { font-size: 20px; color: var(--store-muted); }
+.employee-today-shift-time small { margin-left: 4px; font-size: 12px; color: var(--store-secondary); letter-spacing: 0; }
+.employee-attendance-store { display: flex; align-items: center; gap: 5px; }
+.employee-attendance-store svg { flex-shrink: 0; }
+.employee-attendance-timer { font-size: 38px; letter-spacing: -1px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.employee-attendance-finished { display: flex; align-items: center; gap: 10px; color: var(--store-positive); }
+.employee-attendance-finished strong { color: var(--store-ink); font-size: 30px; font-weight: 500; }
+.employee-attendance-empty { font-size: 22px; font-weight: 500; }
+.employee-attendance-loading { display: flex; align-items: center; gap: 10px; min-height: 36px; font-size: 18px; }
+.employee-attendance-hint { margin: 8px 0 0; font-size: 11px; text-align: center; color: var(--store-muted); }
+.employee-reentry-link { display: block; width: 100%; padding: 8px 0; text-align: left; font-size: 12px; color: var(--store-accent-ink); text-decoration: underline; text-underline-offset: 3px; }
+.employee-reentry-link:disabled { color: var(--store-muted); text-decoration: none; }
+.employee-attendance-problem, .employee-schedule-error { padding: 12px; margin-top: 12px; border-radius: 8px; background: var(--store-negative-soft); color: var(--store-negative); font-size: 13px; }
+.employee-attendance-problem p, .employee-schedule-error p { margin: 0; }
+.employee-attendance-problem button, .employee-schedule-error button { text-decoration: underline; text-underline-offset: 3px; text-align: left; }
+.employee-quick-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.employee-quick-actions > :is(a, button) { display: flex; align-items: center; gap: 9px; min-height: 64px; padding: 12px; border: 1px solid var(--store-border); border-radius: 12px; background: var(--store-surface); color: var(--store-secondary); font-size: 12px; text-align: left; }
+.employee-quick-actions > :is(a, button):hover { background: var(--store-raised); }
+.employee-quick-actions > :is(a, button) > svg:first-child { flex-shrink: 0; color: var(--store-accent-ink); }
+.employee-quick-actions button > svg:last-child { flex-shrink: 0; margin-left: auto; }
+.employee-chevron-open { transform: rotate(180deg); }
+.employee-more-operations:not([hidden]) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 12px 0 0; }
+.employee-more-operations a { display: flex; align-items: center; gap: 8px; padding: 10px; min-height: 48px; border-radius: 8px; color: var(--store-secondary); font-size: 12px; }
+.employee-more-operations a:hover { background: var(--store-raised); }
+.employee-more-operations svg { flex-shrink: 0; }
+.employee-home-schedule { padding: 16px; border: 1px solid var(--store-border); border-radius: 16px; background: var(--store-surface); min-width: 0; }
+.employee-schedule-toggle { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--store-accent-ink); }
+.employee-schedule-navigation { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 6px -8px; }
+.employee-schedule-navigation p { margin: 0; font-size: 13px; color: var(--store-secondary); }
+.employee-home-dates { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+.employee-weekday { text-align: center; padding-bottom: 6px; font-size: 11px; color: var(--store-muted); }
+.employee-home-date { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-width: 0; min-height: 64px; border: 1px solid transparent; border-radius: 10px; font-size: 15px; line-height: 1; color: var(--store-secondary); font-variant-numeric: tabular-nums; }
+.employee-date-weekday { font-size: 10px; color: var(--store-muted); }
+.employee-home-date i, .employee-home-legend i { display: block; width: 5px; height: 5px; border-radius: 50%; background: var(--store-border); }
+.employee-home-date.is-work i, .employee-home-legend .is-work { background: var(--store-positive); }
+.employee-home-date.is-leave i, .employee-home-legend .is-leave { background: var(--store-warning); }
+.employee-home-date.is-loading { background: var(--store-raised); }
+.employee-home-date[aria-current='date'] { border-color: var(--store-accent); }
+.employee-home-date:hover:not(:disabled) { background: var(--store-raised); }
+.employee-home-date[aria-pressed='true'] { background: var(--store-accent); color: var(--store-on-solid); }
+.employee-home-date[aria-pressed='true'] .employee-date-weekday { color: inherit; }
+.employee-home-date[aria-pressed='true'] i { background: var(--store-on-solid); }
+.employee-home-date.is-adjacent:not([aria-pressed='true']) { color: var(--store-muted); }
+.employee-home-dates.is-month .employee-home-date { min-height: 44px; gap: 5px; font-size: 13px; }
+.employee-home-legend { display: flex; align-items: center; gap: 16px; margin-top: 12px; color: var(--store-muted); font-size: 11px; }
+.employee-home-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.employee-selected-shift { border-top: 1px solid var(--store-border); margin-top: 16px; padding-top: 8px; }
+.employee-selected-heading { min-height: 44px; }
+.employee-selected-heading h3 { margin: 0; font-size: 13px; font-weight: 500; }
+.employee-selected-heading button { font-size: 12px; color: var(--store-accent-ink); }
+.employee-selected-label { margin: 0; font-size: 12px; color: var(--store-muted); }
+.employee-selected-time { margin: 4px 0 8px; font-size: 18px; }
+.employee-request-change, .employee-pending-request button { display: flex; align-items: center; gap: 7px; margin-top: 8px; font-size: 12px; color: var(--store-accent-ink); }
+.employee-shift-locked { display: flex; align-items: center; gap: 6px; margin: 12px 0 4px; font-size: 11px; color: var(--store-muted); }
+.employee-pending-request { border-radius: 8px; background: var(--store-raised); padding: 12px; margin-top: 12px; font-size: 12px; }
+.employee-pending-request p { margin: 0 0 6px; overflow-wrap: anywhere; }
+.employee-pending-request p + p { color: var(--store-muted); }
+@media (max-width: 639px) {
+  .employee-content { padding-top: 16px; }
+  .employee-brand-mobile { margin-bottom: 16px; padding-bottom: 12px; gap: 8px; }
+}
+@media (min-width: 900px) {
+  .employee-home-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+  .employee-home-greeting { margin-bottom: 24px; }
+  .employee-today-card { padding: 24px; }
+  .employee-attendance-summary { padding: 24px 0; }
+  .employee-home-schedule { padding: 20px; }
+}

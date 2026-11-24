@@ -17,14 +17,14 @@ export default async function ProfileWrapper() {
         .single();
 
     return (
-        <div className="space-y-6">
+        <div className="employee-screen employee-profile-screen space-y-6">
 
-            <header>
+            <header className="employee-page-heading">
                 <h1 className="text-3xl font-medium text-slate-900">Profile</h1>
                 <p className="mt-2 text-sm text-slate-500">Your details, password, and payslips</p>
             </header>
             {/* High-Design Profile Header */}
-            <div className="flex items-center gap-4">
+            <div className="employee-profile-identity flex items-center gap-4">
                 <div className="employee-profile-avatar">
                     {profile?.full_name?.[0] || 'U'}
                 </div>
@@ -39,7 +39,7 @@ export default async function ProfileWrapper() {
             </div>
 
             {/* Action Grid using native Details/Summary for accordions */}
-            <div className="bg-white rounded-xl md:rounded-xl border border-neutral-100 overflow-hidden">
+            <div className="employee-account-list bg-white rounded-xl md:rounded-xl border border-neutral-100 overflow-hidden">
 
                 {/* Personal details Section */}
                 <details className="group border-b border-neutral-50 outline-none">

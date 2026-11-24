@@ -1,4 +1,5 @@
 'use client';
+import { forceAttendanceClockOut } from '@/app/actions/manual-attendance';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Play, ShieldAlert, Users, CheckCircle2, Loader2, RefreshCw } from 'lucide-react';
@@ -28,15 +29,12 @@ export default function AttendanceOversight() {
     useEffect(() => { fetchStats(); }, []);
 
     const handleForceCheckout = async (attendanceId: string) => {
-        const { error } = await supabase.from('attendance')
-            .update({ check_out: new Date().toISOString() })
-            .eq('id', attendanceId);
-
-        if (!error) {
-            toast.success("Employee manually clocked out.");
+        const result = await forceAttendanceClockOut(attendanceId);
+        if (result.success) {
+            toast.success('Employee manually clocked out.');
             fetchStats();
         } else {
-            toast.error("Failed to clock out employee.");
+            toast.error(result.error || 'Failed to clock out employee.');
         }
     };
 

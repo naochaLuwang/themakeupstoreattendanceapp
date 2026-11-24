@@ -1,0 +1,26 @@
+{
+  "passed": 21,
+  "checks": [
+    "migration applies, reruns, and backfills completed historical attendance",
+    "worked time, label, employee and delete mutations are rejected by database triggers",
+    "checkout retains the lock and harmless no-op updates remain allowed",
+    "attendance deletion or a direct attempt to clear the marker cannot unlock a worked shift",
+    "worked request creation is blocked while a future unworked shift remains requestable",
+    "request created before clock-in cannot be approved after attendance begins",
+    "worked target is checked and a failed second batch update rolls back the first update",
+    "a peer who clocks in after submission blocks the entire peer exchange",
+    "an eligible unworked peer exchange still commits both employee assignments",
+    "valid approval commits once and repeated approval is rejected",
+    "a stale admin tab cannot approve a cancelled request",
+    "both stale publisher snapshots and changed request snapshots are rejected",
+    "an off-day request becomes stale if another shift is added to its target date",
+    "submitted request contents are immutable and duplicate pending requests are rejected",
+    "RPC enforces staff roles and manager store scope; anonymous callers cannot execute it",
+    "legacy/unlinked attendance permanently locks the matching employee business day",
+    "attendance cannot be attached to another employee\u2019s shift",
+    "concurrent clock-in wins: schedule mutation waits and then sees the permanent lock",
+    "concurrent schedule move wins: stale clock-in is rejected rather than mislinked",
+    "concurrent unlinked clock-in also prevents creating a schedule after attendance starts",
+    "separate accidental-checkout request workflow remains available"
+  ]
+}

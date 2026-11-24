@@ -1,0 +1,97 @@
+{
+  "fixtureData": "Actual scanner, decoder and UI; synthetic local camera frames and fictional intercepted attendance API; no hosted database or physical camera",
+  "checks": [
+    {
+      "test": "Actual ZXing decoder reads a synthetic live-camera QR and submits one geotagged scan",
+      "passed": true
+    },
+    {
+      "test": "Repeated camera frames never submit twice, and success releases camera tracks",
+      "passed": true
+    },
+    {
+      "test": "Confirmed clock-in refreshes attendance and emits success feedback",
+      "passed": true
+    },
+    {
+      "test": "Scanning while active shows the exact session and requires explicit clock-out confirmation",
+      "passed": true
+    },
+    {
+      "test": "Explicit confirmation obtains location again and submits the server confirmation handle",
+      "passed": true
+    },
+    {
+      "test": "Expired confirmation disables clock-out and requests a fresh scan",
+      "passed": true
+    },
+    {
+      "test": "A stale-session refusal stays an error and never shows completed attendance",
+      "passed": true
+    },
+    {
+      "test": "A lost response can be retried with the exact operation UUID and GPS payload",
+      "passed": true
+    },
+    {
+      "test": "Denied camera permission explains recovery and keeps manual attendance accessible",
+      "passed": true
+    },
+    {
+      "test": "Retry starts the camera after permission is restored",
+      "passed": true
+    },
+    {
+      "test": "Denied location submits nothing and releases the scanner",
+      "passed": true
+    },
+    {
+      "test": "Backgrounding stops camera; returning requires an explicit resume",
+      "passed": true
+    },
+    {
+      "test": "Pause releases camera resources",
+      "passed": true
+    },
+    {
+      "test": "disabled attendance never asks for camera access",
+      "passed": true
+    },
+    {
+      "test": "completed attendance never asks for camera access",
+      "passed": true
+    },
+    {
+      "test": "review attendance never asks for camera access",
+      "passed": true
+    },
+    {
+      "test": "Unrelated QR URLs stay local and never navigate or submit attendance",
+      "passed": true
+    },
+    {
+      "test": "Offline scanning never submits or queues attendance",
+      "passed": true
+    },
+    {
+      "test": "Smart Scan ends stalled GPS acquisition after its 15-second deadline",
+      "passed": true
+    },
+    {
+      "test": "Scanner waiting fits 360px in dark theme",
+      "passed": true
+    },
+    {
+      "test": "Scanner active fits 360px in dark theme",
+      "passed": true
+    },
+    {
+      "test": "Scanner waiting fits 768px in light theme",
+      "passed": true
+    },
+    {
+      "test": "Scanner active fits 1280px in dark theme",
+      "passed": true
+    }
+  ]
+}

@@ -92,9 +92,9 @@ export default function EmployeePayslipsClient({ history }: { history: any[] }) 
     }
 
     return (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="employee-payslip-list grid grid-cols-1 gap-4">
             {history.map((rec) => (
-                <div key={rec.id} className="bg-white p-6 rounded-xl border border-black/5 flex items-center justify-between gap-4">
+                <div key={rec.id} className="employee-payslip-record bg-white p-6 rounded-xl border border-black/5 flex items-center justify-between gap-4">
                     <div>
                         <p className="text-lg font-medium text-slate-900 tracking-normal">
                             {mounted ? new Date(rec.month_year).toLocaleString('en-IN', { month: 'long', year: 'numeric' }) : '---'}

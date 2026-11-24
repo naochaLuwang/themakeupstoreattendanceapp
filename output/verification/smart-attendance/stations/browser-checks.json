@@ -1,0 +1,93 @@
+{
+  "fixtureData": "Real components, fictional local records and simulated station API; no production connection",
+  "checks": [
+    {
+      "test": "Unpaired display shows a short pairing challenge without a QR",
+      "passed": true
+    },
+    {
+      "test": "Administrator approval is detected and produces a setup-mode QR",
+      "passed": true
+    },
+    {
+      "test": "A due refresh rotates the QR automatically",
+      "passed": true
+    },
+    {
+      "test": "Going offline immediately hides the QR",
+      "passed": true
+    },
+    {
+      "test": "Reconnection recovers a current QR",
+      "passed": true
+    },
+    {
+      "test": "A hidden tab clears the code and becoming visible reloads it",
+      "passed": true
+    },
+    {
+      "test": "Revocation clears QR and stops automatic credential retries",
+      "passed": true
+    },
+    {
+      "test": "A lost issuance response retries the same UUID and creates one QR",
+      "passed": true
+    },
+    {
+      "test": "An elapsed monotonic deadline hides an expired QR",
+      "passed": true
+    },
+    {
+      "test": "Unpair removes the QR and returns to authorization",
+      "passed": true
+    },
+    {
+      "test": "Missing station ID does not send display requests",
+      "passed": true
+    },
+    {
+      "test": "Display fits 360px in light theme",
+      "passed": true
+    },
+    {
+      "test": "Display fits 360px in dark theme",
+      "passed": true
+    },
+    {
+      "test": "Display fits 768px in light theme",
+      "passed": true
+    },
+    {
+      "test": "Display fits 768px in dark theme",
+      "passed": true
+    },
+    {
+      "test": "Display fits 1280px in light theme",
+      "passed": true
+    },
+    {
+      "test": "Display fits 1280px in dark theme",
+      "passed": true
+    },
+    {
+      "test": "Mobile management creates a named station through its form",
+      "passed": true
+    },
+    {
+      "test": "Management edits station settings with its expected version",
+      "passed": true
+    },
+    {
+      "test": "Management submits the displayed pairing code and device name",
+      "passed": true
+    },
+    {
+      "test": "Management confirms and submits device revocation",
+      "passed": true
+    },
+    {
+      "test": "Management fits desktop in dark theme",
+      "passed": true
+    }
+  ]
+}

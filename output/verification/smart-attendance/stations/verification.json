@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-24",
+  "productionChanged": false,
+  "qrAttendanceEnabled": false,
+  "build": "passed",
+  "typecheck": "passed",
+  "stationAndIntegrationEslint": "passed",
+  "nodeTests": 68,
+  "stationDatabaseScenarios": 12,
+  "attendanceDatabaseRegressionScenarios": 25,
+  "shiftDatabaseRegressionScenarios": 21,
+  "stationBrowserChecks": 22,
+  "qrScreenshotDecoded": true,
+  "physicalAndroidTested": false,
+  "repositoryLint": "previous unrelated failures remain",
+  "localProductionRouteChecks": 5
+}

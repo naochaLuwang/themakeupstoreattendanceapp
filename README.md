@@ -1,3 +1,9 @@
+## Attendance infrastructure update
+
+The attendance adapters require migrations **005 and 006**, QR stations additionally require **007**, and Employee Smart Scan requires **20261124080524_attendance_smart_scan.sql**, before deploying matching web code. Migration 006 adds the centralized attendance engine, audit trail and per-store staged enforcement. Rehearse on the real staging schema first; no production migration or deployment has been performed.
+
+Start with [the implementation report](docs/smart-attendance/implementation-report.md), [rollout and rollback](docs/smart-attendance/platform-setup.md), and [progress checklist](docs/smart-attendance/progress.md). [QR stations](docs/smart-attendance/stations.md) and [Employee Smart Scan](docs/smart-attendance/smart-scan.md) are implemented locally. Branch QR flags remain off pending staging/device checks. Intelligent reminders remain the next module.
+
 <a href="https://demo-nextjs-with-supabase.vercel.app/">
   <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
   <h1 align="center">Next.js and Supabase Starter Kit</h1>

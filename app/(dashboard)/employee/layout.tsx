@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import WorkspaceSkeleton from '@/components/WorkspaceSkeleton';
 import '@/components/workspace.css';
 import './employee.css';
+import './employee-design.css';
 import NavWrapper from '@/components/employee/NavWrapper';
 import ThemeToggle from '@/components/ThemeToggle';
 import AppBrand from '@/components/AppBrand';

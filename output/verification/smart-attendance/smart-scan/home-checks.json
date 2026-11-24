@@ -1,0 +1,16 @@
+[
+  {
+    "test": "light: primary Smart Scan stays above dock and manual fallback hash opens swipe",
+    "bottom": 322.09375,
+    "navTop": 554,
+    "overflow": false,
+    "passed": true
+  },
+  {
+    "test": "dark: primary Smart Scan stays above dock and manual fallback hash opens swipe",
+    "bottom": 322.09375,
+    "navTop": 554,
+    "overflow": false,
+    "passed": true
+  }
+]

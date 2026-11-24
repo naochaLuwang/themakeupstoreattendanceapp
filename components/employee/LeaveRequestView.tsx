@@ -58,8 +58,8 @@ export default function LeaveRequestView({ userId }: { userId: string }) {
     };
 
     return (
-        <div className="space-y-6">
-            <header className="flex items-end justify-between">
+        <div className="employee-screen employee-leave-screen space-y-6">
+            <header className="employee-page-heading flex items-end justify-between">
                 <div>
                     <p className="text-sm font-medium text-slate-500 tracking-normal mb-1">Time off</p>
                     <h1 className="text-3xl font-medium text-slate-900">Leave requests</h1>
@@ -69,7 +69,7 @@ export default function LeaveRequestView({ userId }: { userId: string }) {
                 </button>
             </header>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="employee-leave-totals grid grid-cols-2 gap-4">
                 <div className="bg-white border border-slate-100 p-6 rounded-xl shadow-sm">
                     <p className="text-xs font-medium text-slate-500 tracking-normal mb-1">Approved requests</p>
                     <p className="text-3xl font-medium text-slate-900">{stats.approved}</p>
@@ -80,12 +80,12 @@ export default function LeaveRequestView({ userId }: { userId: string }) {
                 </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="employee-leave-history space-y-4">
                 <div className="flex items-center justify-between px-2">
                     <h3 className="text-sm font-medium text-slate-500 tracking-normal flex items-center gap-2"><Clock size={12} /> Recent requests</h3>
                 </div>
                 {history.map(req => (
-                    <div key={req.id} className="bg-white border border-slate-100 p-5 rounded-xl flex items-start justify-between">
+                    <div key={req.id} className="employee-leave-record bg-white border border-slate-100 p-5 rounded-xl flex items-start justify-between">
                         <div>
                             <p className="text-xs font-medium text-slate-900 flex items-center gap-2">{req.start_date} <ArrowRight size={10} className="text-slate-500" /> {req.end_date}</p>
                             <p className="text-sm text-slate-500 font-medium mt-1.5 pr-4 leading-relaxed">"{req.reason}"</p>

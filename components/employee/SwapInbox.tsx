@@ -41,8 +41,8 @@ export default function SwapInbox({ userId }: { userId: string }) {
 
 
     return (
-        <div className="space-y-6">
-            <header className="space-y-2">
+        <div className="employee-screen employee-inbox-screen space-y-6">
+            <header className="employee-page-heading space-y-2">
                 <div className="flex items-center  gap-2 mb-1">
                     <div className="w-2 h-2 rounded-full bg-slate-900" />
                     <span className="text-sm font-medium tracking-normal text-slate-500">Shift requests</span>
@@ -50,7 +50,7 @@ export default function SwapInbox({ userId }: { userId: string }) {
                 <h1 className="text-3xl font-medium text-slate-900">Inbox</h1>
             </header>
 
-            <div className="space-y-4">
+            <div className="employee-inbox-list space-y-4">
                 {loading ? (
                     <div className="flex justify-center py-20"><Loader2 className="animate-spin" /></div>
                 ) : requests.length > 0 ? (
@@ -61,7 +61,7 @@ export default function SwapInbox({ userId }: { userId: string }) {
                             return (
                                 <div
                                     key={req.id}
-                                    className="bg-white border border-slate-100 p-6 rounded-xl shadow-sm"
+                                    className="employee-inbox-record bg-white border border-slate-100 p-6 rounded-xl shadow-sm"
                                 >
                                     <div className="flex justify-between items-start mb-6">
                                         <div className="flex items-center gap-4">

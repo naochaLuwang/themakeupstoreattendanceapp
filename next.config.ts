@@ -16,6 +16,7 @@ const withPWA = withPWAInit({
     clientsClaim: true,
     importScripts: ['/push-worker.js'], // Load stable, non-hashed push logic
     runtimeCaching: [
+      { urlPattern: ({ url }) => url.pathname === '/attendance-station' || url.pathname === '/employee/smart-scan' || url.pathname === '/api/attendance/smart-scan' || url.pathname.startsWith('/api/attendance/station/'), handler: 'NetworkOnly' },
       {
         urlPattern: ({ request }) => request.mode === 'navigate',
         handler: 'NetworkFirst',
@@ -36,7 +37,14 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async headers() {
+    return ['/attendance-station', '/employee/smart-scan'].map(source => ({ source, headers: [
+      { key: 'Cache-Control', value: 'no-store, private' },
+      { key: 'Referrer-Policy', value: 'no-referrer' },
+      { key: 'X-Frame-Options', value: 'DENY' },
+      { key: 'Content-Security-Policy', value: "frame-ancestors 'none'" },
+    ] }));
+  },
 
   experimental: {
     serverActions: {

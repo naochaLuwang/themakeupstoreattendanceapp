@@ -1,0 +1,50 @@
+[
+  {
+    "file": "app/(dashboard)/employee/layout.tsx",
+    "existingErrors": 0,
+    "existingWarnings": 0,
+    "newFindings": 0
+  },
+  {
+    "file": "app/(dashboard)/employee/payslips/page.tsx",
+    "existingErrors": 0,
+    "existingWarnings": 0,
+    "newFindings": 0
+  },
+  {
+    "file": "app/(dashboard)/employee/store-operations/layout.tsx",
+    "existingErrors": 0,
+    "existingWarnings": 0,
+    "newFindings": 0
+  },
+  {
+    "file": "components/employee/ActivityLogViews.tsx",
+    "existingErrors": 2,
+    "existingWarnings": 1,
+    "newFindings": 0
+  },
+  {
+    "file": "components/employee/EmployeePayslipsClient.tsx",
+    "existingErrors": 2,
+    "existingWarnings": 0,
+    "newFindings": 0
+  },
+  {
+    "file": "components/employee/LeaveRequestView.tsx",
+    "existingErrors": 3,
+    "existingWarnings": 1,
+    "newFindings": 0
+  },
+  {
+    "file": "components/employee/ProfileWrapper.tsx",
+    "existingErrors": 0,
+    "existingWarnings": 0,
+    "newFindings": 0
+  },
+  {
+    "file": "components/employee/SwapInbox.tsx",
+    "existingErrors": 0,
+    "existingWarnings": 0,
+    "newFindings": 0
+  }
+]

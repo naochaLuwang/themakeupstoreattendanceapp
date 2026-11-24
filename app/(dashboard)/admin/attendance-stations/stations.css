@@ -1,0 +1,39 @@
+.station-management { max-width: 1120px; }
+.station-management-heading,.station-card-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+.station-management-heading p,.station-card-heading p { margin-top: 8px; font-size: 13px; color: var(--store-muted); }
+.station-management :is(button,a) { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 12px; border-radius: 10px; font-size: 12px; color: var(--store-secondary); }
+.station-management .station-admin-primary { background: var(--store-accent); color: var(--store-on-solid); }
+.station-management :is(button,a):hover { opacity: .85; }
+.station-management :is(button,input,select):disabled { opacity: .5; cursor: not-allowed; }
+.station-setup-note { display: flex; align-items: flex-start; gap: 10px; padding: 16px; border: 1px solid var(--store-border); border-radius: 12px; background: var(--store-accent-soft); color: var(--store-accent-ink); font-size: 13px; }
+.station-setup-note svg { flex-shrink: 0; }
+.station-admin-list { display: grid; gap: 20px; }
+.station-admin-card,.station-admin-form,.station-admin-empty { padding: 24px; border: 1px solid var(--store-border); border-radius: 16px; background: var(--store-surface); }
+.station-management h2 { font-size: 20px; font-weight: 500; overflow-wrap: anywhere; }
+.station-admin-online { font-size: 12px; color: var(--store-muted); }
+.station-admin-online[data-online='true'] { color: var(--store-positive); }
+.station-stats { display: flex; flex-wrap: wrap; gap: 32px; margin: 24px 0 16px; }
+.station-stats dt { color: var(--store-muted); font-size: 12px; }
+.station-stats dd { margin-top: 8px; font-size: 24px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.station-card-actions,.station-form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.station-card-actions { border-top: 1px solid var(--store-border); padding-top: 12px; }
+.station-card-actions > a { color: var(--store-accent-ink); }
+.station-device-list { border-top: 1px solid var(--store-border); margin-top: 16px; }
+.station-device-list > div { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 0; }
+.station-device-list > div + div { border-top: 1px solid var(--store-border); }
+.station-device-list strong { font-weight: 500; font-size: 13px; }
+.station-device-list p { font-size: 12px; color: var(--store-muted); margin-top: 6px; overflow-wrap: anywhere; }
+.station-device-list button { color: var(--store-negative); }
+.station-admin-form h2 { margin-bottom: 20px; }
+.station-form-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
+.station-management label { display: grid; gap: 8px; font-size: 12px; color: var(--store-secondary); }
+.station-management :is(input,select) { min-height: 48px; width: 100%; min-width: 0; border: 1px solid var(--store-border); border-radius: 10px; background: var(--store-surface); padding: 12px; color: var(--store-ink); font-size: 14px; }
+.station-admin-form > p,.station-pair-form > p { margin: 20px 0; color: var(--store-muted); font-size: 12px; line-height: 1.6; }
+.station-pair-form { display: grid; gap: 16px; margin-top: 16px; padding: 20px; border-radius: 12px; background: var(--store-raised); }
+.station-pair-form > p { margin: 0; }
+.station-admin-error { padding: 16px; border: 1px solid var(--store-negative); border-radius: 12px; background: var(--store-negative-soft); color: var(--store-negative); font-size: 13px; }
+.station-admin-notice { padding: 16px; border-radius: 12px; background: var(--store-positive-soft); color: var(--store-positive); font-size: 13px; }
+.station-admin-empty { text-align: center; padding-block: 48px; }
+.station-admin-empty svg { margin: 0 auto 16px; color: var(--store-accent); }
+.station-admin-empty p { margin: 12px auto 0; max-width: 460px; color: var(--store-muted); font-size: 13px; line-height: 1.7; }
+@media(max-width:600px) { .station-admin-card,.station-admin-form { padding: 20px; } .station-form-grid { grid-template-columns: minmax(0,1fr); } .station-management :is(input,select) { font-size: 16px; } .station-stats { gap: 24px; } .station-stats dd { font-size: 22px; } }

@@ -1,0 +1,79 @@
+Employee home — Today-first mobile layout (24 November 2026)
+============================================================
+
+The employee home now presents attendance before schedule browsing. On mobile,
+its order is compact workspace branding, greeting/date, today's attendance,
+a 2-by-2 group of work shortcuts, then the schedule and selected-day details.
+Desktop presents attendance/actions alongside the schedule.
+
+Attendance
+----------
+The top card shows today's scheduled time before clock-in, a live elapsed timer
+while working, or actual check-in/out times and worked duration after checkout.
+Day-off, approved-leave, loading and error states are explicit. Active attendance
+from a previous business day remains visible and can be clocked out.
+
+Attendance reads and today's schedule do not depend on the calendar selection.
+Browsing another week or month cannot change the shift ID submitted by clock-in.
+Re-entry uses the completed attendance record's shift; legacy unlinked records
+can resolve through that record's business date and today's schedule. Pending
+requests are checked before allowing re-entry, and successful requests disable
+repeat submission. Records that cannot be linked ask for a manager review.
+
+Clock-out remains available during schedule errors and does not require GPS.
+Completion is refreshed from the server; the client does not invent a checkout
+timestamp. Existing GPS/geofence handling, swipe keyboard accessibility, haptic
+feedback, shift locks, request approval and request cancellation are retained.
+No operation is automatically replayed after a network failure.
+
+Schedule and navigation
+-----------------------
+The schedule starts with a Monday-first week strip. Full month expands the same
+schedule, including adjacent dates needed to fill complete weeks. Date selection
+uses YYYY-MM-DD rather than a day number shared across different months. Leave
+queries use overlapping start/end boundaries, not an OR that matches all leave.
+Async read version checks prevent older month responses replacing newer results.
+
+My tasks and Daily checklist open the existing employee pages; Report an issue
+opens the existing incident form. More operations expands the other module links.
+Tapping Home while already on Home scrolls back to the attendance card and moves
+keyboard focus there. Existing bottom navigation and native keyboard handling
+remain compatible.
+
+Schedule wall-clock dates/hours retain the project's existing convention. Actual
+attendance timestamps and the definition of today use Asia/Kolkata. This change
+adds no tables, columns, migrations, routes or permission changes.
+
+Verification
+------------
+  npm run build                         Passed
+  npm run typecheck                     Passed after build
+  node --test tests/*.test.mjs           40 passed, including six new schedule tests
+  ESLint on all changed JS/TS files     Passed
+  git diff --check                      Passed
+
+Full-repository ESLint remains unsuccessful: 26,624 errors and 31 warnings across
+existing/generated files, including .next and generated workers. None of the
+changed JS/TS files has a lint finding. Unrelated files were not rewritten.
+
+Cached headless Chromium rendered the actual React components with fictional
+local Supabase responses and intercepted attendance writes. It did not query or
+write production employee data. Fifteen browser assertions cover light/dark
+360x640 layouts, a 360x592 viewport, partial/full swipes, calendar-independent
+clock-in/re-entry, duplicate re-entry prevention, off/leave states, overnight
+attendance, clock-out during schedule errors, Home scrolling, More operations,
+future shift-change submission and locked worked shifts. Desktop was also
+inspected at 1280x900. Results and screenshots are in:
+  output/verification/employee-home/
+
+A physical Android device was not used. These are web changes: the installed
+Capacitor app loads the hosted Next.js app, so deploy the web source to make the
+new home appear there. This batch does not deploy the app, alter the existing APK
+or apply database migrations. Preserve the existing deployment order described
+in docs/shift-locking.txt for the pending shift-protection changes.
+
+Current attendance infrastructure
+---------------------------------
+The later smart-attendance foundation now supplies authoritative state, policy,
+metadata and write handling for this same layout. Deploy migrations 005 and 006
+before the current web adapters; see docs/smart-attendance/platform-setup.md.

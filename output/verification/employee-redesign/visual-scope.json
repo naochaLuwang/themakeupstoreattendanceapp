@@ -1,0 +1,34 @@
+[
+  {
+    "file": "components/employee/ActivityLogViews.tsx",
+    "result": "Identical after removing CSS classes and the added stylesheet import"
+  },
+  {
+    "file": "components/employee/LeaveRequestView.tsx",
+    "result": "Identical after removing CSS classes and the added stylesheet import"
+  },
+  {
+    "file": "components/employee/SwapInbox.tsx",
+    "result": "Identical after removing CSS classes and the added stylesheet import"
+  },
+  {
+    "file": "components/employee/ProfileWrapper.tsx",
+    "result": "Identical after removing CSS classes and the added stylesheet import"
+  },
+  {
+    "file": "components/employee/EmployeePayslipsClient.tsx",
+    "result": "Identical after removing CSS classes and the added stylesheet import"
+  },
+  {
+    "file": "app/(dashboard)/employee/payslips/page.tsx",
+    "result": "Identical after removing CSS classes and the added stylesheet import"
+  },
+  {
+    "file": "app/(dashboard)/employee/store-operations/layout.tsx",
+    "result": "Identical after removing CSS classes and the added stylesheet import"
+  },
+  {
+    "file": "app/(dashboard)/employee/layout.tsx",
+    "result": "Identical after removing CSS classes and the added stylesheet import"
+  }
+]

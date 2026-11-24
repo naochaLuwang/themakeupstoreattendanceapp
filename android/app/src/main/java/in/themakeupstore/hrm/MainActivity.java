@@ -21,6 +21,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.URLUtil;
+import android.webkit.PermissionRequest;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,6 +32,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.BridgeWebViewClient;
+import com.getcapacitor.BridgeWebChromeClient;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,6 +83,17 @@ public class MainActivity extends BridgeActivity {
         webView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
         webView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         webView.setHapticFeedbackEnabled(true);
+        webView.setWebChromeClient(new BridgeWebChromeClient(getBridge()) {
+            @Override public void onPermissionRequest(PermissionRequest request) {
+                String[] resources = request.getResources();
+                if (!workspace.allowsCamera(request.getOrigin().toString(), webView.getUrl(), resources)) {
+                    request.deny();
+                    return;
+                }
+                // Capacitor requests Android CAMERA permission; no microphone access.
+                super.onPermissionRequest(request);
+            }
+        });
         getBridge().setWebViewClient(new BridgeWebViewClient(getBridge()) {
             @Override public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) {
                 if (workspace.contains(url)) { lastWorkspaceUrl = url; mainFrameFailed = false; }

@@ -1,8 +1,150 @@
+import type { StationTables } from '@/lib/attendance/stations/types';
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
   public: {
-    Tables: {
+    Tables: StationTables & {
+      attendance_policies: {
+        Row: {
+          id: string
+          store_id: string
+          enforce_engine: boolean
+          require_session_binding: boolean
+          require_location_metadata: boolean
+          max_accuracy_meters: number | null
+          max_location_age_seconds: number
+          smart_qr_enabled: boolean
+          created_at: string
+          updated_at: string
+          created_by: string | null
+        }
+        Insert: {
+          id?: string
+          store_id: string
+          enforce_engine?: boolean
+          require_session_binding?: boolean
+          require_location_metadata?: boolean
+          max_accuracy_meters?: number | null
+          max_location_age_seconds?: number
+          smart_qr_enabled?: boolean
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Update: {
+          id?: string
+          store_id?: string
+          enforce_engine?: boolean
+          require_session_binding?: boolean
+          require_location_metadata?: boolean
+          max_accuracy_meters?: number | null
+          max_location_age_seconds?: number
+          smart_qr_enabled?: boolean
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Relationships: []
+      }
+      attendance_operations: {
+        Row: {
+          id: string
+          employee_id: string
+          operation_id: string
+          command_hash: string
+          action: string
+          entry_point: string
+          reason: string | null
+          transaction_id: number
+          response: Json | null
+          created_at: string
+          updated_at: string
+          created_by: string
+        }
+        Insert: {
+          id?: string
+          employee_id: string
+          operation_id: string
+          command_hash: string
+          action: string
+          entry_point: string
+          reason?: string | null
+          transaction_id: number
+          response?: Json | null
+          created_at?: string
+          updated_at?: string
+          created_by: string
+        }
+        Update: {
+          id?: string
+          employee_id?: string
+          operation_id?: string
+          command_hash?: string
+          action?: string
+          entry_point?: string
+          reason?: string | null
+          transaction_id?: number
+          response?: Json | null
+          created_at?: string
+          updated_at?: string
+          created_by?: string
+        }
+        Relationships: []
+      }
+      attendance_audit_events: {
+        Row: {
+          id: string
+          employee_id: string | null
+          store_id: string | null
+          attendance_id: string | null
+          shift_id: string | null
+          operation_id: string | null
+          event_type: string
+          attendance_method: string
+          entry_point: string | null
+          reason: string | null
+          previous_values: Json | null
+          new_values: Json | null
+          created_at: string
+          updated_at: string
+          created_by: string | null
+        }
+        Insert: {
+          id?: string
+          employee_id?: string | null
+          store_id?: string | null
+          attendance_id?: string | null
+          shift_id?: string | null
+          operation_id?: string | null
+          event_type: string
+          attendance_method: string
+          entry_point?: string | null
+          reason?: string | null
+          previous_values?: Json | null
+          new_values?: Json | null
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Update: {
+          id?: string
+          employee_id?: string | null
+          store_id?: string | null
+          attendance_id?: string | null
+          shift_id?: string | null
+          operation_id?: string | null
+          event_type?: string
+          attendance_method?: string
+          entry_point?: string | null
+          reason?: string | null
+          previous_values?: Json | null
+          new_values?: Json | null
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           id: string
@@ -62,6 +204,19 @@ export type Database = {
       }
       attendance: {
         Row: {
+          check_out_method: string | null
+          check_out_entry_point: string | null
+          check_out_verification_status: string | null
+          check_out_location_accuracy: number | null
+          check_out_location_captured_at: string | null
+          check_out_distance_meters: number | null
+          version: number
+          attendance_method: string
+          entry_point: string | null
+          verification_status: string
+          location_accuracy: number | null
+          location_captured_at: string | null
+          distance_meters: number | null
           id: string
           employee_id: string
           store_id: string | null
@@ -74,6 +229,19 @@ export type Database = {
           is_auto_checkout: boolean | null
         }
         Insert: {
+          check_out_method?: string | null
+          check_out_entry_point?: string | null
+          check_out_verification_status?: string | null
+          check_out_location_accuracy?: number | null
+          check_out_location_captured_at?: string | null
+          check_out_distance_meters?: number | null
+          version?: number
+          attendance_method?: string
+          entry_point?: string | null
+          verification_status?: string
+          location_accuracy?: number | null
+          location_captured_at?: string | null
+          distance_meters?: number | null
           id?: string
           employee_id: string
           store_id?: string | null
@@ -86,6 +254,19 @@ export type Database = {
           is_auto_checkout?: boolean | null
         }
         Update: {
+          check_out_method?: string | null
+          check_out_entry_point?: string | null
+          check_out_verification_status?: string | null
+          check_out_location_accuracy?: number | null
+          check_out_location_captured_at?: string | null
+          check_out_distance_meters?: number | null
+          version?: number
+          attendance_method?: string
+          entry_point?: string | null
+          verification_status?: string
+          location_accuracy?: number | null
+          location_captured_at?: string | null
+          distance_meters?: number | null
           id?: string
           employee_id?: string
           store_id?: string | null
@@ -1208,6 +1389,15 @@ export type Database = {
     }
     Views: Record<string, never>
     Functions: {
+      attendance_smart_scan: { Args: { p_command: Json; p_operation_id?: string }; Returns: Json }
+      attendance_station_admin: { Args: { p_command: Json }; Returns: Json }
+      attendance_station_device: { Args: { p_action: string; p_credential: string; p_station_id: string | null; p_request_id?: string; p_token_hash?: string; p_pairing_hash?: string }; Returns: Json }
+      attendance_station_token_status: { Args: { p_token: string }; Returns: Json }
+
+      attendance_transition: {
+        Args: { p_command: Json; p_operation_id: string; p_entry_point?: string }
+        Returns: Json
+      }
       commit_shift_changes: {
         Args: { p_changes: Json; p_expected: Json; p_request_id?: string; p_decision?: string }
         Returns: undefined

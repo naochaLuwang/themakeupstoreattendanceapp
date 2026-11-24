@@ -13,8 +13,8 @@ export default async function EmployeePayslipsPage() {
         .order('created_at', { ascending: false });
 
     return (
-        <div className="space-y-6">
-            <header>
+        <div className="employee-screen employee-payslips-screen space-y-6">
+            <header className="employee-page-heading">
                 <h1 className="text-3xl font-medium text-slate-900">Payslips</h1>
                 <p className="text-sm text-slate-500 mt-2">View your pay history and download payslips</p>
             </header>

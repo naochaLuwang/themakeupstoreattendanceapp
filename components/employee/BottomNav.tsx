@@ -53,9 +53,16 @@ export default function BottomNav({ userId, initialCount }: { userId: string, in
                 </Link>
                 <div className="employee-nav-links">
                     {navLinks.map(link => {
-                        const isActive = pathname === link.href || (link.href === '/employee/profile' && pathname === '/employee/payslips');
+                        const isActive = pathname === link.href || (link.href === '/employee' && pathname === '/employee/smart-scan') || (link.href === '/employee/profile' && pathname === '/employee/payslips');
                         return (
-                            <Link key={link.href} href={link.href} onClick={triggerHaptic} data-native-feedback="explicit"
+                            <Link key={link.href} href={link.href} onClick={event => {
+                                triggerHaptic();
+                                if (link.href === '/employee' && pathname === '/employee' && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+                                    event.preventDefault();
+                                    window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+                                    document.getElementById('today-attendance')?.focus({ preventScroll: true });
+                                }
+                            }} data-native-feedback="explicit"
                                 aria-current={isActive ? 'page' : undefined} className="employee-nav-link">
                                 <span className="employee-nav-icon" aria-hidden="true">
                                     {link.icon}

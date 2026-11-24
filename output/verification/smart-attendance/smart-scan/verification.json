@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-24",
+  "productionChanged": false,
+  "branchesEnabled": false,
+  "productionBuild": "passed",
+  "typecheck": "passed",
+  "moduleAndIntegrationLint": "passed",
+  "nodeTests": 79,
+  "smartScanDatabaseScenarios": 14,
+  "attendanceDatabaseRegressionsWithNewMigration": 25,
+  "stationDatabaseRegressions": 12,
+  "shiftDatabaseRegressions": 21,
+  "scannerBrowserChecks": 23,
+  "employeeHomeChecks": 2,
+  "localProductionRouteChecks": 5,
+  "androidBuild": "passed",
+  "androidWorkspaceAndCameraUnitTests": 3,
+  "physicalCameraTested": false,
+  "externalFetchAttemptsDuringProductionSmoke": 0,
+  "apk": "output/android/the-makeup-store-hrm-1.2-smart-scan-debug.apk"
+}

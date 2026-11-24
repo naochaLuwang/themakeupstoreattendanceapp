@@ -1,0 +1,31 @@
+{
+  "database": "disposable local PostgreSQL only",
+  "checks": [
+    "005 + 006 apply, and 006 can rerun without destructive changes",
+    "cross-employee and cross-branch attendance are rejected",
+    "manual clock-in stores server time, metadata, a permanent shift lock and audit event",
+    "stable retries do not duplicate attendance and changed payloads cannot reuse a key",
+    "a repeated clock-in while active never toggles attendance to clock-out",
+    "exact-session clock-out works without GPS and completed shifts cannot clock in again",
+    "re-entry is admin-only, atomic and single-use; old checkout and stale session versions remain protected",
+    "approved leave and an off day do not create attendance",
+    "invalid, remote and missing locations cannot bypass verification",
+    "zero latitude/longitude are legitimate configured store coordinates",
+    "a legacy zero radius retains the existing 100m default",
+    "location age, uncertainty, paired metadata and strict-policy rollout are enforced",
+    "admin corrections validate merged times and deletion preserves history and shift locks",
+    "legacy manual-entry preset IDs resolve to an actual assigned shift",
+    "enforced branches reject raw employee attendance writes and audit/idempotency rewrites",
+    "RLS isolates branches; employees cannot self-promote or widen the store geofence",
+    "real simultaneous transactions create only one active attendance row",
+    "an overnight shift permits arrival after its starting business day and still clocks out normally",
+    "strict session binding can roll out separately and policy changes are audited",
+    "a missing profile role never grants administrative attendance access",
+    "staged enforcement preserves legacy writes with an audit before the server rollout",
+    "concurrent checkout requests produce one version change and one checkout event",
+    "a failed request approval rolls back attendance, version and success-audit changes together",
+    "anonymous callers cannot execute the attendance RPC",
+    "legacy multiple-open sessions remain intact and require explicit reconciliation"
+  ],
+  "passed": 25
+}

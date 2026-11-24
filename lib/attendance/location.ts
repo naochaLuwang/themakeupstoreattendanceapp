@@ -30,7 +30,7 @@ function requestPosition(options: PositionOptions, signal?: AbortSignal): Promis
     });
 }
 
-function refinePosition(radius: number, signal?: AbortSignal): Promise<GeolocationPosition> {
+function refinePosition(radius: number, signal?: AbortSignal, maxAccuracy = radius, maxAgeMs = 15000): Promise<GeolocationPosition> {
     return new Promise((resolve, reject) => {
         if (signal?.aborted) { reject(new DOMException('Location request cancelled.', 'AbortError')); return; }
         const watch: { id?: number } = {};
@@ -54,7 +54,7 @@ function refinePosition(radius: number, signal?: AbortSignal): Promise<Geolocati
         try {
             watch.id = navigator.geolocation.watchPosition(position => {
                 if (settled) return;
-                if (!isAccurate(position, radius)) { imprecise = true; return; }
+                if (!isAccurate(position, maxAccuracy, maxAgeMs)) { imprecise = true; return; }
                 cleanup();
                 resolve(position);
             }, error => {
@@ -70,24 +70,26 @@ function refinePosition(radius: number, signal?: AbortSignal): Promise<Geolocati
     });
 }
 
-function isAccurate(position: GeolocationPosition, radius: number): boolean {
+function isAccurate(position: GeolocationPosition, maxAccuracy: number, maxAgeMs = 15000): boolean {
     const { latitude, longitude, accuracy } = position.coords;
     return Number.isFinite(latitude) && Number.isFinite(longitude) && Number.isFinite(accuracy)
         && latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180
-        && accuracy >= 0 && accuracy <= radius && Date.now() - position.timestamp <= 15000;
+        && accuracy >= 0 && accuracy <= maxAccuracy && Date.now() - position.timestamp <= maxAgeMs && position.timestamp <= Date.now() + 5000;
 }
 
 /** Acquire location only for a confirmed clock-in; never widen the store geofence. */
-export async function getClockInLocation(store: StoreLocation, onRefining: () => void, signal?: AbortSignal): Promise<GeolocationPosition> {
+export async function getClockInLocation(store: StoreLocation, onRefining: () => void, signal?: AbortSignal, quality?: { maxAccuracyMeters: number; maxLocationAgeSeconds: number }): Promise<GeolocationPosition> {
     if (!window.isSecureContext || !navigator.geolocation) {
         throw new Error('Location is unavailable in this browser. Open the app over HTTPS in Safari or Chrome.');
     }
 
     const radius = store.radius_meters && store.radius_meters > 0 ? store.radius_meters : 100;
+    const maxAccuracy = Math.min(radius, quality?.maxAccuracyMeters ?? radius);
+    const maxAgeMs = Math.min(15000, (quality?.maxLocationAgeSeconds ?? 15) * 1000);
     try {
-        const quick = await requestPosition({ enableHighAccuracy: false, timeout: 4000, maximumAge: 15000 }, signal);
+        const quick = await requestPosition({ enableHighAccuracy: false, timeout: 4000, maximumAge: maxAgeMs }, signal);
         const distance = calculateDistance(quick.coords.latitude, quick.coords.longitude, store.lat, store.lng);
-        if (isAccurate(quick, radius) && distance <= radius) return quick;
+        if (isAccurate(quick, maxAccuracy, maxAgeMs) && distance <= radius) return quick;
     } catch (error: unknown) {
         if (signal?.aborted) throw error;
         if (typeof error === 'object' && error !== null && 'code' in error && error.code === 1) {
@@ -96,5 +98,5 @@ export async function getClockInLocation(store: StoreLocation, onRefining: () =>
     }
 
     onRefining();
-    return refinePosition(radius, signal);
+    return refinePosition(radius, signal, maxAccuracy, maxAgeMs);
 }

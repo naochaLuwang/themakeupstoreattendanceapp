@@ -1,0 +1,56 @@
+[
+  {
+    "role": "light body",
+    "foreground": "#302630",
+    "background": "#ffffff",
+    "ratio": 14.53
+  },
+  {
+    "role": "light caption",
+    "foreground": "#776a77",
+    "background": "#f4f2f4",
+    "ratio": 4.58
+  },
+  {
+    "role": "dark body",
+    "foreground": "#f4edf4",
+    "background": "#211b24",
+    "ratio": 14.65
+  },
+  {
+    "role": "dark caption",
+    "foreground": "#ad9db1",
+    "background": "#211b24",
+    "ratio": 6.6
+  },
+  {
+    "role": "primary button",
+    "foreground": "#fff8fb",
+    "background": "#79445f",
+    "ratio": 7.16
+  },
+  {
+    "role": "dark primary button",
+    "foreground": "#251a23",
+    "background": "#e4b4ce",
+    "ratio": 9.37
+  },
+  {
+    "role": "dock caption",
+    "foreground": "#e7dbe3",
+    "background": "#31222e",
+    "ratio": 11.18
+  },
+  {
+    "role": "dock selection",
+    "foreground": "#583449",
+    "background": "#faedf4",
+    "ratio": 9.23
+  },
+  {
+    "role": "shift caption",
+    "foreground": "#e7d2df",
+    "background": "#6c3e56",
+    "ratio": 5.97
+  }
+]

@@ -1,0 +1,10 @@
+/private/tmp/station-check/decode.swift:8:9: warning: 'usesCPUOnly' was deprecated in macOS 14.0 [#DeprecatedDeclaration]
+ 6 | let request = VNDetectBarcodesRequest()
+ 7 | request.symbologies = [.qr]
+ 8 | request.usesCPUOnly = true
+   |         `- warning: 'usesCPUOnly' was deprecated in macOS 14.0 [#DeprecatedDeclaration]
+ 9 | try VNImageRequestHandler(url: imageURL, options: [:]).perform([request])
+10 | let payloads = (request.results ?? []).compactMap { $0.payloadStringValue }
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+PASS: Actual station SVG screenshot decodes to the exact fictional attendance token

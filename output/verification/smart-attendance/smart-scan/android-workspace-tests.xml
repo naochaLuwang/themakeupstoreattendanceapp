@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="in.themakeupstore.hrm.WorkspaceOriginTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-11-24T08:19:54.090Z" hostname="Naocha.local" time="0.001">
+  <properties/>
+  <testcase name="cameraRequiresTheWorkspacePageAndOriginWithNoOtherResources" classname="in.themakeupstore.hrm.WorkspaceOriginTest" time="0.001"/>
+  <testcase name="acceptsOnlyTheConfiguredHttpsOrigin" classname="in.themakeupstore.hrm.WorkspaceOriginTest" time="0.0"/>
+  <testcase name="rootScreensBackgroundTheTaskInsteadOfReturningToLoginHistory" classname="in.themakeupstore.hrm.WorkspaceOriginTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

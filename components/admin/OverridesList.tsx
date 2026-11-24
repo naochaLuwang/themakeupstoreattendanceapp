@@ -1,4 +1,6 @@
 'use client';
+import { approveOverrideRequest } from '@/app/actions/attendance-override';
+import { toast } from 'sonner';
 import { createClient } from '@/lib/supabase/client';
 import { useEffect, useState } from 'react';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
@@ -36,22 +38,10 @@ export default function OverridesList({ adminId }: OverridesListProps) {
         return () => { supabase.removeChannel(channel); };
     }, []);
 
-    const handleApprove = async (request: any) => {
-        const now = new Date();
-        const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-
-        // 1. Remove the accidental check-out to allow shift continuation
-        await supabase.from('attendance')
-            .update({ check_out: null, is_auto_checkout: false })
-            .eq('employee_id', request.requestor_id)
-            .gte('check_in', `${today}T00:00:00Z`);
-
-        // 2. Mark request as approved
-        await supabase.from('swap_requests')
-            .update({ status: 'approved' })
-            .eq('id', request.id);
-
-        fetchOverrides();
+    const handleApprove = async (request: { id: string }) => {
+        const result = await approveOverrideRequest(request.id);
+        if (!result.success) { toast.error(result.error || 'Could not approve re-entry.'); return; }
+        await fetchOverrides();
     };
 
     if (loading) return <div className="p-8 text-slate-500 font-medium">Checking system logs...</div>;
