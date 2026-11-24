@@ -1,9 +1,7 @@
-import { createHash, createHmac, randomBytes } from 'node:crypto';
+import { createHmac } from 'node:crypto';
+export { newDeviceCredential as newStationCredential, validDeviceCredential as validStationCredential, credentialDigest as stationDigest } from '@/lib/security/opaque-credential';
 export const STATION_COOKIE = 'hrm_station_device';
 export const STATION_COOKIE_PATH = '/api/attendance/station';
-export function newStationCredential() { return randomBytes(32).toString('hex'); }
-export function validStationCredential(value: unknown): value is string { return typeof value === 'string' && /^[a-f0-9]{64}$/.test(value); }
-export function stationDigest(value: string) { return createHash('sha256').update(value, 'utf8').digest('hex'); }
 export function devicePairingCode(credential: string) {
     const bytes = createHmac('sha256', credential).update('hrm-station-pair-v1').digest().subarray(0, 5);
     let bits = 0; for (const byte of bytes) bits = bits * 256 + byte;

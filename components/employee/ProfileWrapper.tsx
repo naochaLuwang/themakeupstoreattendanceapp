@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { User, LogOut, ChevronRight, ShieldCheck, FileText } from 'lucide-react';
+import { User, LogOut, ChevronRight, ShieldCheck, FileText, Bell } from 'lucide-react';
 import { PersonalDataForm, SecurityForm } from '@/components/employee/ProfileForm';
 
 export default async function ProfileWrapper() {
@@ -40,6 +40,7 @@ export default async function ProfileWrapper() {
 
             {/* Action Grid using native Details/Summary for accordions */}
             <div className="employee-account-list bg-white rounded-xl md:rounded-xl border border-neutral-100 overflow-hidden">
+                <Link href="/employee/notifications" className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-neutral-50"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-xl bg-neutral-50 flex items-center justify-center"><Bell size={18} /></div><span className="text-sm font-medium text-slate-900">Notifications and reminders</span></div><ChevronRight size={16} className="text-slate-500" /></Link>
 
                 {/* Personal details Section */}
                 <details className="group border-b border-neutral-50 outline-none">

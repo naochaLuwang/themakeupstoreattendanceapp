@@ -1,5 +1,7 @@
 # Security assessment and controls
 
+Current update: PWA installation, service-worker caching/recovery and browser push have been removed. Native FCM integration and in-app history remain; Firebase setup is deferred. See [PWA removal](../pwa-removal.md).
+
 Implemented and locally exercised: verified user identity; database role/branch checks; exact shift ownership; leave/off-day rejection; no silent second attendance after completion; single active session on new writes; operation payload binding; exact-session/version checkout; single-use re-entry approval with rollback; server timestamps; finite/ranged coordinates and interval validation; age/accuracy checks; privileged-field guards; explicit RPC execution grants; per-table RLS; immutable audit; JSON/same-host API submission checks; failure responses without internal database detail.
 
 Privileged database implementation is intentional: it is an atomic security boundary, not a workaround for RLS errors. It validates the signed-in actor independently of client profile claims, lives outside exposed schemas, pins search paths, and denies anonymous execution. Do not grant its helper functions publicly or let employees write operation receipts.
@@ -25,3 +27,7 @@ The exact public station display route and anonymous credential-protected device
 ## Smart Scan verification boundary
 
 [Smart Scan](smart-scan.md) adds authenticated per-employee redemption, transaction-scoped engine context and session/version-bound confirmation with fresh GPS. Private receipt/attempt tables deny all client table access. Origin checks account for the public Host/proxy scheme. Camera frames decode locally; Android video permission is restricted to the current configured HTTPS workspace, denying microphone/unknown resources. QR flags require engine enforcement and remain false until authorized staging/device verification.
+
+## Module 5 — notification boundaries
+
+New reminder rows use restrictive recipient/current-manager RLS even alongside legacy permissive operations policies. Credentials are private, installation cookies are HttpOnly and hashed, enrollment mutations bind the expected account, and account changes detach previous-owner device metadata. Worker authorization precedes service-role client creation; lease fencing and credential revisions limit stale delivery acknowledgements and invalid-token revocation. Generic lock-screen payloads and allowlisted internal destinations limit exposure. Web Push endpoints/keys are validated to prevent arbitrary outbound requests. Accepted pushes cannot be recalled; delivery is at least once and the final check/send race remains. Existing operations policies are not broadly replaced. See [complete module limitations](notifications.md).

@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
 import type { Json } from '@/lib/supabase/database.types';
-import { queueAttendanceNotification } from '../server';
 import type { SmartCommand, SmartFailure, SmartReply } from './types';
 
 export function smartFailure(message: string, code = 'UNAVAILABLE'): SmartFailure {
@@ -25,6 +24,5 @@ export async function performSmartScan(command: SmartCommand | { action: 'config
         if (data.state === 'confirmation_required' && (typeof data.confirmationId !== 'string' || typeof data.expiresAt !== 'string' || typeof data.serverNow !== 'string' || !Number.isFinite(Date.parse(data.expiresAt)) || !Number.isFinite(Date.parse(data.serverNow)))) return smartFailure('Invalid confirmation');
     }
     const result = data as unknown as SmartReply;
-    if (result.success && result.state !== 'ready' && result.state !== 'confirmation_required' && result.changed && !result.replayed) queueAttendanceNotification(user.id, result.state === 'clocked_in' ? 'clock_in' : 'clock_out');
     return result;
 }

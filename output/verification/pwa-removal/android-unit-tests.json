@@ -1,0 +1,16 @@
+[
+  {
+    "name": "com.getcapacitor.myapp.ExampleUnitTest",
+    "tests": "1",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  },
+  {
+    "name": "in.themakeupstore.hrm.WorkspaceOriginTest",
+    "tests": "3",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  }
+]

@@ -6,7 +6,8 @@ Run from the repository:
 node --test tests/*.test.mjs
 npm run build
 npm run typecheck
-python3 tests/attendance-engine-database.py --with-smart-scan
+python3 tests/attendance-engine-database.py --with-reminders
+python3 tests/attendance-reminders-database.py
 python3 tests/shift-lock-database.py
 python3 tests/attendance-stations-database.py
 python3 tests/attendance-smart-scan-database.py
@@ -14,7 +15,7 @@ python3 tests/attendance-smart-scan-database.py
 
 Run build before standalone typecheck, sequentially: Next regenerates its type directory during build.
 
-The four Python suites use only uniquely named disposable databases on PostgreSQL 17, Unix socket `/private/tmp`, port `55439`, owner `audit_owner`. They never read environment credentials or contact Supabase. Supply the local non-login roles `anon`, `authenticated`, `service_role`. Each suite removes only its own fixture database. A local test cluster may be started with TCP disabled; do not point these fixtures at a hosted database.
+The five Python suites use only uniquely named disposable databases on PostgreSQL 17, Unix socket `/private/tmp`, port `55439`, owner `audit_owner`. They never read environment credentials or contact Supabase. Supply the local non-login roles `anon`, `authenticated`, `service_role`. Each suite removes only its own fixture database. A local test cluster may be started with TCP disabled; do not point these fixtures at a hosted database.
 
 ## Coverage
 
@@ -63,3 +64,13 @@ Production build, standalone TypeScript, module/integration lint and 79 Node tes
 The real ZXing decoder and actual scanner/UI use a synthetic local camera stream and fictional intercepted HTTP responses. All 23 browser checks and two phone home checks pass, including a real 15-second GPS deadline. No real camera or hosted database is accessed. Android assembly/compilation and three workspace/camera tests pass (plus the existing template test); the APK manifest verifies camera permission and app version 1.2/code 3 without microphone permission.
 
 Artifacts: `output/verification/smart-attendance/smart-scan/`. Full details and staging/device limitations: [Smart Scan](smart-scan.md). Branch flags remain off; installing the APK alone does not deploy web or SQL changes.
+
+## Module 5 result (24 November 2026)
+
+Production build, standalone TypeScript, changed module/integration ESLint and all 94 Node tests pass. Fifteen notification Node tests exercise validation, account/cookie/origin boundaries, private worker authentication, mocked FCM HTTP v1/Web Push outcomes and bounded worker concurrency. No actual notification is sent.
+
+Real local PostgreSQL passes 18 reminder scenarios, plus 25 engine scenarios with the reminder migration installed, 14 scan, 12 station and 21 shift-lock scenarios (90 total). Coverage includes migration reruns, service-only worker grants, private credentials, hostile endpoints/token hijacking, recipient-only history despite broad legacy policies, current-state rechecks, quiet hours, retries/configuration budgets, token revisions, lease fencing, account switching, current manager scope, moved/overnight shifts, unresolved escalation, trusted re-entry notices and concurrent workers.
+
+Actual settings/history/lifecycle components pass 15 browser checks using fictional records and mocked permission/provider APIs, including 360px phone layouts and dark mode. Signed-out production route checks and the actual generated service worker install/activation pass locally with server-side external fetch blocked. The previous missing custom-worker import is removed. Android 1.3/code 4 assembles successfully; three workspace JVM tests plus the template JVM test pass. Manifest inspection confirms notification permission/icon/service, retained camera permission and absence of microphone/background-location permission. Firebase configuration remains absent.
+
+Read-only npm audit reports 30 existing advisories; no affected package node is newly introduced by this module. No audit fix or unrelated upgrade was applied. Full-repository lint retains previously documented issues; changed-file lint passes. No Supabase advisor, hosted schema, physical Android or real FCM background-delivery test was performed. Artifacts: `output/verification/smart-attendance/reminders/`; operational limitations: [notification report](notifications.md).

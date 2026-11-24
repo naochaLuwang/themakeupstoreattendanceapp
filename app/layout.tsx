@@ -1,4 +1,5 @@
-import InstallPWA from "@/components/InstallPWA";
+import RetirePwa from "@/components/RetirePwa";
+import NotificationBridge from '@/components/notifications/NotificationBridge';
 import "./globals.css";
 import NextTopLoader from 'nextjs-toploader';
 import { Metadata } from "next";
@@ -11,15 +12,6 @@ export const metadata: Metadata = {
     template: `%s | ${WORKSPACE_NAME}`,
   },
   description: "Attendance tracking app for THE MAKEUP STORE employees.",
-  manifest: "/manifest.webmanifest",
-  other: {
-    "mobile-web-app-capable": "yes",
-  },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "MUS Attendance App",
-  },
   formatDetection: {
     telephone: false,
   },
@@ -34,53 +26,12 @@ export const metadata: Metadata = {
     title: "MUS Attendance App",
     description: "Attendance tracking app for THE MAKEUP STORE employees.",
   },
-  icons: {
-    apple: [
-      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
-    ],
-  },
+
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: `
-          window.selfHeal = async () => {
-            // Android owns connection recovery; never discard an in-progress form.
-            if (window.Capacitor?.isNativePlatform?.()) return;
-            try {
-              const last = Number(sessionStorage.getItem('hrm:lastRecovery') || 0);
-              if (Date.now() - last < 60000) return;
-              sessionStorage.setItem('hrm:lastRecovery', String(Date.now()));
-            } catch { return; }
-            if ('serviceWorker' in navigator) {
-              const registrations = await navigator.serviceWorker.getRegistrations();
-              for (let registration of registrations) {
-                await registration.unregister();
-              }
-            }
-            window.location.reload();
-          };
-
-          window.addEventListener('error', (e) => {
-            const msg = e.message || '';
-            const isChunkError = msg.includes('Loading chunk') || msg.includes('Loading CSS chunk') || msg.includes('reading \\'payload\\'');
-            if (isChunkError) {
-              console.log('Critical error detected, triggering self-heal...', msg);
-              window.selfHeal();
-            }
-          }, true);
-
-          window.addEventListener('unhandledrejection', (e) => {
-            const reason = (e.reason && e.reason.message) || '';
-            if (reason.includes('Loading chunk') || reason.includes('Loading CSS chunk') || reason.includes('reading \\'payload\\'')) {
-               console.log('Rejection detected, triggering self-heal...', reason);
-               window.selfHeal();
-            }
-          });
-        ` }} />
-      </head>
       <body className="antialiased">
         <ThemeProvider>
           <NextTopLoader
@@ -97,7 +48,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main>
             {children}
           </main>
-          <InstallPWA />
+          <RetirePwa />
+          <NotificationBridge />
         </ThemeProvider>
       </body>
     </html>

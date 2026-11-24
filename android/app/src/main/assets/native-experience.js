@@ -11,9 +11,6 @@
         let focusTimer;
         const bridge = (method, options = {}) => window.Capacitor.nativePromise('AppExperience', method, options).catch(() => {});
         const feedback = kind => bridge('feedback', { kind });
-        // Older hosted pages reload on generic network/AbortError failures.
-        // Android owns connection recovery, so those errors must not erase a form.
-        window.selfHeal = async () => {};
 
         function appearance() { void bridge('appearance', { dark: root.classList.contains('dark') }); }
         function connection(connected) {
@@ -105,13 +102,7 @@
             }
         }).observe(document.body, { childList: true, subtree: true, characterData: true });
         window.addEventListener('offline', () => connection(false));
-        window.addEventListener('online', event => {
-            // The older next-pwa bundle registers an automatic reload here.
-            // Android owns reconnects; its read-only hrm:connection signal keeps
-            // forms intact instead of dispatching legacy reload callbacks.
-            event.stopImmediatePropagation();
-            connection(window.__hrmConnected !== false);
-        }, { capture: true });
+        window.addEventListener('online', () => connection(window.__hrmConnected !== false));
         appearance();
         connection(window.__hrmConnected !== false && navigator.onLine !== false);
         requestAnimationFrame(() => requestAnimationFrame(() => { void bridge('ready'); }));

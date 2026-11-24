@@ -1,0 +1,65 @@
+{
+  "fixtureData": "Actual settings/history/lifecycle components, fictional local records, mocked notification permission/FCM APIs; no hosted database or provider calls",
+  "checks": [
+    {
+      "test": "Opening reminder settings never requests notification permission automatically",
+      "passed": true
+    },
+    {
+      "test": "Preference save carries authenticated-account binding and overnight quiet-hour settings",
+      "passed": true
+    },
+    {
+      "test": "Browser push requests permission only after an explicit enable action",
+      "passed": true
+    },
+    {
+      "test": "Turning off attendance push revokes the device registration",
+      "passed": true
+    },
+    {
+      "test": "Shared reminder history marks a message read and opens an authenticated app screen",
+      "passed": true
+    },
+    {
+      "test": "Browser permission denial does not create a registered device",
+      "passed": true
+    },
+    {
+      "test": "A build without Firebase remains honest and never requests permission or an FCM token",
+      "passed": true
+    },
+    {
+      "test": "Configured Android flow registers its native token after explicit permission",
+      "passed": true
+    },
+    {
+      "test": "An account mismatch hides stale preferences and prevents editing another account",
+      "passed": true
+    },
+    {
+      "test": "A failed history query is shown as an error instead of an empty inbox",
+      "passed": true
+    },
+    {
+      "test": "Branch timing can be saved without falsely claiming the worker or FCM is configured",
+      "passed": true
+    },
+    {
+      "test": "Stale branch changes keep the editor open and report the conflict",
+      "passed": true
+    },
+    {
+      "test": "Preferences fits 360px in dark theme",
+      "passed": true
+    },
+    {
+      "test": "Preferences fits 768px in dark theme",
+      "passed": true
+    },
+    {
+      "test": "Management fits 1280px in dark theme",
+      "passed": true
+    }
+  ]
+}

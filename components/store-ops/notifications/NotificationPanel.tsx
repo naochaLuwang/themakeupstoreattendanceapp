@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { notificationPath } from '@/lib/notifications/links'
 import { Bell, CheckCheck, Loader2, ExternalLink } from 'lucide-react'
 import type { NotificationLog } from '@/lib/store-ops/database.types'
 import { markAsRead as markAsReadAction, markAllAsRead as markAllAsReadAction } from '@/app/actions/store-ops/notifications'
@@ -10,34 +11,42 @@ import { toast } from 'sonner'
 
 interface NotificationPanelProps {
   userId: string
+  embedded?: boolean
+  attendanceOnly?: boolean
 }
 
-export default function NotificationPanel({ userId }: NotificationPanelProps) {
+export default function NotificationPanel({ userId, embedded = false, attendanceOnly = false }: NotificationPanelProps) {
   const router = useRouter()
   const supabase = createClient()
   const [open, setOpen] = useState(false)
   const [notifications, setNotifications] = useState<NotificationLog[]>([])
   const [loading, setLoading] = useState(true)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const panelRef = useRef<HTMLDivElement>(null)
 
   const fetchNotifications = useCallback(async () => {
-    const { data, error } = await supabase
+    let query = supabase
       .from('notification_log')
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(20)
+    if (attendanceOnly) query = query.not('attendance_reminder_id', 'is', null)
+    const { data, error } = await query
 
     if (!error && data) {
+      setLoadError(null)
       setNotifications(data as NotificationLog[])
       setUnreadCount(data.filter(n => !n.is_read).length)
-    }
+    } else setLoadError('Notifications could not be loaded. Refresh to try again.')
     setLoading(false)
-  }, [userId, supabase])
+  }, [userId, supabase, attendanceOnly])
 
   useEffect(() => {
     fetchNotifications()
+    window.addEventListener('hrm:notification', fetchNotifications)
+    return () => window.removeEventListener('hrm:notification', fetchNotifications)
   }, [fetchNotifications])
 
   useEffect(() => {
@@ -62,13 +71,14 @@ export default function NotificationPanel({ userId }: NotificationPanelProps) {
   }, [])
 
   async function handleMarkAsRead(id: string, link?: string | null) {
-    await markAsReadAction(id)
+    const result = await markAsReadAction(id)
+    if (!result.success) { toast.error(result.error || 'Could not mark the notification as read'); return }
     setNotifications(prev =>
       prev.map(n => n.id === id ? { ...n, is_read: true } : n)
     )
     setUnreadCount(prev => Math.max(0, prev - 1))
     if (link) {
-      router.push(link)
+      router.push(notificationPath(link, '/'))
       setOpen(false)
     }
   }
@@ -97,7 +107,7 @@ export default function NotificationPanel({ userId }: NotificationPanelProps) {
 
   return (
     <div ref={panelRef} className="relative">
-      <button
+      {!embedded && <button
         onClick={() => setOpen(!open)}
         className="relative p-2 rounded-xl hover:bg-slate-100 transition-colors"
       >
@@ -107,13 +117,13 @@ export default function NotificationPanel({ userId }: NotificationPanelProps) {
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
-      </button>
+      </button>}
 
-      {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden z-50">
+      {(open || embedded) && (
+        <div className={embedded ? 'notification-card notification-history' : 'absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden z-50'}>
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
             <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-widest">
-              Notifications
+              {attendanceOnly ? 'Reminder history' : 'Notifications'}
               {unreadCount > 0 && (
                 <span className="ml-1.5 text-slate-400">({unreadCount})</span>
               )}
@@ -133,7 +143,7 @@ export default function NotificationPanel({ userId }: NotificationPanelProps) {
               <div className="py-12 flex justify-center">
                 <Loader2 size={18} className="animate-spin text-slate-300" />
               </div>
-            ) : notifications.length === 0 ? (
+            ) : loadError ? <div role="alert" className="notification-error"><p>{loadError}</p><button type="button" onClick={() => void fetchNotifications()}>Refresh history</button></div> : notifications.length === 0 ? (
               <div className="py-12 text-center">
                 <Bell size={24} className="mx-auto text-slate-200 mb-2" />
                 <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">No notifications</p>

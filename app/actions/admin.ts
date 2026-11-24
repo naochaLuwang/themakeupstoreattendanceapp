@@ -9,7 +9,8 @@ export async function createNewUser(formData: FormData) {
         const password = formData.get('password') as string
         const fullName = formData.get('fullName') as string
         const username = formData.get('username') as string
-        const role = formData.get('role') as string
+        const role = formData.get('role')
+        if (role !== 'admin' && role !== 'manager' && role !== 'employee') return { error: 'Choose a valid staff role.' }
         const storeId = formData.get('storeId') as string
 
         // 1. Create user in Supabase Auth
@@ -39,7 +40,7 @@ export async function createNewUser(formData: FormData) {
         }
 
         return { success: true }
-    } catch (err: any) {
-        return { error: err.message };
+    } catch (err: unknown) {
+        return { error: err instanceof Error ? err.message : 'Could not create the staff account.' };
     }
 }

@@ -1,0 +1,25 @@
+{
+  "mockedPermissionAndProviderAPIs": true,
+  "checks": [
+    {
+      "test": "Browser preferences keep history without browser push settings or permission requests",
+      "passed": true
+    },
+    {
+      "test": "Event preferences remain editable without PWA support",
+      "passed": true
+    },
+    {
+      "test": "Unconfigured Android preserves deferred FCM setup and never registers a token",
+      "passed": true
+    },
+    {
+      "test": "Configured Android enrollment still uses FCM",
+      "passed": true
+    },
+    {
+      "test": "Admin provider status has no browser push configuration",
+      "passed": true
+    }
+  ]
+}

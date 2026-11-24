@@ -1,0 +1,12 @@
+{
+  "counts": {
+    "info": 0,
+    "low": 1,
+    "moderate": 11,
+    "high": 16,
+    "critical": 2,
+    "total": 30
+  },
+  "newAffectedPackageNodes": [],
+  "baselineAdvisoriesRemain": true
+}

@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
-import ts from 'typescript';
 
 const source = readFileSync('mobile/native-experience.js', 'utf8');
 
@@ -29,7 +28,6 @@ function setup() {
     const dispatched = [];
     const window = {
         Capacitor: { nativePromise: async (plugin, method, options) => calls.push({ plugin, method, options }) },
-        selfHeal: async () => { reloads++; },
         addEventListener(name, handler, options) {
             const items = windowListeners.get(name) || [];
             items.push({ handler, capture: Boolean(options?.capture) });
@@ -65,25 +63,24 @@ test('native bootstrap is idempotent and reports readiness once', () => {
     assert.equal(app.calls.filter(call => call.method === 'ready').length, 1);
 });
 
-test('offline/reconnect and legacy generic recovery never reload or replay a form', async () => {
+test('offline/reconnect never reloads or replays a form', async () => {
     const app = setup();
     app.window.__hrmNative.connection(false);
     assert.ok(app.attributes.has('data-native-offline'));
     app.window.__hrmNative.connection(true);
-    await app.window.selfHeal();
     assert.equal(app.attributes.has('data-native-offline'), false);
     assert.equal(app.reloads(), 0);
     assert.equal(app.calls.some(call => call.method === 'save' || call.method === 'submit'), false);
 });
 
-test('native reconnect suppresses the legacy PWA online-reload callback', () => {
+test('native reconnect reports connection without blocking other online listeners', () => {
     const app = setup();
     let legacyReloads = 0;
     app.window.addEventListener('online', () => { legacyReloads++; });
     app.window.__hrmNative.connection(false);
     const event = { stopped: false, stopImmediatePropagation() { this.stopped = true; } };
     app.fireWindow('online', event);
-    assert.equal(legacyReloads, 0);
+    assert.equal(legacyReloads, 1);
     assert.equal(app.attributes.has('data-native-offline'), false);
     assert.equal(app.reloads(), 0);
 });
@@ -145,42 +142,4 @@ test('legacy attendance swipes buzz at the threshold and release without submitt
     const kinds = app.calls.filter(call => call.method === 'feedback').map(call => call.options.kind);
     assert.deepEqual(kinds, ['selection', 'impact']);
     assert.equal(app.reloads(), 0);
-});
-
-function recovery(native) {
-    const file = ts.createSourceFile('layout.tsx', readFileSync('app/layout.tsx', 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
-    let literal;
-    function visit(node) {
-        if (ts.isPropertyAssignment(node) && node.name.getText(file) === '__html') literal = node.initializer.getText(file);
-        ts.forEachChild(node, visit);
-    }
-    visit(file);
-    const script = vm.runInNewContext(`(${literal})`);
-    const listeners = new Map();
-    const storage = new Map();
-    let reloads = 0;
-    const window = {
-        Capacitor: { isNativePlatform: () => native },
-        location: { reload: () => { reloads++; } },
-        addEventListener: (name, fn) => listeners.set(name, fn),
-    };
-    vm.runInNewContext(script, { window, navigator: {}, Date, console: { log() {} }, sessionStorage: {
-        getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value),
-    } });
-    return { window, listeners, reloads: () => reloads };
-}
-
-test('the actual recovery script ignores native recovery and generic AbortError failures', async () => {
-    const app = recovery(true);
-    await app.window.selfHeal();
-    app.listeners.get('unhandledrejection')({ reason: new Error('AbortError') });
-    app.listeners.get('error')({ message: 'NetworkError' });
-    assert.equal(app.reloads(), 0);
-});
-
-test('browser chunk recovery can reload only once per minute', async () => {
-    const app = recovery(false);
-    await app.window.selfHeal();
-    await app.window.selfHeal();
-    assert.equal(app.reloads(), 1);
 });

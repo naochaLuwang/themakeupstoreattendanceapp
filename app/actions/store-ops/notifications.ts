@@ -1,7 +1,6 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server';
-import { sendPushNotification } from '@/lib/push';
 
 export async function getNotifications(userId: string) {
   const supabase = await createClient();
@@ -71,9 +70,6 @@ export async function createNotification(
     });
 
   if (error) return { error: error.message };
-
-  // Also send push notification
-  await sendPushNotification(title, body || '', link || '/');
 
   return { success: true };
 }

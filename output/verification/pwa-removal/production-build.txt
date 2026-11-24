@@ -1,0 +1,115 @@
+
+> build
+> next build --webpack
+
+▲ Next.js 16.1.6 (webpack)
+- Environments: .env.local
+- Experiments (use with caution):
+  · serverActions
+
+  Creating an optimized production build ...
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+✓ Compiled successfully in 12.6s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/68) ...
+  Generating static pages using 7 workers (17/68) 
+  Generating static pages using 7 workers (34/68) 
+  Generating static pages using 7 workers (51/68) 
+✓ Generating static pages using 7 workers (68/68) in 296.3ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /admin
+├ ƒ /admin/attendance-notifications
+├ ƒ /admin/attendance-stations
+├ ƒ /admin/leaves
+├ ƒ /admin/logs
+├ ƒ /admin/oversight
+├ ƒ /admin/payroll
+├ ƒ /admin/reports/consolidated
+├ ƒ /admin/reports/geotag
+├ ƒ /admin/reports/graphs
+├ ƒ /admin/reports/reliability
+├ ƒ /admin/roaster
+├ ƒ /admin/schedule
+├ ƒ /admin/store-operations
+├ ƒ /admin/store-operations/audits/audits
+├ ƒ /admin/store-operations/audits/audits/[id]
+├ ƒ /admin/store-operations/audits/audits/new
+├ ƒ /admin/store-operations/daily-checklist
+├ ƒ /admin/store-operations/daily-checklist/templates/[id]/edit
+├ ƒ /admin/store-operations/daily-checklist/templates/new
+├ ƒ /admin/store-operations/damage-reports
+├ ƒ /admin/store-operations/damage-reports/[id]
+├ ƒ /admin/store-operations/damage-reports/new
+├ ƒ /admin/store-operations/incidents
+├ ƒ /admin/store-operations/incidents/[id]
+├ ƒ /admin/store-operations/incidents/new
+├ ƒ /admin/store-operations/reports
+├ ƒ /admin/store-operations/restocking
+├ ƒ /admin/store-operations/restocking/[id]
+├ ƒ /admin/store-operations/restocking/new
+├ ƒ /admin/store-operations/shelf-inspection
+├ ƒ /admin/store-operations/shelf-inspection/[id]
+├ ƒ /admin/store-operations/shelf-inspection/new
+├ ƒ /admin/store-operations/tasks
+├ ƒ /admin/store-operations/tasks/[id]
+├ ƒ /admin/store-operations/tasks/new
+├ ƒ /admin/store-operations/testers
+├ ƒ /admin/store-operations/testers/[id]
+├ ƒ /admin/store-operations/testers/[id]/edit
+├ ƒ /admin/store-operations/testers/new
+├ ƒ /admin/weekoff-request
+├ ƒ /api/admin/attendance-notifications
+├ ƒ /api/attendance/clock-in
+├ ƒ /api/attendance/clock-out
+├ ƒ /api/attendance/smart-scan
+├ ƒ /api/attendance/state
+├ ƒ /api/attendance/station/[action]
+├ ƒ /api/auth/login
+├ ƒ /api/internal/attendance-reminders/run
+├ ƒ /api/notifications
+├ ƒ /api/reports/reliability
+├ ƒ /api/requests/swap
+├ ƒ /attendance-station
+├ ƒ /employee
+├ ƒ /employee/inbox
+├ ƒ /employee/leave
+├ ƒ /employee/logs
+├ ƒ /employee/notifications
+├ ƒ /employee/payslips
+├ ƒ /employee/profile
+├ ƒ /employee/smart-scan
+├ ƒ /employee/store-operations/daily-checklist
+├ ƒ /employee/store-operations/damage-reports
+├ ƒ /employee/store-operations/damage-reports/[id]
+├ ƒ /employee/store-operations/damage-reports/new
+├ ƒ /employee/store-operations/incidents
+├ ƒ /employee/store-operations/incidents/[id]
+├ ƒ /employee/store-operations/incidents/new
+├ ƒ /employee/store-operations/restocking
+├ ƒ /employee/store-operations/restocking/new
+├ ƒ /employee/store-operations/shelf-inspection
+├ ƒ /employee/store-operations/shelf-inspection/[id]
+├ ƒ /employee/store-operations/shelf-inspection/new
+├ ƒ /employee/store-operations/tasks
+├ ƒ /employee/store-operations/tasks/[id]
+├ ƒ /employee/store-operations/testers
+├ ○ /login
+└ ƒ /signout
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

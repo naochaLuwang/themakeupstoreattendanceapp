@@ -1,5 +1,7 @@
 # Setup, deployment and rollback
 
+Current update: PWA installation, service-worker caching/recovery and browser push have been removed. Native FCM integration and in-app history remain; Firebase setup is deferred. See [PWA removal](../pwa-removal.md).
+
 ## Attendance infrastructure delivery
 
 No dependency or environment variable is added. Existing server Supabase URL/publishable key and verified cookie sessions are reused. Attendance no longer needs a service-role client for its admin commands. Other existing modules still have their original environment requirements. Admin push remains optional through existing VAPID variables.
@@ -41,3 +43,9 @@ To withdraw the station module, revoke/deactivate stations through the admin flo
 Apply `20261124080524_attendance_smart_scan.sql` after 007 through the authorized staging process, then deploy matching web code and install Android 1.2. New pinned dependencies are ZXing browser 0.2.1/library 0.23.0; no new secret or paid provider is required. Camera permission is new, optional and foreground-only; no microphone or background location permission is introduced.
 
 Keep branch flags false until physical/staging checks pass. Opt-in requires both `enforce_engine=true` and `smart_qr_enabled=true` on the intended policy row. Turning `smart_qr_enabled=false` withdraws QR actions/confirmations without changing manual attendance or deleting receipts/audit. Full instructions, APK location and remaining checks: [smart-scan.md](smart-scan.md).
+
+## Module 5 staging and rollback
+
+Apply `20261124094512_attendance_reminders.sql` only after the Smart Scan prerequisites and real-schema rehearsal, then deploy matching web code. Dependencies are pinned `@capacitor/push-notifications@8.1.3` and `google-auth-library@10.9.1`. Android 1.3/code 4 adds notification permission and the approved-logo status icon, with Firebase auto-initialization disabled pending explicit enrollment. The local build contains no Firebase app configuration; native permission/registration is guarded and unavailable until a Firebase project is configured and Android rebuilt.
+
+Follow [Firebase/worker setup](firebase-setup.md) for server-only OAuth credentials, worker bearer/Vault secrets and the separately reviewed Cron setup. No Firebase project, scheduler or live push is provisioned. Keep branches paused until real-device/staging acceptance. Roll back by pausing branch reminders and stopping only the reminder schedule before reverting matching web code. Retain additive private tables/history; attendance records and prior worker-independent push remain intact. See [notification report](notifications.md).

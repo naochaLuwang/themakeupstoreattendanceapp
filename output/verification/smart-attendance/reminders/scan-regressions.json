@@ -1,0 +1,20 @@
+{
+  "database": "disposable local PostgreSQL only",
+  "passed": 14,
+  "checks": [
+    "migration is rerunnable, defaults disabled and requires engine enforcement for opt-in",
+    "anonymous/private-table access and forged QR entry points are denied",
+    "clock-in is QR-attributed; repeated frames and lost-response retries cannot become clock-out",
+    "active attendance requires employee-bound explicit confirmation; completed shifts cannot restart",
+    "QR checkout preserves manual check-in provenance and exact retries do not increment the version",
+    "stale/missing/imprecise/outside/boundary-overlapping locations fail with no partial attendance or redemption",
+    "session version changes invalidate confirmation and roll back privileged write context",
+    "expired confirmations and revoked displays cannot close a session",
+    "expired/tampered tokens and cross-branch scans fail",
+    "one station QR supports multiple separately authenticated employees",
+    "concurrent requests with different operation IDs redeem one employee/token once",
+    "concurrent confirmations close the bound session exactly once",
+    "a valid short-lived confirmation can outlive its original QR, with fresh GPS and reauthorization checks",
+    "revocation that commits while a scan waits for the station lock prevents attendance"
+  ]
+}

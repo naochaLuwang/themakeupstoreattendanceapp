@@ -1,9 +1,10 @@
+import type { NotificationTables } from '@/lib/notifications/types';
 import type { StationTables } from '@/lib/attendance/stations/types';
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
   public: {
-    Tables: StationTables & {
+    Tables: StationTables & NotificationTables & {
       attendance_policies: {
         Row: {
           id: string
@@ -1355,6 +1356,11 @@ export type Database = {
       }
       notification_log: {
         Row: {
+          updated_at: string
+          created_by: string | null
+          attendance_reminder_id: string | null
+          attendance_store_id: string | null
+          attendance_manager_alert: boolean
           id: string
           user_id: string | null
           title: string
@@ -1365,6 +1371,11 @@ export type Database = {
           created_at: string
         }
         Insert: {
+          updated_at?: string
+          created_by?: string | null
+          attendance_reminder_id?: string | null
+          attendance_store_id?: string | null
+          attendance_manager_alert?: boolean
           id?: string
           user_id?: string | null
           title: string
@@ -1375,6 +1386,11 @@ export type Database = {
           created_at?: string
         }
         Update: {
+          updated_at?: string
+          created_by?: string | null
+          attendance_reminder_id?: string | null
+          attendance_store_id?: string | null
+          attendance_manager_alert?: boolean
           id?: string
           user_id?: string | null
           title?: string
@@ -1389,6 +1405,9 @@ export type Database = {
     }
     Views: Record<string, never>
     Functions: {
+      attendance_notification_user: { Args: { p_command: Json }; Returns: Json }
+      attendance_reminder_admin: { Args: { p_command: Json }; Returns: Json }
+      attendance_reminder_worker: { Args: { p_command: Json }; Returns: Json }
       attendance_smart_scan: { Args: { p_command: Json; p_operation_id?: string }; Returns: Json }
       attendance_station_admin: { Args: { p_command: Json }; Returns: Json }
       attendance_station_device: { Args: { p_action: string; p_credential: string; p_station_id: string | null; p_request_id?: string; p_token_hash?: string; p_pairing_hash?: string }; Returns: Json }

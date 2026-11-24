@@ -1,0 +1,14 @@
+{
+  "fictionalLocalDataOnly": true,
+  "checks": [
+    "Login has no manifest, install metadata or automatic recovery script",
+    "Signed-out employee/admin pages remain protected",
+    "Public QR station display remains accessible",
+    "Both legacy worker URLs serve uncached retirement code without authentication",
+    "Browser test-push endpoint is gone; notification API still requires sign-in",
+    "Build contains no web manifest or PWA offline page",
+    "Fresh production page does not register any service worker",
+    "Real browser upgrade replaces and unregisters the old worker while preserving unrelated caches",
+    "Real client cleanup preserves drafts/session storage and does not navigate the page"
+  ]
+}

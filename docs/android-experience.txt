@@ -47,14 +47,12 @@ error toasts as a compatibility path. lib/native/experience.ts provides explicit
 feedback for the updated web code; controls with explicit feedback are excluded
 from generic tap detection, and native duplicate events are coalesced.
 
-Source changes to the web app add explicit attendance feedback, refresh attendance
-when returning from the background, suppress PWA install prompts inside Android,
-and stop generic network/AbortError automatic reloads. Those web changes need a
-separate web deployment to activate on the hosted app. The native bridge includes
-a compatibility override for the older page's generic self-heal reload function.
-It also captures Android's browser online event before the legacy next-pwa
-reload-on-online callback. Native reconnects are exposed as hrm:connection;
-the updated attendance screen performs read-only status refreshes on reconnect.
+Source changes to the web app add explicit attendance feedback and refresh attendance
+when returning from the background. PWA installation, service-worker caching and
+browser push are now removed. Native connection events continue as hrm:connection;
+the attendance screen performs read-only status refreshes on reconnect. The older
+self-heal override and interception of other online listeners have been removed.
+Deploy the matching web changes separately before relying on the hosted experience.
 The app still uses the HTTPS Next.js server for login, attendance and operations;
 this batch does not create an offline attendance queue or a native database.
 

@@ -42,14 +42,6 @@ yarn-error.log*
 next-env.d.ts
 
 
-# PWA files
-public/sw.js
-public/sw.js.map
-public/workbox-*.js
-public/workbox-*.js.map
-public/worker-*.js
-public/worker-*.js.map
-
 # Generated Android web assets and installable build artifacts
 /mobile/www/
 /mobile/assets/
@@ -59,3 +51,9 @@ public/worker-*.js.map
 *.jks
 *.keystore
 keystore.properties
+
+# Supply Firebase app configuration and server credentials through deployment setup.
+/android/app/google-services.json
+*-service-account.json
+*firebase-adminsdk*.json
+service-account*.json

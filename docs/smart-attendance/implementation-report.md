@@ -1,8 +1,10 @@
-# Implementation report — attendance infrastructure, QR stations and Smart Scan
+# Implementation report — attendance infrastructure, QR, Smart Scan and notifications
+
+Current update: PWA installation, service-worker caching/recovery and browser push have been removed. Native FCM integration and in-app history remain; Firebase setup is deferred. See [PWA removal](../pwa-removal.md).
 
 ## Delivered scope
 
-The repository assessment, attendance infrastructure, dynamic QR stations and Employee Smart Scan are complete locally. Intelligent reminders and rollout remain incomplete. The module boundary follows the repository instruction to validate and wait before starting another module.
+The repository assessment, attendance infrastructure, dynamic QR stations, Employee Smart Scan and intelligent notification integration are complete locally. Firebase configuration, hosted rollout and physical delivery remain incomplete. The module boundary follows the repository instruction to validate and wait before starting another module.
 
 ## Implemented
 
@@ -38,7 +40,7 @@ The infrastructure module introduces no new package, paid provider, environment 
 
 ## Important remaining work
 
-Reminder queue/device registration, notification actions, shortcuts, verified external QR links, native geofencing, structured correction requests, finalized-payroll locks and admin attendance analytics remain unimplemented. There are no placeholder buttons presenting them as working.
+Interactive notification actions, shortcuts, verified external QR links, native geofencing, structured correction requests, finalized-payroll locks and admin attendance analytics remain unimplemented. There are no placeholder buttons presenting them as working.
 
 The production base schema/RLS and cron implementation have not been inspected. Multi-organization and temporary-assignment structures do not currently exist. Manual historical time inputs retain their previous UTC contract. Physical device behavior and the five-second end-to-end scan target have not been tested. These limitations and the staged-enforcement compatibility window are detailed in the architecture, database, security and platform documents.
 
@@ -58,6 +60,12 @@ Employee Smart Scan adds a home action, locally decoded camera QR, fresh foregro
 
 Build, TypeScript, module/integration ESLint, 79 Node tests, 14 Smart Scan database scenarios, 58 database regressions, 23 synthetic-camera browser checks, two mobile home checks and the Android build/workspace tests pass. Physical camera and real staging compatibility remain outstanding. See [full Smart Scan report](smart-scan.md).
 
+## Module 5 delivered locally
+
+Intelligent attendance reminders now provide a durable server-planned queue, deduplicated private history, current-state suppression, quiet hours/cooldown, fenced per-device retries and current-role manager escalation. Android FCM HTTP v1 integration and browser VAPID delivery share the worker; enrollment is explicit and account-bound. Employee preferences and admin branch timing reuse the current workspace design. Existing immediate admin/operations push paths remain intact.
+
+Build, TypeScript, changed-file ESLint, 94 Node tests, 18 reminder database scenarios, 72 database regressions, 15 component browser checks, production route/service-worker smoke checks and Android assembly/JVM tests pass. The approved logo is retained in Android 1.3/code 4. No Firebase project/configuration, provider send, production migration/deployment or scheduler installation exists yet. See [module report](notifications.md) and [Firebase setup](firebase-setup.md).
+
 ## Next module
 
-Intelligent notifications: device registration, durable scheduling, deduplication, retries and manager escalation. Begin after the module checkpoint required by AGENTS.md.
+Quick access/external QR links and related interactive entry points. Begin after the module checkpoint required by AGENTS.md.

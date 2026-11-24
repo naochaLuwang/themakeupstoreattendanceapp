@@ -54,7 +54,8 @@ try:
     run(BASE_SCHEMA)
     TODAY=run("SELECT (clock_timestamp() AT TIME ZONE 'Asia/Kolkata')::date")
     migrations=['005_shift_attendance_lock.sql','006_attendance_engine.sql','006_attendance_engine.sql']
-    if '--with-smart-scan' in sys.argv:migrations+=['007_attendance_stations.sql','20261124080524_attendance_smart_scan.sql']
+    if '--with-smart-scan' in sys.argv or '--with-reminders' in sys.argv:migrations+=['007_attendance_stations.sql','20261124080524_attendance_smart_scan.sql']
+    if '--with-reminders' in sys.argv:migrations+=['20261124094512_attendance_reminders.sql']
     for migration in migrations:
         r=subprocess.run(PSQL+['-f',str(ROOT/'supabase/migrations'/migration)],capture_output=True,text=True)
         assert r.returncode==0,r.stderr

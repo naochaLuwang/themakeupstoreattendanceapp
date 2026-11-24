@@ -34,3 +34,7 @@ After 006, apply the additive `007_attendance_stations.sql` only through an auth
 ## Smart Scan migration
 
 `20261124080524_attendance_smart_scan.sql` follows 007. It adds two RLS-protected private tables for per-employee token attempts/confirmations and exact-operation receipts, six nullable checkout-provenance/quality columns, and the authenticated scan RPC. It replaces the existing engine/audit function definitions to admit only a verified transaction-scoped QR context. The reserved always-false QR constraint becomes an opt-in requiring engine enforcement; existing flags stay false. No old attendance/paid hours are rewritten. Schema, rollback and privacy/retention details are in [smart-scan.md](smart-scan.md). The staging preflight is `supabase/checks/smart_scan_preflight.sql`.
+
+## Intelligent reminder migration
+
+`20261124094512_attendance_reminders.sql` follows Smart Scan. It adds three public metadata/preferences/settings tables, three private key/job/delivery tables, additive reminder identity on existing `notification_log`, restrictive recipient/current-manager RLS for new engine history, mutation guards and three validated RPC boundaries. Every new table has UUID ID and creation/update/creator metadata. Branches default to paused. No scheduler or hosted deployment is installed. See [schema/access/delivery details](notifications.md) and the read-only `supabase/checks/attendance_reminders_preflight.sql`.

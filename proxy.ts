@@ -9,24 +9,8 @@ export async function proxy(request: NextRequest) {
   // station credential, so the store display never needs an admin login cookie.
   if (pathname === '/attendance-station') return NextResponse.next();
 
-  // --- PWA ESCAPE HATCH ---
-  // If it's a PWA system file, let it through immediately without checking Auth
-  if (
-    pathname.endsWith('.png') ||
-    pathname.endsWith('.ico') ||
-    pathname.endsWith('.webmanifest') ||
-    pathname.startsWith('/sw.js') ||
-    pathname.startsWith('/MUS-SW.js') ||
-    pathname.startsWith('/workbox-')
-  ) {
-    const response = NextResponse.next();
-    // CRITICAL: Ensure Service Worker is NEVER cached by the browser
-    if (pathname.includes('SW.js') || pathname.includes('sw.js')) {
-      response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-      response.headers.set('Service-Worker-Allowed', '/');
-    }
-    return response;
-  }
+  // Public static images and retirement URLs do not require a staff session.
+  if (pathname.endsWith('.png') || pathname.endsWith('.ico') || pathname === '/MUS-SW.js' || pathname === '/sw.js') return NextResponse.next();
 
   let response = NextResponse.next({
     request: { headers: request.headers },
@@ -65,8 +49,8 @@ export const config = {
     /*
      * Match all request paths except:
      * 1. Next.js internals and static files
-     * 2. PWA generated files (sw, manifest, fallback)
+     * 2. Legacy worker retirement URLs
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|manifest.webmanifest|manifest.json|sw.js|MUS-SW.js|workbox-.*|fallback-.*|icons).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|sw\\.js$|MUS-SW\\.js$|icons).*)',
   ],
 }

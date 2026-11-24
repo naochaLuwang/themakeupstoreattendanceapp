@@ -1,0 +1,33 @@
+{
+  "appId": "in.themakeupstore.hrm",
+  "appName": "THE MAKEUP STORE HRM",
+  "versionName": "1.3",
+  "versionCode": 4,
+  "artifact": "output/android/the-makeup-store-hrm-1.3-fcm-ready-debug.apk",
+  "bytes": 9015757,
+  "sha256": "0543d6fc2be71d41c21a151ec7e8a110be3942002d589747037f6d2e0aba605e",
+  "firebaseConfigured": false,
+  "nativeFcmDeliveryTested": false,
+  "webDeployed": false,
+  "databaseDeployed": false,
+  "schedulerInstalled": false,
+  "realNotificationsSent": false,
+  "checks": {
+    "productionBuild": true,
+    "typecheck": true,
+    "changedFileEslint": true,
+    "nodeTests": 94,
+    "notificationDatabaseScenarios": 18,
+    "databaseRegressionScenarios": 72,
+    "browserFixtureChecks": 15,
+    "productionSmokeChecks": 9,
+    "androidDebugBuild": true,
+    "androidJvmTests": 4
+  },
+  "limitations": [
+    "Firebase app config and server credentials required before native push testing",
+    "Matching web/database/worker deployment required",
+    "Local disposable fixtures do not prove hosted schema compatibility",
+    "Physical Android notification/background delivery not tested"
+  ]
+}

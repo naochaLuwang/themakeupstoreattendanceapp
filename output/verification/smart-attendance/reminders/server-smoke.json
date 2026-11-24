@@ -1,0 +1,52 @@
+{
+  "externalServerFetchBlocked": true,
+  "checks": [
+    {
+      "path": "/api/notifications",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/api/admin/attendance-notifications",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/api/notifications",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "path": "/api/internal/attendance-reminders/run",
+      "method": "GET",
+      "status": 405
+    },
+    {
+      "path": "/api/internal/attendance-reminders/run",
+      "method": "POST",
+      "status": 503
+    },
+    {
+      "path": "/employee/notifications",
+      "method": "GET",
+      "status": 307
+    },
+    {
+      "path": "/admin/attendance-notifications",
+      "method": "GET",
+      "status": 307
+    },
+    {
+      "path": "/attendance-station",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "test": "Actual generated PWA service worker installs and activates without missing imports",
+      "registration": {
+        "active": "http://127.0.0.1:3138/MUS-SW.js",
+        "scope": "http://127.0.0.1:3138/"
+      }
+    }
+  ]
+}

@@ -8,7 +8,7 @@ import AppBrand from '@/components/AppBrand';
 import { WORKSPACE_NAME } from '@/lib/branding';
 import {
     Activity, Calendar, Palmtree, LogOut, Search, RefreshCcw,
-    CreditCard, BarChart3, QrCode, ShieldCheck, MoreHorizontal, X, MapPin, Store,
+    CreditCard, BarChart3, QrCode, Bell, ShieldCheck, MoreHorizontal, X, MapPin, Store,
 } from 'lucide-react';
 
 const links = [
@@ -17,6 +17,7 @@ const links = [
     { href: '/admin/schedule', label: 'Shift planner', mobileLabel: 'Planner', icon: Calendar },
     { href: '/admin/store-operations', label: 'Store operations', mobileLabel: 'Store', icon: Store },
     { href: '/admin/attendance-stations', label: 'Attendance stations', icon: QrCode },
+    { href: '/admin/attendance-notifications', label: 'Attendance notifications', icon: Bell },
     { href: '/admin/weekoff-request', label: 'Swap requests', icon: RefreshCcw },
     { href: '/admin/reports/consolidated', label: 'Consolidated report', icon: BarChart3 },
     { href: '/admin/reports/graphs', label: 'Attendance graphs', icon: BarChart3 },

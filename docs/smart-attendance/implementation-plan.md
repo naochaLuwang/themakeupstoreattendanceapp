@@ -2,7 +2,7 @@
 
 ## Current delivery boundary
 
-The audit, attendance infrastructure, dynamic QR stations and Employee Smart Scan have been implemented and verified locally. Next is Intelligent notifications. `AGENTS.md` requires a pause after each implemented module. No production migration, deployment or live-data mutation is authorized by this brief.
+The audit, attendance infrastructure, dynamic QR stations, Employee Smart Scan and intelligent notification integration have been implemented and verified locally. Firebase setup and hosted deployment remain pending. Next is quick access/external QR links. `AGENTS.md` requires a pause after each implemented module. No production migration, deployment or live-data mutation is authorized by this brief.
 
 ## Repository assessment
 
@@ -15,7 +15,7 @@ The audit, attendance infrastructure, dynamic QR stations and Employee Smart Sca
 - Migration 005 permanently locks worked shifts and serializes schedule changes with attendance association. New transactions must use the same lock order and retain those protections. Overnight clock-in after midnight currently conflicts with its same-business-day association check.
 - Approved leave is in `leave_requests`; off days are dates without a shift. There is no break/segment policy or explicit split-shift policy. Completed attendance must remain completed until the existing authorized re-entry flow acts.
 - Payroll reads attendance and stores paid settlements in `payroll_records`. No finalization-lock service exists in this repository. Never recalculate or overwrite existing settlements in this module; document historical-edit impact and the later correction/period-lock integration.
-- Existing VAPID web push targets admins; operations have an independent notifications table. The service worker opens URLs. There is no durable reminder queue, worker scheduler, per-device native token service, notification preferences or geofence engine.
+- Existing VAPID web push targets admins; operations have an independent notifications table. The service worker opens URLs. At the original audit there was no durable reminder queue, worker scheduler, per-device native token service, notification preferences or geofence engine. Module 5 now supplies reminder integration and optional scheduler setup; geofencing remains unimplemented.
 - Existing tests cover location acquisition, shift locks and native compatibility. A disposable local PostgreSQL fixture can validate migrations and real concurrency without production access.
 
 ## Sequence

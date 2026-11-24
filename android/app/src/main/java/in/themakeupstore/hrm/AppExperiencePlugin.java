@@ -4,6 +4,11 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.Settings;
+import androidx.core.app.NotificationManagerCompat;
+import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -13,6 +18,28 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 public class AppExperiencePlugin extends Plugin {
     private long lastFeedback;
     private String lastKind = "";
+
+    @PluginMethod public void pushConfiguration(PluginCall call) {
+        getActivity().runOnUiThread(() -> {
+        if (!trusted()) { call.reject("This page is outside the workspace."); return; }
+        int resource = getContext().getResources().getIdentifier("google_app_id", "string", getContext().getPackageName());
+        JSObject result = new JSObject();
+        result.put("configured", resource != 0 && !getContext().getString(resource).trim().isEmpty());
+        result.put("notificationsEnabled", NotificationManagerCompat.from(getContext()).areNotificationsEnabled());
+        call.resolve(result);
+        });
+    }
+
+    @PluginMethod public void openNotificationSettings(PluginCall call) {
+        getActivity().runOnUiThread(() -> {
+        if (!trusted()) { call.reject("This page is outside the workspace."); return; }
+        Intent intent = Build.VERSION.SDK_INT >= 26
+            ? new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, getContext().getPackageName())
+            : new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", getContext().getPackageName(), null));
+        getActivity().startActivity(intent);
+        call.resolve();
+        });
+    }
 
     @PluginMethod public void feedback(PluginCall call) {
         getActivity().runOnUiThread(() -> {

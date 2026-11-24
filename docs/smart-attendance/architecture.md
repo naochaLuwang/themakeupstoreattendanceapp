@@ -1,5 +1,7 @@
 # Attendance foundation architecture
 
+Current update: PWA installation, service-worker caching/recovery and browser push have been removed. Native FCM integration and in-app history remain; Firebase setup is deferred. See [PWA removal](../pwa-removal.md).
+
 `EmployeeShiftView` → compatible API route → `lib/attendance/http.ts` → `lib/attendance/server.ts` → typed `engine.ts` adapter → `public.attendance_transition` → authenticated private PostgreSQL implementation.
 
 Server Actions for employee attendance, existing admin manual entries/edits/deletes, force checkout, and accidental-checkout approvals enter the same service. Three browser admin write paths now use those Actions rather than deleting/reopening/updating attendance directly. Legacy signatures and response fields remain available; new fields are additive.
@@ -26,3 +28,7 @@ The employee's state comes from the shared read API. Its location acquisition re
 ## Smart Scan path
 
 Employee camera (local ZXing decode) → fresh foreground location → authenticated scan API → private QR transaction → station/device reauthorization and unique employee/token claim → existing attendance engine. Active attendance yields a 120-second employee/session/version confirmation instead of an automatic checkout. The confirmation path validates fresh location and current authorization before the same engine closes that session. Details: [Smart Scan](smart-scan.md).
+
+## Module 5 — intelligent reminders
+
+A separate durable server worker plans current shift/re-entry events, publishes recipient-only history and leases per-device delivery. It rechecks eligibility immediately before FCM HTTP v1 or browser VAPID requests; the transport cannot mutate attendance. Preferences, enrollment and branch timing use authenticated RPCs, while only the bearer-authenticated internal worker uses service-role RPC access. Provider errors do not affect attendance success. Legacy immediate admin push remains best effort. See [notification architecture and guarantees](notifications.md); actionable notification controls and geofences remain later work.
