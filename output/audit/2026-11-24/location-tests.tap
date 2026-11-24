@@ -1,0 +1,18 @@
+✔ a recent, accurate nearby position needs no GPS watch (41.573125ms)
+✔ a quick timeout falls back to fresh GPS and releases the watch (11.473334ms)
+✔ imprecise and stale readings are refined until a fresh accurate fix arrives (9.208625ms)
+✔ an outside quick fix is retried before rejecting someone at the store (7.182209ms)
+✔ permission denial gives actionable feedback without repeated prompts (6.217125ms)
+✔ persistent poor accuracy ends with guidance and stops tracking (17.808333ms)
+✔ a stalled location provider has a deadline (28.707458ms)
+✔ leaving the page cancels GPS refinement and clears the watch (8.766625ms)
+✔ unsupported location fails clearly (5.37875ms)
+✔ store day is correct before UTC midnight (49.5445ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 370.38775

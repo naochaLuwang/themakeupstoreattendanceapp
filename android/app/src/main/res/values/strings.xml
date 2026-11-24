@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">THE MAKEUP STORE HRM</string>
+    <string name="title_activity_main">THE MAKEUP STORE HRM</string>
+    <string name="package_name">in.themakeupstore.hrm</string>
+    <string name="custom_url_scheme">in.themakeupstore.hrm</string>
+</resources>

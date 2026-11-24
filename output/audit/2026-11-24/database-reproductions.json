@@ -1,0 +1,49 @@
+{
+  "environment": "Isolated PostgreSQL 17; minimal fictional base schema; no production access; explicit anon/authenticated grants assumed for permission tests",
+  "checks": [
+    {
+      "check": "migration applies with minimal base schema: 002_damage_reports.sql",
+      "evidence": "success"
+    },
+    {
+      "check": "migration applies with minimal base schema: 003_daily_checklist.sql",
+      "evidence": "success"
+    },
+    {
+      "check": "004 fails while creating notification_log UPDATE policy",
+      "evidence": "ERROR:  column \"created_by\" does not exist\nHINT:  Perhaps you meant to reference the column \"notification_log.created_at\".\nCONTEXT:  SQL statement \"CREATE POLICY \"Owners can update notification_log\" ON notification_log FOR UPDATE USING (auth.uid() = created_by OR EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'manager')))\"\nPL/pgSQL function inline_code_block line 21 at EXECUTE"
+    },
+    {
+      "check": "004 policy DO block rollback leaves tasks with no policies on this clean fixture",
+      "evidence": "0"
+    },
+    {
+      "check": "template item FK rejects a checklist_templates ID",
+      "evidence": "ERROR:  insert or update on table \"daily_checklist_items\" violates foreign key constraint \"daily_checklist_items_daily_checklist_id_fkey\"\nDETAIL:  Key (daily_checklist_id)=(00000000-0000-4000-8000-000000000010) is not present in table \"daily_checklists\"."
+    },
+    {
+      "check": "002 employee INSERT policy accepts preapproved report, forged author and negative amount/quantity",
+      "evidence": "approved,-5,-100.00,00000000-0000-4000-8000-000000000002"
+    },
+    {
+      "check": "002 anonymous SELECT policy exposes rows IF table SELECT privileges exist",
+      "evidence": "1"
+    },
+    {
+      "check": "003 employee can INSERT completed, author-forged duplicate daily checklists with no items",
+      "evidence": "2"
+    },
+    {
+      "check": "003 rerun fails because DROP policy names do not match CREATE names",
+      "evidence": "ERROR:  policy \"Admin/Manager can update templates\" for table \"checklist_templates\" already exists"
+    },
+    {
+      "check": "004 intended policies in adjusted fixture let employee create/assign completed task and self-approve own restock",
+      "evidence": "approved"
+    },
+    {
+      "check": "004 adjusted fixture has no store boundary on incident SELECT",
+      "evidence": "true"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+.brand { display: inline-flex; align-items: center; gap: 10px; min-width: 0; max-width: 100%; color: inherit; text-align: left; }
+.logo { display: block; width: 44px; height: 44px; flex-shrink: 0; border-radius: 8px; background: #fff; }
+.copy { display: block; min-width: 0; }
+.name { display: block; font-size: 12px; font-weight: 600; line-height: 1.4; text-wrap: balance; }
+.subtitle { display: block; margin-top: 3px; font-size: 11px; font-weight: 400; line-height: 1.4; opacity: 0.72; }

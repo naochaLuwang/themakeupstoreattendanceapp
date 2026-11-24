@@ -1,0 +1,22 @@
+{
+  "mode": "Built-in image generation",
+  "reference": "/Users/somojitarambam/Desktop/attendance-app/output/branding/variations-v3/06-operations-checklist.png",
+  "base": "Use case: precise-object-edit / logo-brand.\nEDIT the attached app-icon concept. The user LIKES its muted-plum inner monogram and rounded geometric style, but finds the clipboard much too prominent.\nPreserve the inner plum symbol very closely: its left upright and descending diagonal, the parallel diagonal that bends upward into a broad V/check and then into the right upright, and the short rounded horizontal dash at the bottom right. Keep that distinctive arrangement and recognizable geometry; do not replace it with a font M. Preserve near-black (#171917), muted plum (#704858), rounded stroke terminals, crisp flat geometry and clean white negative space.\nThis is an app icon for staff attendance AND store operations. The check-like bend in the M suggests attendance confirmed; a very restrained workspace/store cue can suggest operations. The clipboard clip, bulky top tab and clipboard handle MUST disappear completely.\nOutput one single square logo concept on pure white, centered, filling approximately 70% of the square with balanced safe margins. No text, no labels, no contact sheet, no phone mockup, no gradients, no shadows, no texture, no watermark. Do not add clocks, people, calendars, awning stripes, detached check badges or tiny checklist rows. Keep the inner monogram dominant and readable at 32px.",
+  "variants": [
+    {
+      "slug": "08-light-workspace-frame",
+      "name": "Light workspace frame",
+      "direction": "VERSION 1 — LIGHT WORKSPACE FRAME. Remove the clipboard's entire top clip and replace the bulky clipboard outline with one simple rounded-square black frame, about HALF the stroke weight of the plum monogram. The frame has a clean uninterrupted top edge and absolutely no tab or handle. Reduce the frame's visual weight substantially and enlarge the original plum inner mark so it fills the frame comfortably. Preserve the inner short plum dash as a subtle completed-task/status cue. This should read as a branded app workspace, with no literal clipboard remaining."
+    },
+    {
+      "slug": "09-open-check-in-frame",
+      "name": "Open check-in frame",
+      "direction": "VERSION 2 — OPEN CHECK-IN FRAME. Remove the entire clipboard, including every outer side and the top clip. Preserve and slightly enlarge the selected plum inner M/check and its short lower-right dash. Add only TWO short near-black rounded corner brackets diagonally opposite each other: one at upper left, one at lower right. The brackets are substantially lighter than the plum symbol and remain clearly separated from it. No full enclosing outline. They suggest entering a staff workspace / checking in, while the M/check and single dash suggest operations completed. Sparse, balanced, airy, distinctive, no scanner beam or QR-code pattern."
+    },
+    {
+      "slug": "10-minimal-store-frame",
+      "name": "Minimal store frame",
+      "direction": "VERSION 3 — MINIMAL STORE FRAME. Keep the selected plum inner M/check and its lower-right dash. Replace the clipboard with a stripped-down near-black shop structure: a single short flat canopy cap with subtly softened overhanging ends and just two thin side posts. NO scalloped awning, stripes, top tab, handle, clipboard clip, roof triangle or bottom border. Keep these structural black strokes roughly HALF the weight of the plum symbol. The plum monogram itself forms the storefront's interior; its check-shaped bend signals attendance, its small lower dash reads as a counter or shelf. A single compact, restrained mark, visibly lighter than the source."
+    }
+  ]
+}

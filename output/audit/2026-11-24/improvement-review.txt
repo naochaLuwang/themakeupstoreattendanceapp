@@ -1,0 +1,619 @@
+THE MAKEUP STORE HRM — IMPROVEMENT REVIEW
+24 November 2026 · Local source assessment · No product changes or production writes
+
+Your shift concern is correct: an employee’s ordinary change request should be blocked once attendance begins for that shift, and the lock should remain after clock-out. Future unworked shifts should still be eligible. A manager/admin correction should be an explicit audited exception.
+
+The highest-value improvements are consistent business rules, dependable retries, accurate time/pay calculations, and simpler completion/approval workflows. The current app has useful foundations: attendance identity checks, server-generated attendance event times, an admin-only helper for privileged corrections, cancellable GPS refinement, and visible loading/retry states. Several rules currently stop at the screen rather than being enforced end to end.
+
+This review provides 12 improvement groups and a technical appendix of 35 findings. Priorities are proposed implementation order, not promises about effort or claims that every possible defect has been found. No fixes have been applied; existing uncommitted product changes were preserved.
+
+PRIORITIZED IMPROVEMENTS
+
+1. [First] Lock a shift once attendance starts
+Keep the shift assignment, date and scheduled hours fixed after clock-in, including after clock-out. Check both sides of an interchange or peer swap. Apply the rule to requests, approval and bulk scheduling. Future unrelated shifts should remain editable.
+Expected experience: An employee who has started today’s 10:00 shift cannot move it to 12:00 or exchange that worked day. A manager sees why it is locked. A historical correction uses a separate audited workflow.
+Technical references: F01, F02, F03, F04, F05
+
+2. [First] Make clock-in and clock-out safe to retry
+Use a unique operation ID and an exact attendance session for each swipe. Enforce one active session in the database, reject failed eligibility reads, and confirm saved state after an uncertain network response. Do not wait for push delivery before acknowledging attendance.
+Expected experience: If a phone loses its connection after a swipe, reopening or retrying shows the saved result instead of creating another attendance row or closing a newer session.
+Technical references: F06, F07, F09, F10, F32
+
+3. [First] Improve location feedback and verification
+Keep the existing quick-location/refinement flow, but validate finite coordinates and store configuration on the server too. Give clear permission, accuracy and timeout messages. Add a bounded attendance-save timeout with reconciliation. Provide a reasoned manager-assisted exception when legitimate staff cannot obtain GPS.
+Expected experience: Staff see whether the app is finding a location or saving attendance. Missing store coordinates cannot silently produce a verified clock-in. Clock-out remains available without GPS.
+Technical references: F08, F09, F32
+
+4. [First] Make re-entry and corrections explicit
+Keep original attendance events, link each request to an exact attendance record, require a reason and single-use approval, and preserve who approved it. Distinguish correcting an accidental checkout from returning after an actual off-duty break.
+Expected experience: Approving an accidental-checkout correction cannot reopen an unrelated day or be reused repeatedly. Real break time is not silently paid as continuous work.
+Technical references: F11, F12
+
+5. [First] Use one store clock and reliable time calculations
+Use Asia/Kolkata for business dates and convert event times consistently. Handle overnight shifts, half-open day/month boundaries and cross-month leave. Share calculation helpers between attendance, payroll and reports.
+Expected experience: Manual 10:00 entry means 10:00 IST everywhere. A shift ending after midnight belongs to the correct shift day. Reports agree regardless of the server or viewer timezone.
+Technical references: F12, F13, F14, F18
+
+6. [First] Make payroll period-based and reviewable
+Calculate amounts on the server, check payroll authorization, use precise worked minutes, filter payments by month and year, and prevent duplicate settlement. Show regular hours, overtime, rate, advances, adjustments and net pay. Confirm whether overtime is a total 1.5x rate or an additional premium.
+Expected experience: A prior-year November advance does not reduce this November’s pay. The current formula pays overtime hours at a combined 2.5x rate when Auto OT is added; the app should apply your chosen policy explicitly.
+Technical references: F15, F16, F17, F18
+
+7. [Next] Turn shift and leave requests into clear workflows
+Store request type, target preset/date and affected shift IDs as structured data. Show a before/after preview, current status, decision reason and timeline. Prevent duplicates and reject stale approvals. Check worked shifts, overlapping leave and staffing conflicts.
+Expected experience: Employees select “change time” or “move day off” without ambiguous generated messages. A request cancelled or invalidated by clock-in cannot later be approved from an old browser tab.
+Technical references: F02, F03, F04, F05, F14
+
+8. [Next] Repair checklist setup and trustworthy completion
+Separate reusable template items from daily run items. Create one appropriate checklist per store/day/type, support staff collaboration, require mandatory items/photo proof before completion, and freeze completed runs unless explicitly reopened.
+Expected experience: Opening and closing checklists contain the intended template items. A colleague can finish their assigned item, and an empty checklist cannot count as a completed opening.
+Technical references: F23, F24
+
+9. [Next] Make task and audit actions match employee responsibilities
+Let employees complete authorized assigned work with an explicit Complete action. Keep cancelled work closed. Restrict audit execution to managers/admins, validate scores, preserve template versions, and fix audit links plus record deletion.
+Expected experience: Repeating a completion request does not undo a task. A five-point audit question cannot receive 999 points. Starting an audit opens its actual detail page.
+Technical references: F25, F26, F27, F28
+
+10. [Next] Keep photos and forms reliable on phones
+Fix multi-image selection, accumulate uploaded URLs correctly, compress images, validate files on the server, save drafts, and clean up cancelled uploads. Save each report and its child records atomically or with an explicit resumable state.
+Expected experience: Selecting three photos keeps all three. An interrupted upload does not silently lose proof or leave duplicate empty damage/restock reports.
+Technical references: F29, F30
+
+11. [Next] Enforce role, store and privacy rules in the database
+Bind authorship to the signed-in user, restrict approvals to authorized reviewers, preserve store ownership, scope manager access, and limit private report/notification reads. Reconcile migrations before applying new policies. Use a generic offline shell for private HR pages on shared devices.
+Expected experience: Employee, manager and admin permissions are consistent even when someone bypasses the screen. Signing out does not leave the previous user’s private page available through offline navigation.
+Technical references: F19, F20, F21, F22, F31, F33
+
+12. [Later] Show actionable alerts and accurate operations reports
+Prioritize today’s active shift, pending approvals and due tasks. Deliver notifications to the intended person after the business transaction. Add real period filters and compliance metrics, avoid penalizing cancelled/override requests as unreliability, and verify recurring tasks, expiry reminders and auto-checkout jobs. Test Android login, GPS, reconnect and report saving on a real device.
+Expected experience: Managers can distinguish an overdue task from a completed one, see last successful automation runs, and reconcile dashboard numbers with actual records. Alerts are useful rather than noisy.
+Technical references: F18, F31, F32, F34, F35
+
+EXPECTED SHIFT-CHANGE RULES
+• Future shift with no attendance: Allow an otherwise valid request, with conflict and eligibility checks.
+• Today, before clock-in: Allow if your request cutoff policy permits it; recheck when approving.
+• Clocked in / attendance active: Block ordinary changes to that shift’s employee, date and scheduled hours.
+• Clocked out / auto-checked out: Keep the ordinary shift-change lock. Checkout does not erase that the shift was worked.
+• Two-day interchange or peer swap: Block if either affected shift has attendance or otherwise conflicts.
+• Request pending when employee clocks in: Allow attendance under the current valid schedule; invalidate/expire the incompatible request atomically or reject its later approval.
+• Unrelated future shift while employee is clocked in today: Continue allowing eligible requests for that future shift.
+• Accidental checkout / historical correction: Use an exact attendance ID, single-use approval, reason and preserved original events; keep it separate from ordinary shift change.
+
+WHAT WAS VERIFIED
+• 25 isolated checks execute actual TypeScript handlers or extracted UI handlers against fictional in-memory data: 24 characterize defects and one checks that cross-user attendance/request identity is rejected. Passing these checks confirms the observed behavior; it does not mean the behavior is correct or that production lacks extra database protection.
+• 11 PostgreSQL checks used the actual 002/003/004 migration files against a temporary PostgreSQL 17 database with minimal fictional profiles/stores and an auth.uid fixture. The temporary server used a local Unix socket with TCP disabled and was stopped afterward.
+• Unmodified 002/003 policy behavior, checklist FK failure, 004 migration failure and 003 rerun failure were reproduced. For a separate test of intended 004 policies, notification_log was explicitly excluded from a temporary string copy of its failing policy block. Those adjusted-fixture results do not prove that unmodified 004 applies or that those policies exist in production.
+• Anonymous-read tests explicitly granted table SELECT in the fixture. Real exposure depends on deployed grants, Data API settings and RLS.
+• Existing attendance-location tests: 10/10 pass. TypeScript: npm run typecheck passes.
+• Source-only ESLint over app, components, lib, proxy.ts and next.config.ts: 216 errors, 29 warnings across 196 scanned files. Full npm run lint: 26,503 errors and 31 warnings, including generated Android/build/service-worker artifacts. The source-only result confirms this is not solely generated-file noise. These are current workspace results, not a claimed regression caused by this audit.
+
+LIMITS AND DEPLOYMENT DISTINCTION
+The review examined the local worktree, not a verified production deployment. Live pg_policies, base attendance/profile/payroll constraints, triggers, grants, storage bucket rules, Auth settings, Realtime publications, cron jobs and external functions were not inspected. A service-role application key is not a substitute for read-only PostgreSQL catalog access. No employee records were queried and no exploit was sent to production. Missing server checks are confirmed; additional live database protection is explicitly unknown.
+
+Only store-operations migrations 002–004 are present. Core auth/attendance/scheduling/payroll schema definitions and the manual_trigger_checkout implementation are not versioned here. The Android APK is an online wrapper around the deployed HTTPS site: rebuilding it does not deploy local Next.js fixes. The wrapper’s device-level login, location, reconnect, push and document saving need separate real-device acceptance tests. No production build was rerun for this report-only task, avoiding generated product asset changes.
+
+RECOMMENDED DELIVERY ORDER
+1. Attendance and shift integrity: shift locks, structured requests, transaction/state checks, idempotent attendance and audited corrections. Add focused regression tests for both ordinary and concurrent flows.
+2. Time and payroll: one timezone model, manual-entry fix, precise hours, explicit overtime policy, period ledger and duplicate-payment protection. Reconcile sample payslips before enabling changes.
+3. Operational completion: checklist schema repair, task assignment transitions, audit routes/scoring, atomic report creation and phone uploads. Deliver and verify one module at a time.
+4. Permissions and operational readiness: reconcile deployed schema/policies, apply reviewed forward migrations, verify alerts/automation, exclude private pages from offline caching and run Android acceptance checks. Permission exposure checks should be prioritized immediately if live policies match the permissive repository definitions.
+
+READ-ONLY LIVE FOLLOW-UP NEEDED
+Inspect policies/grants for profiles (especially role, hourly_rate and store_id updates), attendance, shifts, requests, payroll, push subscriptions and operations tables. Verify partial unique/overlap constraints for attendance, shift-mutation guard triggers, request status constraints and payroll idempotency. Check manual_trigger_checkout function privileges/SECURITY DEFINER configuration, actual cron schedule, storage.objects policies and bucket privacy, Realtime publication, Auth signup/rate-limit/session settings, proxy handling of forwarded IP, and the deployed web revision. The companion live-inspection.sql contains catalog-only queries; it does not call business functions or change data.
+
+ACCEPTANCE SCENARIOS FOR THE FIRST IMPLEMENTATION
+• Clock in, then attempt a time change, date move, peer swap and bulk schedule change: all ordinary mutations affecting the worked shift are rejected consistently.
+• Submit a request, then clock in before approval; approving the stale request returns a clear conflict.
+• Clock out and attempt the same changes: the shift remains locked. Another future shift is still requestable.
+• Source is unworked but target/peer shift was worked: the exchange is blocked.
+• Double swipe, two phones, delayed/replayed requests and failed response after a successful commit produce one intended attendance outcome.
+• GPS permission denied, slow, inaccurate or missing store location produces clear feedback without false verification. Clock-out still works without GPS.
+• Correct an accidental checkout once with reason/approver; preserve original events and reject replay. A real break remains excluded from worked time.
+• Manually enter 10:00 IST and verify the identical business time in logs, reports and payroll. Verify overnight and month/year boundaries.
+• Two simultaneous settlements and a network retry create one intended payment operation; a prior-year payment does not reduce this period’s balance.
+• Employee direct API/database attempts cannot self-approve reports, alter another store’s work, or read another user’s private notifications.
+
+TECHNICAL APPENDIX — DETAILED FINDINGS
+
+F01 [P1] A worked shift is not locked against ordinary changes
+Area: Shift changes
+Verification: Confirmed in application source and isolated execution; live database trigger protection unverified.
+Observed behavior: The request button checks only whether the selected date is today or later. Submission and ordinary approval never query attendance. Bulk publishing also upserts scheduled times without checking whether a shift has been worked. The defect persists after clock-out: no path treats any recorded check-in as an immutable boundary.
+Reproduction: With active attendance for today's shift, submit a time-change request and approve it. The isolated test changes the shift from 10:00 to 12:00 while attendance remains open. Repeat with completed attendance, or submit before clock-in and approve afterward; no attendance guard exists.
+Business impact: The schedule underlying lateness, overtime and accountability can change after work starts. Hiding the button would leave the API, Server Action, approval screen and bulk scheduler paths open.
+Improvement: Enforce the invariant in a shared server/database transaction used by clock-in and schedule mutation. Lock all affected shift rows in consistent order and reject ordinary changes if any attendance exists. Keep this lock after checkout. Make historical corrections a separate, reasoned, audited admin operation.
+Evidence:
+  components/employee/EmployeeShiftView.tsx:578
+  components/employee/EmployeeShiftView.tsx:374
+  app/api/requests/swap/route.ts:28
+  app/actions/requests.ts:60
+  app/(dashboard)/admin/weekoff-request/page.tsx:35
+  components/admin/BulkScheduler.tsx:179
+
+F02 [P1] Requests accept foreign, past and duplicate shift references
+Area: Shift changes
+Verification: Confirmed handler behavior; whether arbitrary references can persist depends on live RLS and constraints.
+Observed behavior: Authentication binds userId to the session, but neither entry point verifies that shiftId belongs to that user, represents an eligible date, or has no conflicting pending request. Receiver is set to the caller regardless of who owns the referenced shift.
+Reproduction: Use an authenticated employee session with a fictional other employee's past shift ID in the isolated harness. Two identical requests are accepted. No shifts or attendance lookup occurs.
+Business impact: Misleading approval requests, duplicate work for managers, and potential changes to another employee's schedule through an apparently self-directed request. Duplicate requests also lower the reliability score.
+Improvement: Derive the requestor from auth; fetch and authorize every affected shift. Validate both dates, target eligibility, approved leave and conflicts. Add a structured uniqueness rule for competing pending requests and a submission idempotency key.
+Evidence:
+  app/api/requests/swap/route.ts:7
+  app/api/requests/swap/route.ts:29
+  app/actions/requests.ts:44
+
+F03 [P1] Approval has no pending-state or schedule-version precondition
+Area: Approvals
+Verification: Confirmed source and isolated execution.
+Observed behavior: The approval handler trusts the request object previously loaded into the browser, then updates by ID alone. Cancellation also updates by ID alone. There is no atomic pending-to-approved transition, expected shift version, or recheck after the manager opens a request.
+Reproduction: Load a request in an admin tab, cancel it elsewhere, then approve from the stale tab. The isolated handler accepts a cancelled request. Two reviewers can also act on the same stale request, or a shift can change before approval.
+Business impact: Cancelled, outdated or already handled requests can take effect; the last writer determines the displayed status and schedule.
+Improvement: Move approval to one authorized transactional operation with status='pending', expected versions and row locks. Competing operations should return a conflict instead of silently overwriting each other. Revalidate attendance inside that same operation.
+Evidence:
+  app/(dashboard)/admin/weekoff-request/page.tsx:35
+  app/(dashboard)/admin/weekoff-request/page.tsx:178
+  components/employee/EmployeeShiftView.tsx:435
+  app/actions/attendance-override.ts:16
+
+F04 [P1] A swap can be partially applied and still marked approved
+Area: Approvals
+Verification: Confirmed by executing the actual approval handler with an injected second-write failure.
+Observed behavior: Two-shift interchange and peer swaps issue separate updates and ignore some returned errors. Status is updated afterward. Malformed messages, absent joined shifts, or unmatched branches can also reach the final approved update without a schedule change.
+Reproduction: Fail the second shift update in the isolated harness. The first shift changes, the second does not, and the request becomes approved. A malformed 'Shift Change' message is also approved with no schedule mutation.
+Business impact: Duplicate shift assignments, lost reciprocal swaps and an approval history that claims a change occurred when it did not.
+Improvement: Apply every schedule mutation and request status change in one database transaction. Validate an exact request type before executing it, require the expected affected row counts, and roll back on any failure.
+Evidence:
+  app/(dashboard)/admin/weekoff-request/page.tsx:117
+  app/(dashboard)/admin/weekoff-request/page.tsx:123
+  app/(dashboard)/admin/weekoff-request/page.tsx:161
+  app/(dashboard)/admin/weekoff-request/page.tsx:177
+
+F05 [P1] Employee-written prose is parsed as an executable change instruction
+Area: Shift changes
+Verification: Confirmed source; ambiguous preset resolution depends on available labels.
+Observed behavior: Request classification uses substrings such as 'Shift Change' and 'OVERRIDE REQUEST'. Target dates come from regexes over message text. Presets are matched with an employee-controlled partial ILIKE pattern instead of an exact preset ID. The API accepts arbitrary message text.
+Reproduction: Submit a message whose label is only part of a preset name, contains pattern characters, or has an unexpected count/order of dates. The approval branch is determined by the text rather than validated request fields. One off-day request message also describes its source/target days in reverse in the UI.
+Business impact: Approvers can authorize a different change than expected; future wording edits can break business logic, and malformed requests can be silently approved.
+Improvement: Store request_type, source_shift_id, target_shift_id/date and target_preset_id in validated columns. Generate display text from those fields. Keep override requests in a distinct workflow with an attendance_id.
+Evidence:
+  app/(dashboard)/admin/weekoff-request/page.tsx:39
+  app/(dashboard)/admin/weekoff-request/page.tsx:54
+  app/(dashboard)/admin/weekoff-request/page.tsx:61
+  app/(dashboard)/admin/weekoff-request/page.tsx:78
+  app/actions/attendance-override.ts:18
+
+F06 [P1] Clock-in bypasses the same-day re-entry approval rule
+Area: Attendance
+Verification: Confirmed application behavior; a live database uniqueness/trigger rule may provide additional protection.
+Observed behavior: The employee screen labels a completed day as finished and offers an override request. Both clock-in backends check only for an open attendance row, then allow another insert after checkout. They never require an approved re-entry grant.
+Reproduction: Seed a completed attendance row for the same day/shift, then call the real clock-in handler against the isolated database double. It inserts a second attendance row without consulting any override request.
+Business impact: The restriction shown to employees is bypassable. Multiple sessions also produce inconsistent totals because different reports aggregate them differently.
+Improvement: Define allowed attendance segments per scheduled shift. Require a single-use, attendance-specific re-entry authorization, consumed atomically. Enforce the chosen uniqueness and overlap rules in PostgreSQL as well as the API.
+Evidence:
+  components/employee/EmployeeShiftView.tsx:193
+  components/employee/EmployeeShiftView.tsx:600
+  app/api/attendance/clock-in/route.ts:36
+  app/actions/attendance.ts:27
+
+F07 [P1] Clock-in trusts the supplied shift and store without checking eligibility
+Area: Attendance
+Verification: Confirmed missing validation and isolated acceptance; live RLS/FK protection unverified.
+Observed behavior: The server verifies the caller's userId but accepts a null shiftId or an arbitrary shift reference. It fetches the supplied store without comparing it to the employee's assigned store. It does not verify shift ownership, date, cancellation, allowed clock-in window or approved leave.
+Reproduction: The isolated handler accepts no shift and a shift owned by another employee on a past date. It also accepts a store different from profile.store_id, provided the supplied coordinates match the selected store.
+Business impact: Attendance can be linked to the wrong schedule or location and created on an ineligible day if the live database does not independently prevent it.
+Improvement: Derive the employee and store from the authenticated profile and authorized shift. Validate schedule eligibility and leave state on the server, then persist only those verified identifiers. Treat missing or invalid schedules as an explicit exception workflow.
+Evidence:
+  app/api/attendance/clock-in/route.ts:8
+  app/api/attendance/clock-in/route.ts:23
+  app/api/attendance/clock-in/route.ts:58
+  app/actions/attendance.ts:17
+  components/employee/EmployeeShiftView.tsx:250
+
+F08 [P1] Server geofence validation fails open for invalid data or missing configuration
+Area: Attendance / location
+Verification: Confirmed application guard behavior. Malformed coordinates may still be rejected by production column types/constraints.
+Observed behavior: Only undefined coordinates are rejected. Numeric type, finiteness and latitude/longitude ranges are unchecked. A nonnumeric value yields NaN, which does not satisfy distance > radius. If either store coordinate is null or zero, the server skips the check but still records is_within_geofence=true. GPS age and accuracy are checked only in the browser, and neither is sent to the server.
+Reproduction: In the harness, an invalid string reaches attendance.insert. With missing store coordinates, a remote coordinate is accepted and marked inside the geofence. These tests prove application behavior, not successful malformed-value persistence in the live database.
+Business impact: Location validation can be bypassed or produce a false assertion of verification. Even valid coordinates remain employee-supplied claims; the current design does not prove physical presence.
+Improvement: Validate strict finite coordinate ranges and a positive configured radius; reject invalid store configuration. Record location timestamp/accuracy and the actual verification result. If stronger presence assurance is required, add a separate store/device verification factor. Do not describe browser GPS alone as tamper-proof.
+Evidence:
+  app/api/attendance/clock-in/route.ts:10
+  app/api/attendance/clock-in/route.ts:26
+  app/api/attendance/clock-in/route.ts:61
+  app/actions/attendance.ts:19
+  lib/geofence.ts:1
+  lib/attendance/location.ts:73
+
+F09 [P1] Duplicate prevention is racy and ignores failed attendance reads
+Area: Attendance
+Verification: Confirmed handler behavior under concurrent calls and injected query error; live uniqueness constraint unknown.
+Observed behavior: Clock-in reads an active row and inserts later. Two requests can both observe no active attendance. The error from the active-session lookup is discarded, so a failed read is treated like an empty result. Manual creation has the same check-then-insert pattern.
+Reproduction: Two simultaneous calls to the actual clock-in handler insert two rows in the fixture. Injecting an active-attendance SELECT error also results in an insert. Frontend refs prevent some duplicate swipes in one mounted screen, but cannot serialize other tabs, devices or retries.
+Business impact: Overlapping sessions, inflated hours and ambiguous clock-out/re-entry behavior unless the live database supplies an appropriate unique/overlap constraint.
+Improvement: Fail closed on lookup errors. Add a database rule for one active session per employee and transactional shift validation. Use operation idempotency keys and return the committed result for a retry of the same operation.
+Evidence:
+  app/api/attendance/clock-in/route.ts:37
+  app/api/attendance/clock-in/route.ts:58
+  app/actions/attendance.ts:28
+  app/actions/manual-attendance.ts:39
+
+F10 [P1] Clock-out is not tied to the attendance session the employee intended to close
+Area: Attendance
+Verification: Confirmed source and isolated execution.
+Observed behavior: Clock-out accepts only userId and updates every open attendance row for that employee. It has no expected attendance ID, operation key or session version. A delayed old request can therefore close a newer reopened/re-entered session.
+Reproduction: Seed two open attendance rows; one call closes both, even if an attendanceId is included because the route ignores it. A retry after an override reopens a row also acts on the newly open state.
+Business impact: A stale tab or retried network operation can clock out the wrong session, and duplicate data is hidden rather than reconciled.
+Improvement: Require attendance_id plus an operation ID/version. Update only that employee's expected active session, and return a stable already-completed result for a retry. Handle unexpected extra open rows as an explicit reconciliation issue.
+Evidence:
+  app/api/attendance/clock-out/route.ts:7
+  app/api/attendance/clock-out/route.ts:28
+  app/actions/attendance.ts:88
+
+F11 [P1] Re-entry approval is replayable, rewrites closed records and has two inconsistent implementations
+Area: Attendance overrides
+Verification: Confirmed source and isolated execution; legacy screen reachability depends on its current parent page.
+Observed behavior: The server action requires admin access correctly, but does not require a pending request or a current-day closed attendance ID. It finds attendance by a date range and erases check_out. The legacy client handler instead ignores the request date, reopens all attendance since today's UTC midnight, ignores both write errors and approves separately. Requests are not consumed as single-use grants.
+Reproduction: Approve an already approved override, close attendance again, then approve the same request again: the fixture reopens it twice. The legacy handler reopens two current-day records when given a request describing a different date.
+Business impact: Original checkout evidence is lost. A genuine off-duty gap becomes paid elapsed time if the eventual checkout is measured from the original check-in. An old session can be reopened alongside a new one.
+Improvement: Use one admin-authorized transactional path tied to an exact attendance row, request status and shift date. Preserve original events; create a correction or new attendance segment with reason, approver and timestamp. Distinguish an accidental checkout correction from a real return after a break.
+Evidence:
+  app/actions/attendance-override.ts:16
+  app/actions/attendance-override.ts:31
+  app/actions/attendance-override.ts:43
+  components/admin/OverridesList.tsx:39
+  components/employee/EmployeeShiftView.tsx:360
+
+F12 [P1] Manual entry supplies a preset ID as a shift ID and permits invalid partial edits
+Area: Manual attendance
+Verification: Confirmed UI/action mismatch and partial-edit behavior; live FK determines whether a preset ID is rejected.
+Observed behavior: The dropdown loads shift_presets and sends the selected preset's ID as attendance.shift_id, although the rest of the app joins that field to scheduled shifts. The action checks only that an employee exists. Edit validates chronology only when both timestamps appear in the request, without merging saved values. Creation also ignores active sessions on other days, and deletion hard-deletes records without an audit reason.
+Reproduction: Select a normal preset for manual entry; with the expected attendance-to-shifts FK, the insert fails. Without that FK, it creates a mislinked record. The isolated edit action accepts a checkout in 2020 on a record whose saved check-in is in 2026 when only checkout is supplied.
+Business impact: Broken manual attendance, wrong shift joins, impossible durations and loss of correction history. The admin-only helper is present; this is a validation/integrity issue, not an unauthenticated service-role action.
+Improvement: Select the employee's actual scheduled shift for the requested date, or create a documented authorized unscheduled shift. Validate the complete merged attendance state, overlap, future times and payroll locks. Record corrections/voids instead of deleting evidence.
+Evidence:
+  components/admin/ManualAttendanceEntry.tsx:45
+  components/admin/ManualAttendanceEntry.tsx:79
+  components/admin/ManualAttendanceEntry.tsx:169
+  app/actions/manual-attendance.ts:32
+  app/actions/manual-attendance.ts:83
+  app/actions/manual-attendance.ts:91
+
+F13 [P1] UTC, Indian local time and server/browser local time are mixed
+Area: Dates and time
+Verification: Confirmed inconsistent source calculations; exact scheduled timestamp semantics need live column/schema verification.
+Observed behavior: Scheduling writes wall-clock strings without an offset, approval writes Z, manual entry appends +00 to local-looking input, while normal attendance is a real server instant. Some screens extract UTC string times and others reconstruct times in the viewer/server timezone. Checklists use UTC dates. Shift end dates are kept on the same day even for overnight times. Today's completed-attendance query has no upper day boundary.
+Reproduction: A manual input of 10:00 IST is stored as 10:00 UTC, or 15:30 IST. At 02:00 IST, UTC-based checklist dates still refer to the previous day. Run payroll's reconstructed shift-end calculation under TZ=UTC and TZ=Asia/Kolkata; the computed instant differs. A 22:00-to-06:00 shift is written with an end before its start.
+Business impact: Wrong day attribution, missed month-boundary records, inconsistent lateness/overtime and unusable overnight shifts. Backdated/future manual entries can also confuse the UI's completed-today state.
+Improvement: Use Asia/Kolkata as the explicit business timezone, real UTC instants for events, and a separate shift business date. Convert wall-clock inputs once. Use half-open local-day/month intervals and explicit next-day shift ends. Reuse the same calculations across payroll, reports and attendance.
+Evidence:
+  components/admin/BulkScheduler.tsx:195
+  app/(dashboard)/admin/weekoff-request/page.tsx:67
+  app/actions/manual-attendance.ts:32
+  components/employee/EmployeeShiftView.tsx:199
+  app/actions/store-ops/daily-checklist.ts:137
+  app/(dashboard)/admin/payroll/page.tsx:43
+  components/admin/AdminShiftCalendar.tsx:41
+
+F14 [P1] Leave can conflict with worked shifts, schedules and other approved leave
+Area: Leave
+Verification: Confirmed source and inverted-range acceptance in the isolated action; live date constraints unknown.
+Observed behavior: Submission does not validate date ordering, overlap, past/worked days or balances/policy. Approval directly changes status with no conflict checks or pending precondition. The clock-in server does not check leave, and the UI's clock-in guard checks active shift rather than isLeave. Employee leave fetching uses OR instead of date-range overlap; the admin calendar fetches only leave fully contained in the month.
+Reproduction: The isolated action accepts an end date before the start date. Approve leave spanning a worked/scheduled day; the attendance and schedule remain independently actionable. Leave that starts before a month and ends inside it is omitted from the admin calendar query.
+Business impact: Employees can appear on leave and present for the same shift; month views disagree; retrospective leave can alter workforce interpretation without reconciliation.
+Improvement: Validate and approve leave transactionally against the affected shifts and attendance. Use start_date <= range_end AND end_date >= range_start. Define leave versus attendance precedence and explicit correction/cancellation rules.
+Evidence:
+  app/actions/requests.ts:6
+  components/admin/LeaveManagementWrapper.tsx:64
+  components/employee/EmployeeShiftView.tsx:90
+  components/admin/AdminShiftCalendar.tsx:47
+  components/employee/EmployeeShiftView.tsx:250
+
+F15 [P1] Payroll Server Action lacks its own authorization and trusts browser totals
+Area: Payroll
+Verification: Confirmed actual action execution; unauthorized persistence depends on live payroll RLS.
+Observed behavior: processPayroll does not call auth.getUser or check role. It parses employeeId, gross/net pay, hours, deductions and type supplied in FormData and inserts a paid record. No finite/range validation or server recomputation exists. The parent admin layout allows managers as well as admins, so it is not an admin-only payroll boundary.
+Reproduction: The isolated action records a negative net amount and a chosen employee without invoking auth. This proves missing application authorization, not that a live unauthenticated caller defeats unknown database policies. Hidden form fields can be altered by an authorized browser user too.
+Business impact: If RLS is permissive, non-payroll users can record payments. Even with strict admin RLS, tampered totals or inconsistent net/gross amounts are accepted.
+Improvement: Require the intended payroll role inside the action. Derive amounts from an authoritative period ledger, validate bounded decimal values, and permit explicit approved adjustments with reasons. Never treat browser-calculated netPay as authoritative.
+Evidence:
+  app/(dashboard)/admin/payroll/actions.ts:5
+  app/(dashboard)/admin/payroll/actions.ts:8
+  app/(dashboard)/admin/payroll/actions.ts:21
+  app/(dashboard)/admin/payroll/PayrollTable.tsx:101
+  app/(dashboard)/admin/layout.tsx:44
+
+F16 [P1] Settlement has no idempotency, period key or concurrent balance check
+Area: Payroll
+Verification: Confirmed application behavior; live constraints unknown.
+Observed behavior: Every submission inserts another paid record using today's server-local date as month_year. There is no operation ID, selected payroll period, persisted calculation snapshot, server-side outstanding-balance check or lock. The form is not disabled while its Server Action is pending.
+Reproduction: Submit the same fictional payroll FormData twice; two paid records appear. Two admin tabs using the same displayed balance can both settle it before either refreshes.
+Business impact: Duplicate payment records and incorrect balance due. A retry is indistinguishable from a legitimate partial payment, and the service cannot reliably settle a prior period.
+Improvement: Model payroll periods and payment operations explicitly. Add an idempotency key, transactional balance validation and a payment/correction ledger. Persist the hours/rates/adjustments used for each settlement.
+Evidence:
+  app/(dashboard)/admin/payroll/actions.ts:18
+  app/(dashboard)/admin/payroll/actions.ts:21
+  app/(dashboard)/admin/payroll/PayrollTable.tsx:50
+  app/(dashboard)/admin/payroll/AdvanceForm.tsx:9
+
+F17 [P1] Balance and overtime calculations can materially misstate pay
+Area: Payroll
+Verification: Confirmed arithmetic and source filters. The intended overtime policy needs a business decision.
+Observed behavior: Already-paid filtering compares month number without year or status/type policy. Gross pay includes all worked hours, then Auto OT adds another 1.5 times the hourly rate for overtime hours, making those hours total 2.5 times the rate. Total hours are rounded to a whole hour before base pay. Overtime/bonus adjustments can be applied again on repeated settlements.
+Reproduction: An old November payment is deducted from the current November balance. At 100/hour for nine hours including one overtime hour, gross is 900 and Auto OT adds 150: 1,050 total. A total of 7.49 hours becomes seven hours. These are direct results of the formulas, not an assumption about your intended pay policy.
+Business impact: Underpayment, overpayment or unexplained balances. Annual history and repeated settlements compound the error.
+Improvement: Filter a complete payroll period/year and explicit payment statuses/types. Define whether 1.5x is the total overtime rate or an additional premium, then avoid double-counting. Calculate from minutes/precise decimals and round currency at the agreed point. Allocate adjustments once.
+Evidence:
+  app/(dashboard)/admin/payroll/PayrollTable.tsx:18
+  app/(dashboard)/admin/payroll/PayrollTable.tsx:43
+  app/(dashboard)/admin/payroll/PayrollTable.tsx:49
+  app/(dashboard)/admin/payroll/PayrollTable.tsx:60
+  app/(dashboard)/admin/payroll/page.tsx:61
+
+F18 [P1] Different screens count different attendance and hide invalid durations
+Area: Attendance reports
+Verification: Confirmed source; real discrepancies depend on data volume and session history.
+Observed behavior: The consolidated report picks only the first attendance row matching shift or date and includes elapsed ongoing sessions. Payroll sums all completed rows and excludes ongoing sessions. Attendance logs display absolute duration, making a negative interval look positive, and silently limit results to 100 without pagination. Large unpaginated payroll/history queries can also hit the server's configured row cap.
+Reproduction: Give an employee two valid attendance segments on one day: consolidated reporting uses one while payroll sums both. A checkout before check-in looks like a positive duration in the log. Compare more than 100 logs to the screen list.
+Business impact: Managers cannot reconcile payslips, logs and reports. Duplicate or corrupt records can remain visually plausible and records can be omitted without warning.
+Improvement: Use one shared attendance aggregation service with explicit valid segments, overlap checks, business dates and finalized versus live totals. Flag impossible intervals. Paginate exports and financial queries, and make truncation/query errors visible.
+Evidence:
+  app/(dashboard)/admin/reports/consolidated/page.tsx:93
+  app/(dashboard)/admin/reports/consolidated/page.tsx:106
+  app/(dashboard)/admin/payroll/page.tsx:34
+  components/admin/AttendanceLogTable.tsx:29
+  components/admin/AttendanceLogTable.tsx:50
+
+F19 [P1] Store-operations SELECT policies contain no user or store restriction
+Area: Database permissions
+Verification: Confirmed repository SQL and local PostgreSQL behavior under explicit grants. Live grants/policies were not inspected.
+Observed behavior: The damage/checklist SELECT policies use USING(true) with no TO authenticated clause or ownership/store predicate. The intended generic policies do the same for incidents, audits, tasks and notifications. A public API key is a normal client capability; confidentiality must come from grants and RLS, not Next.js navigation guards.
+Reproduction: After applying 002 locally and granting SELECT to an anon role, that role reads a fictional damage report. The same policy text permits any row for roles granted table access. Important: unmodified 004 fails; its generic policies were tested only in an explicitly adjusted fixture excluding notification_log.
+Business impact: Potential anonymous or cross-employee access to operational photos, incidents, reports and notifications if the live database grants and applied policies match these definitions. This is not a confirmed live data breach.
+Improvement: Inspect deployed grants and policies first. Use role-scoped SELECT policies with employee/store access rules; give sensitive incident/audit/notification rows narrower access. Test direct Data API access as anonymous, employee, manager and admin roles.
+Evidence:
+  supabase/migrations/002_damage_reports.sql:101
+  supabase/migrations/002_damage_reports.sql:124
+  supabase/migrations/003_daily_checklist.sql:91
+  supabase/migrations/004_remaining_modules.sql:330
+
+F20 [P1] INSERT and broad owner UPDATE policies bypass approval and authorship rules
+Area: Database permissions
+Verification: 002/003 reproduced unmodified locally; 004 behavior reproduced in an adjusted policy fixture only. Live state unknown.
+Observed behavior: INSERT checks only that the caller has a profile/role. They do not bind created_by/reported_by to auth.uid, force pending state or forbid reviewer fields. Intended 004 policies let any profile insert manager-owned objects and let owners update all mutable columns, including approval state.
+Reproduction: With unmodified 002 policies, a local employee inserts an already approved damage report with another employee's author IDs, manager review ID, negative quantity and negative MRP. With 003, an employee inserts duplicate completed checklists attributed to someone else. The adjusted 004 fixture permits employee-created assigned tasks and self-approval of an own restock.
+Business impact: The app's action-level role checks can be bypassed through direct database API calls if the deployed SQL matches. Approval, authorship and audit evidence become unreliable.
+Improvement: Enforce authorship, initial states and allowed transitions in the database. Limit direct column updates or route privileged transitions through tightly authorized functions. Separate report content editing from reviewer decisions. Bind child records to an authorized parent.
+Evidence:
+  supabase/migrations/002_damage_reports.sql:105
+  supabase/migrations/003_daily_checklist.sql:95
+  supabase/migrations/003_daily_checklist.sql:119
+  supabase/migrations/004_remaining_modules.sql:333
+  supabase/migrations/004_remaining_modules.sql:336
+
+F21 [P1] Store operations do not consistently preserve store ownership or manager scope
+Area: Store and role boundaries
+Verification: Confirmed schema/action omissions; impact spans stores if more than one store is present.
+Observed behavior: Damage, incident and audit creation omit existing store_id fields. Tasks, restock requests, checklists and sections do not have a store_id in the provided schema. Generic manager permissions are global. The common admin layout also allows managers into pages beyond the store-operations role matrix, while some admin-only actions reject them later.
+Reproduction: Inspect inserted rows: several have no store attribution despite a store-linked employee. In a two-store fixture, the intended manager RLS predicate does not reference either store. A manager is admitted by the shared admin layout to payroll/scheduling navigation; downstream base-table policies remain unknown.
+Business impact: Reports cannot reliably separate stores, managers may act outside their assigned store, and screens offer operations that later fail or have an unintended role boundary.
+Improvement: Derive and persist store ownership, propagate it through parent relationships, and enforce manager-store memberships. Define separate capabilities for HR/payroll, scheduling and store operations in both server actions and RLS.
+Evidence:
+  app/actions/store-ops/damage-reports.ts:32
+  app/actions/store-ops/incidents.ts:27
+  app/actions/store-ops/audits.ts:100
+  supabase/migrations/004_remaining_modules.sql:75
+  supabase/migrations/004_remaining_modules.sql:195
+  supabase/migrations/004_remaining_modules.sql:336
+  app/(dashboard)/admin/layout.tsx:44
+
+F22 [P1] 004 fails during policy creation; 003 cannot be safely rerun as written
+Area: Migrations
+Verification: Reproduced using real PostgreSQL 17 with the repository migration files and a minimal fictional base schema.
+Observed behavior: notification_log has no created_by column, but the generic UPDATE policy references it. The policy DO block fails and its work rolls back. In an autocommit migration-file run, earlier table/RLS statements remain while the policy block does not, leaving new tables inaccessible to ordinary roles. An outer transaction can roll back the whole migration instead. 003 drops different policy names from several policies it creates, so rerun encounters an already-exists error.
+Reproduction: 002 and 003 apply in the isolated fixture. 004 fails with column created_by does not exist, and tasks has zero policies afterward. Running 003 a second time fails on the existing Admin/Manager can update templates policy.
+Business impact: A fresh environment cannot be reproduced reliably. Fixing only the missing column could unexpectedly activate the permissive generic policies described in F19/F20.
+Improvement: Ship forward migrations with dedicated recipient-based notification policies and module-specific authorization. Verify clean install and upgrade behavior separately. Reconcile the deployed baseline before applying changes; do not blindly rerun migrations on production.
+Evidence:
+  supabase/migrations/004_remaining_modules.sql:224
+  supabase/migrations/004_remaining_modules.sql:326
+  supabase/migrations/004_remaining_modules.sql:336
+  supabase/migrations/003_daily_checklist.sql:57
+  supabase/migrations/003_daily_checklist.sql:78
+
+F23 [P1] Template items are written into a table linked to daily checklist instances
+Area: Daily checklists
+Verification: Confirmed source and real local PostgreSQL foreign-key failure.
+Observed behavior: createTemplate first saves a checklist_templates row, then writes its ID into daily_checklist_items.daily_checklist_id, whose FK points to daily_checklists. Update and start logic reuse the same mistaken relationship. There is no separate template-item table in the provided migration.
+Reproduction: Insert an item using a newly created template ID in the isolated PostgreSQL database; the FK rejects it. The already saved template is not rolled back by the action. Starting that template can then copy no items and create an empty checklist.
+Business impact: Template creation/editing fails after partial success, empty daily checklists can appear, and the completion metrics have no trustworthy underlying template definition.
+Improvement: Create checklist_template_items with a real template FK, and snapshot those items into daily_checklist_items when starting a run. Create template/header/items transactionally. Preserve historical checklist items when a template changes.
+Evidence:
+  app/actions/store-ops/daily-checklist.ts:24
+  app/actions/store-ops/daily-checklist.ts:38
+  app/actions/store-ops/daily-checklist.ts:85
+  app/actions/store-ops/daily-checklist.ts:148
+  supabase/migrations/003_daily_checklist.sql:31
+
+F24 [P1] Incomplete or empty checklists can be completed, duplicated and later altered
+Area: Daily checklists
+Verification: Confirmed source/isolated execution and duplicate inserts under unmodified 003 schema.
+Observed behavior: completeDailyChecklist writes completed without reading items or requiring photo proof. Item completion is a read-then-toggle and does not check parent completion. Starting a daily checklist uses a non-unique type/date lookup without store/template scoping or active-template/type validation. Item RLS uses creator ownership, which conflicts with multiple employees collaborating on a manager/colleague-created checklist.
+Reproduction: The actual action completes a checklist with an unfinished item and no photo. PostgreSQL accepts two completed opening checklists for the same day. A duplicate start race is not resolved by a unique constraint in 003. A different employee can receive zero updated rows without a database error.
+Business impact: Checklist compliance can be claimed without work, collaboration can silently fail, and retries can flip item state or produce duplicates.
+Improvement: Define store/date/type uniqueness and valid templates. Complete only when required items and proof are present, atomically. Use explicit set-completed operations with version checks, and align item permissions with the intended team workflow. Lock completed runs or require an audited reopen.
+Evidence:
+  app/actions/store-ops/daily-checklist.ts:132
+  app/actions/store-ops/daily-checklist.ts:186
+  app/actions/store-ops/daily-checklist.ts:236
+  supabase/migrations/003_daily_checklist.sql:13
+  supabase/migrations/003_daily_checklist.sql:125
+
+F25 [P1] Task completion ignores assignment and can reopen cancelled/completed tasks
+Area: Tasks
+Verification: Confirmed handler behavior; intended 004 RLS can also block legitimate assigned employees.
+Observed behavior: completeTask checks the role's general permission but not assigned_to, created_by or store. It toggles any non-completed status, including cancelled, to completed, and toggles completed back to pending. Generic RLS authorizes the creator rather than the assignee, so an employee assigned a manager-created task may update zero rows while the action returns success.
+Reproduction: In the isolated handler, an employee completes a cancelled task assigned to someone else; a repeat call changes it to pending. With the intended owner predicate, an assigned employee who did not create the task has no matching update authorization.
+Business impact: Unrelated tasks can be altered if RLS is permissive; legitimate work can fail if RLS follows the provided owner rule. Retries change business state rather than repeat the same result.
+Improvement: Authorize the exact task against assignee/team/manager store. Implement explicit allowed transitions and an idempotent complete operation. Record completed_by/completed_at and reject changes to cancelled tasks unless explicitly reopened. Require an affected row.
+Evidence:
+  app/actions/store-ops/tasks.ts:112
+  app/actions/store-ops/tasks.ts:127
+  app/actions/store-ops/tasks.ts:135
+  supabase/migrations/004_remaining_modules.sql:79
+  supabase/migrations/004_remaining_modules.sql:336
+
+F26 [P1] Audit execution lacks manager checks, score bounds and finalization integrity
+Area: Store audits
+Verification: Confirmed source and isolated action execution; live RLS may impose additional restrictions.
+Observed behavior: Template creation checks manager/admin, but startAudit, submitAuditAnswer and completeAudit check only authentication. Answer score is not checked against the question maximum or nonnegativity; schema has no score check or unique audit/question pair. Completed answers can still be updated. Completion sums available rows without validating completeness, question membership or consistency with the template. The UI ignores individual answer-save failures before completing.
+Reproduction: An employee starts an audit in the isolated action and records score 999 on a five-point question. A missing/failed answer save can be followed by successful completeAudit, leaving a final score based on partial or old data.
+Business impact: Employee-conducted or inflated audits, scores above 100%, post-finalization edits and totals that do not match saved answers.
+Improvement: Enforce manager/admin and store scope for execution. Validate every question/score, require unique expected answers and transactional finalization, freeze completed audits, and preserve a template version. Treat legitimate zero scores as answered, distinct from unsaved answers.
+Evidence:
+  app/actions/store-ops/audits.ts:77
+  app/actions/store-ops/audits.ts:130
+  app/actions/store-ops/audits.ts:155
+  components/store-ops/audits/AuditRunner.tsx:117
+  supabase/migrations/004_remaining_modules.sql:145
+
+F27 [P2] Audit routes are nested incorrectly and delete calls the template action
+Area: Store audits / navigation
+Verification: Confirmed filesystem route structure, links and action call; no production deletion attempted.
+Observed behavior: Actual audit pages live under /admin/store-operations/audits/audits, but navigation, basePath and redirects use /admin/store-operations/audits. Settings is also linked without a corresponding page. The audit detail delete button calls deleteAuditTemplate(audit.template_id), rather than deleting the selected audit record.
+Reproduction: Follow the sidebar audit URL or the post-start detail URL; they do not match the page tree. On a reachable detail page, the delete handler targets the template. With the provided schema, the existing audit's template FK blocks that delete, so the normal result should be failure, not deletion of the audit.
+Business impact: Core audit navigation/start/detail flows lead to missing routes, and audit deletion cannot perform the operation the user confirmed.
+Improvement: Normalize the audit folder tree and centralize route constants. Add a distinct audit-record deletion/void action with the right authorization/history policy. Keep template deletion separate and protect templates referenced by historical audits.
+Evidence:
+  app/(dashboard)/admin/store-operations/StoreOpsNav.tsx:22
+  app/(dashboard)/admin/store-operations/audits/audits/page.tsx:25
+  app/(dashboard)/admin/store-operations/audits/audits/[id]/AuditDetailView.tsx:23
+  app/actions/store-ops/audits.ts:55
+  supabase/migrations/004_remaining_modules.sql:134
+
+F28 [P2] Approvals and edits do not enforce allowed state transitions or review history
+Area: Operational workflow states
+Verification: Confirmed source; some desired restrictions need an explicit business policy.
+Observed behavior: Damage approval/rejection/archive, restock approval/rejection/completion and incident status changes update by ID without checking the current state. Approved damage content can be edited without invalidating review. Shelf approval merely records reviewer fields. Many update actions spread typed input directly; TypeScript types do not validate untrusted runtime fields. Reject/review actions lack an immutable reason/history ledger.
+Reproduction: Call completion on a pending restock or approval on a previously rejected/completed object; the action does not reject the transition. Change an approved damage quantity; review metadata remains. Runtime extra properties are not stripped by the update functions that spread data.
+Business impact: Reports can claim approval or completion without the required preceding step. Managers cannot establish what exactly was approved or whether later edits changed it.
+Improvement: Define allowed transitions per module, validate and allowlist runtime input, use status/version preconditions, and record immutable review events. Reset/re-review approved content after substantive changes. Require reasons where rejection, archival or correction changes accountability.
+Evidence:
+  app/actions/store-ops/damage-reports.ts:69
+  app/actions/store-ops/damage-reports.ts:130
+  app/actions/store-ops/damage-reports.ts:188
+  app/actions/store-ops/restocking.ts:60
+  app/actions/store-ops/restocking.ts:116
+  app/actions/store-ops/incidents.ts:128
+  app/actions/store-ops/shelf-inspection.ts:138
+
+F29 [P2] Multi-step creates are not atomic and numeric/date inputs are weakly validated
+Area: Operational data integrity
+Verification: Confirmed source, injected failure reproduction and PostgreSQL acceptance for damage fields.
+Observed behavior: Headers and their items/images/answers are separate commits. Failure returns an error while leaving the header behind; a retry creates another header. Restock quantity has no positive check, damage quantity/MRP have no nonnegative checks, and tester date relationships lack validation. Browser form constraints do not protect direct action/Data API calls.
+Reproduction: Inject failure into restock_items.insert: the actual action returns an error with a saved request header and no items. A negative restock quantity is accepted in the handler; real local PostgreSQL accepts negative damage quantity/MRP under 002.
+Business impact: Empty requests, duplicate reports after retry, incomplete audits and negative/inconsistent operational totals.
+Improvement: Use transactional database operations for each logical create, plus idempotency keys. Validate finite numeric ranges, integer quantities, lengths, enums and date relationships in reusable runtime schemas and database constraints. Reconcile existing orphaned headers before enabling stricter rules.
+Evidence:
+  app/actions/store-ops/restocking.ts:30
+  app/actions/store-ops/restocking.ts:51
+  app/actions/store-ops/damage-reports.ts:32
+  app/actions/store-ops/damage-reports.ts:59
+  app/actions/store-ops/incidents.ts:27
+  app/actions/store-ops/audits.ts:100
+  supabase/migrations/004_remaining_modules.sql:213
+  supabase/migrations/002_damage_reports.sql:42
+
+F30 [P2] Multi-file uploads lose earlier URLs and storage ownership/lifecycle is incomplete
+Area: Photos and storage
+Verification: Multi-upload loss reproduced against the actual handler. Bucket privacy, MIME/size policies and deletion permissions are unverified live.
+Observed behavior: Every upload in one selection calls onChange([...images,newUrl]) using the same old images array, so the last response replaces earlier newly uploaded URLs. The max-image check uses that same stale length. Removing a photo only removes its URL from form state. Upload actions do not themselves enforce image signatures/size or verify later URL ownership; deletion parses paths from supplied URLs, and storage removal errors can be ignored. Compression/thumbnail generation is absent from the shared uploader.
+Reproduction: Select two files in the isolated extracted handler: two storage uploads succeed, but the final form update contains only the second URL. Removing/cancelling a draft leaves uploaded objects. The server-side storage behavior still depends on bucket rules that are not in the repository.
+Business impact: Missing proof photos, orphaned storage, bypassed browser limits and uncertain confidentiality/deletion behavior. getPublicUrl does not establish that the bucket is actually public: if private, these display URLs can fail; if public, anyone with the URL may access it.
+Improvement: Accumulate uploaded URLs per selection and enforce limits against the accumulating list. Validate files server-side, authorize parent/object paths, use private objects and signed reads where appropriate, and implement draft cleanup plus safe deletion/retry. Generate the required compressed images/thumbnails.
+Evidence:
+  components/store-ops/ImageUpload.tsx:26
+  components/store-ops/ImageUpload.tsx:38
+  components/store-ops/ImageUpload.tsx:49
+  app/actions/store-ops/shelf-inspection.ts:195
+  app/actions/store-ops/tasks.ts:226
+  app/actions/store-ops/incidents.ts:105
+
+F31 [P1] Notification actions trust recipient IDs and forward unvalidated links to navigation
+Area: Notifications
+Verification: Confirmed action/navigation source; cross-user access and stored navigation exploitability depend on live notification policies.
+Observed behavior: getNotifications and markAllAsRead use a caller-supplied userId without checking it matches auth. Any authenticated caller can attempt to create a notification for any user with arbitrary title/body/link. Its push helper sends to all admins rather than the chosen recipient. The panel passes stored link directly to router.push without requiring a safe internal path. markAsRead correctly includes user.id, but does not verify an affected row.
+Reproduction: The isolated action accepts another recipient and calls the admin broadcast helper. In source, a stored link flows directly into router.push. No live malicious notification or browser script payload was submitted. Official Next.js documentation warns that untrusted router.push URLs can enable XSS.
+Business impact: Potential cross-user notification disclosure/modification, misleading admin notifications and stored unsafe-navigation/XSS risk if an attacker can insert a link visible to a victim. The broken 004 migration means actual notification policies must be inspected first.
+Improvement: Derive recipients for self-service reads/updates and authorize server-generated cross-user notifications. Use recipient-based RLS and targeted push delivery. Validate an allowlisted same-origin internal path before storage and navigation; reject executable/protocol-relative/external URLs.
+Evidence:
+  app/actions/store-ops/notifications.ts:6
+  app/actions/store-ops/notifications.ts:37
+  app/actions/store-ops/notifications.ts:52
+  app/actions/store-ops/notifications.ts:76
+  components/store-ops/notifications/NotificationPanel.tsx:64
+  lib/push.ts:29
+
+F32 [P2] Push setup is incomplete and notification delivery delays attendance responses
+Area: Push and request reliability
+Verification: Confirmed configuration/source; browser/native delivery was not device-tested during this audit.
+Observed behavior: The service worker imports /push-worker.js, which is absent from public; the existing worker/index.ts/generated hashed worker do not supply that stable URL. The auth proxy does not explicitly exempt push-worker.js. Employee-triggered push uses the employee's database session to read admin subscriptions, so strict own-subscription RLS can prevent delivery. Attendance/request handlers await notification delivery after committing the business write, without a delivery timeout. Native Android push integration is not configured.
+Reproduction: Filesystem/configuration inspection confirms the missing imported file. In the isolated clock-in handler, attendance is already saved while the response waits on a deliberately unresolved notification promise. No actual push was sent during the audit.
+Business impact: Push registration/delivery can fail, admins may not receive alerts, and employees can see a long-running or failed request even after attendance was committed. Retrying interacts with the idempotency defects above.
+Improvement: Provide one correctly routed worker, verify registration on a real device, and authorize subscription reads in a trusted targeted notification service. Deliver via an outbox/queue after committing attendance. Add bounded delivery timeouts and a separate native push path if Android alerts are required.
+Evidence:
+  next.config.ts:17
+  components/admin/AdminPushManager.tsx:48
+  lib/push.ts:27
+  lib/push.ts:52
+  app/api/attendance/clock-in/route.ts:70
+  app/api/attendance/clock-out/route.ts:40
+  capacitor.config.ts:12
+
+F33 [P1] Authenticated navigations share a persistent URL-keyed cache across sign-outs
+Area: PWA / shared-device privacy
+Verification: Confirmed caching/sign-out configuration; actual cached private response contents were not inspected in a browser.
+Observed behavior: All navigation requests use a common NetworkFirst navigation-cache with a five-second fallback. There is no user/session partition or logout cache purge. A service worker cache can answer without the server's current authorization check when offline or during fallback. This risk applies if the worker is installed and caches sensitive navigation responses; F32 can separately prevent fresh installation.
+Reproduction: Device validation still required: log in as admin, visit a server-rendered sensitive page, sign out, switch user or go offline, then revisit the same URL and inspect Cache Storage/fallback behavior. Do not infer that every page necessarily contains cached sensitive data from configuration alone.
+Business impact: Potential prior-user payroll/personnel/operational page disclosure on shared browsers or devices, including after logout. A failed current worker installation does not prove older installed caches are absent.
+Improvement: Exclude authenticated HR/operations routes from persistent navigation caching and use a generic offline shell. Purge old authenticated caches on logout/upgrade. Verify user-switch and offline privacy explicitly on web/PWA and the Android wrapper.
+Evidence:
+  next.config.ts:19
+  next.config.ts:23
+  app/(auth)/signout/route.ts:4
+  public/MUS-SW.js:1
+
+F34 [P2] Several displayed metrics and automation promises have no complete business implementation
+Area: Reports and automation
+Verification: Confirmed local source coverage; external Supabase cron/functions/webhooks may exist and were not inspected.
+Observed behavior: Reliability deducts points for every swap request, including cancelled/declined requests, overrides and duplicates, with no time window, and counts leave requests rather than leave days. Operations Reports is a set of all-time counts; it labels all checklist rows as completed without filtering status. Recurrence fields are stored, but no recurring-task generator exists locally. Notification creation is not wired into the shown operational transitions. Auto-checkout calls manual_trigger_checkout, but its function/cron definition is absent from migrations.
+Reproduction: Create/consider a cancelled duplicate request: the reliability formula still deducts five points. An in-progress checklist increases the count described as completed. Search local source for recurrence execution and the checkout SQL definition: only fields/UI and RPC calls are present.
+Business impact: Staff can be scored unfairly, compliance summaries are misleading, and managers may depend on reminders/recurring tasks/checkout jobs that have not been verified. This is a mixture of confirmed metric defects and unverified externally hosted automation, not proof those live jobs are absent.
+Improvement: Specify each metric and implement a shared period-scoped query. Separate approved leave days, actual attendance exceptions and request counts. Verify/export deployed jobs, triggers, Realtime publication and functions; implement missing workers and expose their last successful run. Complete required report/export functionality incrementally.
+Evidence:
+  app/api/reports/reliability/route.ts:67
+  app/(dashboard)/admin/store-operations/reports/page.tsx:20
+  app/(dashboard)/admin/store-operations/reports/page.tsx:96
+  app/actions/store-ops/tasks.ts:40
+  components/admin/AttendanceOversight.tsx:45
+  lib/supabase/database.types.ts:1203
+
+F35 [P2] Login protection is process-local and several flows report success or zero data without confirmation
+Area: Authentication and error handling
+Verification: Confirmed source; forwarded-IP spoofability depends on the deployment proxy and upstream Supabase throttling is separate.
+Observed behavior: The app login limiter is an in-memory Map keyed by the first x-forwarded-for value. Counts are per process, disappear on restart and are not shared between replicas; expired keys are never globally evicted. Unknown usernames return a distinct 404. Several queries replace errors with empty arrays/zero counts, and update actions often treat error=null as success without checking that any row was changed. The notification UI marks items read even if its action failed.
+Reproduction: Separate server processes have separate limiter Maps; a new key starts a new allowance. Whether a client can influence the forwarded value needs deployment verification. Deny an UPDATE with RLS or pass an unknown ID: a zero-row response can still be reported as success. Fail schedule/stat queries: some screens display no shifts/zero counts instead of an error.
+Business impact: Reduced brute-force resistance, username enumeration, growing limiter memory and operational failures that look like valid empty data or successful work.
+Improvement: Use a bounded shared limiter with a trusted proxy identity and normalized account/IP policy. Keep login errors generic. Require affected rows/versions for writes, propagate query failures, and show retryable errors instead of zero-valued operational reports. Preserve optimistic UI state only after success or roll it back on failure.
+Evidence:
+  app/api/auth/login/route.ts:15
+  app/api/auth/login/route.ts:29
+  lib/rate-limit.ts:1
+  components/employee/EmployeeShiftView.tsx:95
+  app/actions/store-ops/tasks.ts:142
+  components/store-ops/notifications/NotificationPanel.tsx:64
+  app/(dashboard)/admin/store-operations/reports/page.tsx:36
+
+REFERENCE DOCUMENTATION
+Supabase: row-level security and role-based policies: https://supabase.com/docs/guides/database/postgres/row-level-security
+Next.js: securing Server Actions and data access: https://nextjs.org/docs/app/guides/data-security
+Next.js: useRouter and unsafe untrusted URLs: https://nextjs.org/docs/app/api-reference/functions/use-router

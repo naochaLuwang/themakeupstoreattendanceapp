@@ -1,0 +1,160 @@
+TAP version 13
+# Subtest: swap submission accepts a shift that already has active attendance
+ok 1 - swap submission accepts a shift that already has active attendance
+  ---
+  duration_ms: 12.416042
+  type: 'test'
+  ...
+# Subtest: swap submission accepts a past shift owned by another employee and duplicates
+ok 2 - swap submission accepts a past shift owned by another employee and duplicates
+  ---
+  duration_ms: 5.049292
+  type: 'test'
+  ...
+# Subtest: normal approval edits an actively worked shift
+ok 3 - normal approval edits an actively worked shift
+  ---
+  duration_ms: 17.43975
+  type: 'test'
+  ...
+# Subtest: stale cancelled request can still be approved; malformed message can be approved without changing a shift
+ok 4 - stale cancelled request can still be approved; malformed message can be approved without changing a shift
+  ---
+  duration_ms: 9.093166
+  type: 'test'
+  ...
+# Subtest: two-shift approval ignores second update failure and still approves
+ok 5 - two-shift approval ignores second update failure and still approves
+  ---
+  duration_ms: 8.263542
+  type: 'test'
+  ...
+# Subtest: clock-in accepts completed same-day attendance without override approval
+ok 6 - clock-in accepts completed same-day attendance without override approval
+  ---
+  duration_ms: 4.445708
+  type: 'test'
+  ...
+# Subtest: clock-in accepts no shift and a mismatched shift/store without consulting schedule or store assignment
+ok 7 - clock-in accepts no shift and a mismatched shift/store without consulting schedule or store assignment
+  ---
+  duration_ms: 6.755584
+  type: 'test'
+  ...
+# Subtest: malformed coordinates reach the database write instead of being rejected by geofence
+ok 8 - malformed coordinates reach the database write instead of being rejected by geofence
+  ---
+  duration_ms: 3.167333
+  type: 'test'
+  ...
+# Subtest: missing store coordinates skip geofence but mark attendance within geofence
+ok 9 - missing store coordinates skip geofence but mark attendance within geofence
+  ---
+  duration_ms: 3.581584
+  type: 'test'
+  ...
+# Subtest: active-attendance query failure is ignored and followed by insert
+ok 10 - active-attendance query failure is ignored and followed by insert
+  ---
+  duration_ms: 2.901625
+  type: 'test'
+  ...
+# Subtest: concurrent clock-in requests can both insert without a database uniqueness guard
+ok 11 - concurrent clock-in requests can both insert without a database uniqueness guard
+  ---
+  duration_ms: 4.229667
+  type: 'test'
+  ...
+# Subtest: clock-out closes every open record rather than a specified attendance session
+ok 12 - clock-out closes every open record rather than a specified attendance session
+  ---
+  duration_ms: 2.664709
+  type: 'test'
+  ...
+# Subtest: clock-in persists before its awaited push delivery has completed
+ok 13 - clock-in persists before its awaited push delivery has completed
+  ---
+  duration_ms: 14.096709
+  type: 'test'
+  ...
+# Subtest: override accepts an already approved request and reopens it again after a later checkout
+ok 14 - override accepts an already approved request and reopens it again after a later checkout
+  ---
+  duration_ms: 2.673958
+  type: 'test'
+  ...
+# Subtest: manual edit validates only supplied endpoints and accepts checkout before saved check-in
+ok 15 - manual edit validates only supplied endpoints and accepts checkout before saved check-in
+  ---
+  duration_ms: 5.235833
+  type: 'test'
+  ...
+# Subtest: leave request accepts inverted dates and a day already worked
+ok 16 - leave request accepts inverted dates and a day already worked
+  ---
+  duration_ms: 2.577333
+  type: 'test'
+  ...
+# Subtest: payroll action trusts caller totals and does not check auth or prevent duplicate submission
+ok 17 - payroll action trusts caller totals and does not check auth or prevent duplicate submission
+  ---
+  duration_ms: 2.478875
+  type: 'test'
+  ...
+# Subtest: daily checklist completion does not read or require completed items or photo proof
+ok 18 - daily checklist completion does not read or require completed items or photo proof
+  ---
+  duration_ms: 9.355833
+  type: 'test'
+  ...
+# Subtest: task completion can reopen a cancelled task and is a non-idempotent toggle
+ok 19 - task completion can reopen a cancelled task and is a non-idempotent toggle
+  ---
+  duration_ms: 7.9745
+  type: 'test'
+  ...
+# Subtest: authenticated employee can start an audit; answer score has no runtime range check
+ok 20 - authenticated employee can start an audit; answer score has no runtime range check
+  ---
+  duration_ms: 4.01475
+  type: 'test'
+  ...
+# Subtest: restocking accepts negative quantity and leaves a parent after item insert failure
+ok 21 - restocking accepts negative quantity and leaves a parent after item insert failure
+  ---
+  duration_ms: 7.119959
+  type: 'test'
+  ...
+# Subtest: notification action accepts a different recipient and forwards to the admin broadcast helper
+ok 22 - notification action accepts a different recipient and forwards to the admin broadcast helper
+  ---
+  duration_ms: 2.245125
+  type: 'test'
+  ...
+# Subtest: identity guard rejects clock-in and swap for a different user
+ok 23 - identity guard rejects clock-in and swap for a different user
+  ---
+  duration_ms: 4.006584
+  type: 'test'
+  ...
+# Subtest: multi-image upload repeatedly uses the old image array and discards earlier uploaded URLs
+ok 24 - multi-image upload repeatedly uses the old image array and discards earlier uploaded URLs
+  ---
+  duration_ms: 5.412458
+  type: 'test'
+  ...
+# Subtest: legacy override approval ignores request date and reopens all records since today
+ok 25 - legacy override approval ignores request date and reopens all records since today
+  ---
+  duration_ms: 1.743584
+  type: 'test'
+  ...
+1..25
+# tests 25
+# suites 0
+# pass 25
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 358.555

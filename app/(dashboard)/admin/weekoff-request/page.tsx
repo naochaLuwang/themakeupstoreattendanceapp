@@ -3,13 +3,22 @@ import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import {
     Check, X, Clock, ArrowRight, RefreshCcw,
-    Calendar, Search, Loader2, ArrowLeftRight, AlertCircle
+    Calendar, Search, Loader2, ArrowLeftRight
 } from 'lucide-react';
 import { approveOverrideRequest } from '@/app/actions/attendance-override';
+import { reviewShiftRequestAction } from '@/app/actions/shifts';
+import { SHIFT_LOCK_MESSAGE } from '@/lib/shifts/rules';
+import type { Database } from '@/lib/supabase/database.types';
+
+type RequestRow = Database['public']['Tables']['swap_requests']['Row'] & {
+    requestor: { full_name: string | null } | null;
+    receiver: { full_name: string | null } | null;
+    shifts: Database['public']['Tables']['shifts']['Row'] | null;
+};
 
 export default function AdminRequestManager() {
     const supabase = createClient();
-    const [requests, setRequests] = useState<any[]>([]);
+    const [requests, setRequests] = useState<RequestRow[]>([]);
     const [activeTab, setActiveTab] = useState<'pending' | 'history'>('pending');
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
@@ -20,7 +29,7 @@ export default function AdminRequestManager() {
             .from('swap_requests')
             .select(`*, requestor:profiles!requestor_id(full_name), receiver:profiles!receiver_id(full_name), shifts(*)`)
             .order('created_at', { ascending: false });
-        if (!error) setRequests(data || []);
+        if (!error) setRequests((data || []) as unknown as RequestRow[]);
         setLoading(false);
     }, [supabase]);
 
@@ -32,155 +41,18 @@ export default function AdminRequestManager() {
         return () => { supabase.removeChannel(channel); };
     }, [fetchRequests, supabase]);
 
-    const handleAction = async (request: any, action: 'approved' | 'declined') => {
+    const handleAction = async (request: RequestRow, action: 'approved' | 'declined') => {
+        if (processingId) return;
         setProcessingId(request.id);
         try {
-            // --- Override request (accidental clock-out) ---
-            const isOverride = request.message?.includes('OVERRIDE REQUEST');
-            if (action === 'approved' && isOverride) {
-                const result = await approveOverrideRequest(request.id);
-                if (!result.success) throw new Error(result.error);
-                await fetchRequests();
-                return;
-            }
-
-            // --- Normal shift swap / change logic ---
-            if (action === 'approved' && request.shifts) {
-                const isSelf = request.requestor_id === request.receiver_id;
-                const msg = request.message || "";
-
-                if (isSelf) {
-                    // CASE 1: SHIFT TIME CHANGE (same day, different schedule)
-                    if (msg.includes("Shift Change")) {
-                        const labelMatch = msg.match(/to (.+?) for/);
-                        const newLabel = labelMatch ? labelMatch[1].trim() : null;
-                        if (newLabel) {
-                            const { data: preset } = await supabase
-                                .from('shift_presets')
-                                .select('*')
-                                .ilike('label', `%${newLabel}%`)
-                                .single();
-                            if (preset) {
-                                const baseDate = request.shifts.start_time.split('T')[0];
-                                const { error } = await supabase.from('shifts').update({
-                                    shift_label: preset.label,
-                                    start_time: `${baseDate}T${preset.start_time}Z`,
-                                    end_time: `${baseDate}T${preset.end_time}Z`
-                                }).eq('id', request.shift_id);
-                                if (error) throw error;
-                            } else {
-                                throw new Error(`Shift preset '${newLabel}' not found`);
-                            }
-                        }
-                    }
-                    // CASE 2: DATE INTERCHANGE (move shift from one date to another)
-                    else {
-                        const dateMatch = msg.match(/(\d{4}-\d{2}-\d{2})/g);
-                        if (dateMatch && dateMatch.length === 2) {
-                            const sourceDate = dateMatch[0];
-                            const targetDate = dateMatch[1];
-
-                            if (msg.includes("Week Off Change")) {
-                                const newStart = request.shifts.start_time.replace(targetDate, sourceDate);
-                                const newEnd = request.shifts.end_time.replace(targetDate, sourceDate);
-                                if (newStart === request.shifts.start_time) {
-                                    const altStart = request.shifts.start_time.replace(sourceDate, targetDate);
-                                    const altEnd = request.shifts.end_time.replace(sourceDate, targetDate);
-                                    const { error } = await supabase.from('shifts').update({
-                                        start_time: altStart, end_time: altEnd
-                                    }).eq('id', request.shift_id);
-                                    if (error) throw error;
-                                } else {
-                                    const { error } = await supabase.from('shifts').update({
-                                        start_time: newStart, end_time: newEnd
-                                    }).eq('id', request.shift_id);
-                                    if (error) throw error;
-                                }
-                            } else {
-                                // Shift Interchange: swap dates of two shifts
-                                const { data: sourceShift } = await supabase
-                                    .from('shifts')
-                                    .select('*')
-                                    .eq('employee_id', request.requestor_id)
-                                    .gte('start_time', `${sourceDate}T00:00:00`)
-                                    .lte('start_time', `${sourceDate}T23:59:59`)
-                                    .maybeSingle();
-
-                                const { data: targetShift } = await supabase
-                                    .from('shifts')
-                                    .select('*')
-                                    .eq('employee_id', request.requestor_id)
-                                    .gte('start_time', `${targetDate}T00:00:00`)
-                                    .lte('start_time', `${targetDate}T23:59:59`)
-                                    .maybeSingle();
-
-                                if (sourceShift && targetShift) {
-                                    const sourceTime = sourceShift.start_time.split('T')[1];
-                                    const sourceEndTime = (sourceShift.end_time || '').split('T')[1];
-                                    const targetTime = targetShift.start_time.split('T')[1];
-                                    const targetEndTime = (targetShift.end_time || '').split('T')[1];
-
-                                    await supabase.from('shifts').update({
-                                        start_time: `${sourceDate}T${targetTime}`,
-                                        end_time: `${sourceDate}T${targetEndTime}`,
-                                        shift_label: targetShift.shift_label
-                                    }).eq('id', sourceShift.id);
-
-                                    await supabase.from('shifts').update({
-                                        start_time: `${targetDate}T${sourceTime}`,
-                                        end_time: `${targetDate}T${sourceEndTime}`,
-                                        shift_label: sourceShift.shift_label
-                                    }).eq('id', targetShift.id);
-                                } else if (sourceShift || targetShift) {
-                                    const existingShift: typeof sourceShift = sourceShift || targetShift;
-                                    if (!existingShift) return;
-                                    const moveToDate = sourceShift ? targetDate : sourceDate;
-                                    const timeOnly = (existingShift.start_time || '').split('T')[1];
-                                    const endTimeOnly = (existingShift.end_time || '').split('T')[1];
-
-                                    const { error } = await supabase.from('shifts').update({
-                                        start_time: `${moveToDate}T${timeOnly}`,
-                                        end_time: `${moveToDate}T${endTimeOnly}`
-                                    }).eq('id', existingShift.id);
-                                    if (error) throw error;
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    // CASE 3: PEER SWAP
-                    const shiftDate = request.shifts.start_time.split('T')[0];
-                    const { data: receiverShift } = await supabase
-                        .from('shifts')
-                        .select('*')
-                        .eq('employee_id', request.receiver_id)
-                        .gte('start_time', `${shiftDate}T00:00:00`)
-                        .lte('start_time', `${shiftDate}T23:59:59`)
-                        .maybeSingle();
-
-                    if (receiverShift) {
-                        await supabase.from('shifts')
-                            .update({ employee_id: request.receiver_id })
-                            .eq('id', request.shift_id);
-                        await supabase.from('shifts')
-                            .update({ employee_id: request.requestor_id })
-                            .eq('id', receiverShift.id);
-                    } else {
-                        const { error } = await supabase.from('shifts')
-                            .update({ employee_id: request.receiver_id })
-                            .eq('id', request.shift_id);
-                        if (error) throw error;
-                    }
-                }
-            }
-
-            // Update request status (for non‑override approvals and all declines)
-            const { error: statusErr } = await supabase.from('swap_requests').update({ status: action }).eq('id', request.id);
-            if (statusErr) throw statusErr;
-            fetchRequests();
-        } catch (err: any) {
-            console.error("Approval Error:", err);
-            alert(`Action Failed: ${err.message}`);
+            const result = action === 'approved' && request.message?.startsWith('OVERRIDE REQUEST')
+                ? await approveOverrideRequest(request.id)
+                : await reviewShiftRequestAction(request.id, action);
+            if (!result.success) throw new Error(result.error);
+            await fetchRequests();
+        } catch (error: unknown) {
+            alert(error instanceof Error ? error.message : 'Could not review this request.');
+            await fetchRequests();
         } finally {
             setProcessingId(null);
         }
@@ -194,7 +66,7 @@ export default function AdminRequestManager() {
         return matchesTab && nameMatch;
     });
 
-    const getRequestType = (req: any) => {
+    const getRequestType = (req: RequestRow) => {
         const isSelf = req.requestor_id === req.receiver_id;
         const msg = req.message || '';
         if (!isSelf) return { type: 'Peer Swap', icon: <ArrowLeftRight size={20} />, color: 'bg-emerald-50 text-emerald-600' };
@@ -267,11 +139,11 @@ export default function AdminRequestManager() {
                                                         {reqType.type}
                                                     </span>
                                                 </div>
-                                                <p className="text-xs text-slate-500 font-medium leading-relaxed">"{req.message}"</p>
+                                                <p className="text-xs text-slate-500 font-medium leading-relaxed">&ldquo;{req.message}&rdquo;</p>
                                                 {req.note && (
                                                     <div className="mt-2 bg-slate-50/80 border border-slate-100/80 rounded-xl p-3">
                                                         <p className="text-xs font-medium text-slate-500 tracking-normal mb-1.5">Employee Note</p>
-                                                        <p className="text-xs font-medium text-slate-600">"{req.note}"</p>
+                                                        <p className="text-xs font-medium text-slate-600">&ldquo;{req.note}&rdquo;</p>
                                                     </div>
                                                 )}
                                                 {req.shifts && (
@@ -290,19 +162,18 @@ export default function AdminRequestManager() {
                                                     </div>
                                                 )}
                                                 <p className="text-xs text-slate-500 font-medium">
-                                                    {new Date(req.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                    {new Date(req.created_at || '').toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                                 </p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2 shrink-0">
                                             {req.status === 'pending' ? (
                                                 <>
-                                                    <button onClick={() => handleAction(req, 'declined')}
+                                                    <button disabled={Boolean(processingId)} aria-label="Decline request" onClick={() => handleAction(req, 'declined')}
                                                         className="p-4 rounded-xl bg-slate-50 text-slate-500 hover:bg-rose-50 hover:text-rose-500 transition-colors">
                                                         <X size={20} />
                                                     </button>
-                                                    <button onClick={() => handleAction(req, 'approved')}
-                                                        disabled={processingId === req.id}
+                                                    <button disabled={Boolean(processingId) || Boolean(req.shifts?.attendance_started_at && !req.message?.startsWith('OVERRIDE REQUEST'))} title={req.shifts?.attendance_started_at && !req.message?.startsWith('OVERRIDE REQUEST') ? SHIFT_LOCK_MESSAGE : undefined} aria-label="Approve request" onClick={() => handleAction(req, 'approved')}
                                                         className="flex items-center gap-3 px-8 py-4 rounded-xl bg-slate-900 text-white hover:bg-emerald-600 transition-colors disabled:opacity-50">
                                                         {processingId === req.id ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
                                                         <span className="text-sm font-medium tracking-normal">Approve</span>

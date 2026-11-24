@@ -49,3 +49,13 @@ public/workbox-*.js
 public/workbox-*.js.map
 public/worker-*.js
 public/worker-*.js.map
+
+# Generated Android web assets and installable build artifacts
+/mobile/www/
+/mobile/assets/
+/output/android/
+
+# Android signing material stays local
+*.jks
+*.keystore
+keystore.properties

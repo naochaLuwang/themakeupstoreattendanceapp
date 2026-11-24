@@ -7,6 +7,8 @@ import SwipeToConfirm from '@/components/SwipeToConfirm';
 import { calculateDistance } from '@/lib/geofence';
 import { getClockInLocation } from '@/lib/attendance/location';
 import { getAttendanceDate } from '@/lib/attendance/date';
+import { SHIFT_LOCK_MESSAGE } from '@/lib/shifts/rules';
+import { nativeFeedback } from '@/lib/native/experience';
 import type { Database } from '@/lib/supabase/database.types';
 import {
     ChevronLeft, ChevronRight, CheckCircle2, Clock, X,
@@ -30,6 +32,7 @@ type CalendarDay = {
     label: string | null;
     fullDate: string;
     request: SwapRequest | null;
+    locked: boolean;
 };
 
 export default function EmployeeShiftView({ userId }: { userId: string }) {
@@ -49,6 +52,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
     const [cancellingRequestId, setCancellingRequestId] = useState<string | null>(null);
     const [interchangeMode, setInterchangeMode] = useState<'shift_type' | 'swap_date'>('shift_type');
     const [interchangeNote, setInterchangeNote] = useState('');
+    const [sendingRequest, setSendingRequest] = useState(false);
 
     // Attendance & Timer
     const [elapsedTime, setElapsedTime] = useState('00:00:00');
@@ -67,7 +71,13 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
 
     const showToast = (msg: string, type: 'error' | 'success' = 'error') => {
         setToast({ msg, type });
+        nativeFeedback(type);
         setTimeout(() => setToast(null), 3000);
+    };
+
+    const reportAttendanceError = (message: string) => {
+        setAttendanceError(message);
+        nativeFeedback('error');
     };
 
     // --- HELPERS ---
@@ -99,7 +109,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
 
         const blanks: CalendarDay[] = Array.from({ length: firstDayIdx }, () => ({
             day: null, active: false, isLeave: false, start: null, end: null,
-            startRaw: null, endRaw: null, label: null, fullDate: '', request: null,
+            startRaw: null, endRaw: null, label: null, fullDate: '', request: null, locked: false,
         }));
         const days = Array.from({ length: daysInMonth }, (_, i) => {
             const dayNum = i + 1;
@@ -140,7 +150,8 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                 endRaw: shift?.end_time ? shift.end_time.split('T')[1]?.substring(0, 5) : null,
                 label: leave ? 'LEAVE' : (shift?.shift_label || null),
                 fullDate: dateStr,
-                request: request || null
+                request: request || null,
+                locked: Boolean(shift?.attendance_started_at),
             };
         });
 
@@ -219,6 +230,18 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
 
     useEffect(() => { fetchEverything(); }, [fetchEverything]);
     useEffect(() => {
+        const refresh = () => { void init(); void fetchEverything(); };
+        const reconnect = (event: Event) => {
+            if ((event as CustomEvent<{ connected: boolean }>).detail?.connected) refresh();
+        };
+        window.addEventListener('hrm:resume', refresh);
+        window.addEventListener('hrm:connection', reconnect);
+        return () => {
+            window.removeEventListener('hrm:resume', refresh);
+            window.removeEventListener('hrm:connection', reconnect);
+        };
+    }, [init, fetchEverything]);
+    useEffect(() => {
         void init();
         return () => {
             attendanceVersionRef.current += 1;
@@ -248,16 +271,16 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
         setAttendanceError(null);
 
         if (!activeDayData || activeDayData.fullDate !== todayStr || !activeDayData.active) {
-            setAttendanceError('No scheduled shift found for today.');
+            reportAttendanceError('No scheduled shift found for today.');
             return;
         }
         if (storeInfo?.lat == null || storeInfo?.lng == null) {
-            setAttendanceError('Store location is missing. Ask your manager to update it.');
+            reportAttendanceError('Store location is missing. Ask your manager to update it.');
             return;
         }
 
         if (!navigator.onLine) {
-            setAttendanceError('You are offline. Connect to the internet, then swipe again.');
+            reportAttendanceError('You are offline. Connect to the internet, then swipe again.');
             return;
         }
         attendanceOperationRef.current = true;
@@ -277,7 +300,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
             const dist = calculateDistance(pos.coords.latitude, pos.coords.longitude, storeInfo.lat, storeInfo.lng);
             const radius = storeInfo.radius_meters || 100;
             if (dist > radius) {
-                setAttendanceError(`You are ${Math.round(dist)}m from the store. Move within ${radius}m, then swipe again.`);
+                reportAttendanceError(`You are ${Math.round(dist)}m from the store. Move within ${radius}m, then swipe again.`);
                 return;
             }
 
@@ -303,11 +326,11 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                 setAttendanceStatus('active');
                 showToast("Clocked in", "success");
             } else {
-                setAttendanceError(result.error || 'Clock-in failed. Please swipe again.');
+                reportAttendanceError(result.error || 'Clock-in failed. Please swipe again.');
             }
         } catch (error: unknown) {
             if (controller.signal.aborted) return;
-            setAttendanceError(error instanceof Error && !(error instanceof TypeError)
+            reportAttendanceError(error instanceof Error && !(error instanceof TypeError)
                 ? error.message : 'Could not confirm clock-in. Check your connection and refresh attendance before retrying.');
         } finally {
             attendanceOperationRef.current = false;
@@ -320,7 +343,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
         if (attendanceOperationRef.current || attendanceStatus !== 'active') return;
         setAttendanceError(null);
         if (!navigator.onLine) {
-            setAttendanceError('You are offline. Connect to the internet, then swipe again.');
+            reportAttendanceError('You are offline. Connect to the internet, then swipe again.');
             return;
         }
         attendanceOperationRef.current = true;
@@ -345,11 +368,11 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                 showToast("Shift Ended", "success");
                 void fetchEverything();
             } else {
-                setAttendanceError(result.error || 'Clock-out failed. Please swipe again.');
+                reportAttendanceError(result.error || 'Clock-out failed. Please swipe again.');
             }
         } catch {
             if (controller.signal.aborted) return;
-            setAttendanceError('Could not confirm clock-out. Check your connection and refresh attendance before retrying.');
+            reportAttendanceError('Could not confirm clock-out. Check your connection and refresh attendance before retrying.');
         } finally {
             attendanceOperationRef.current = false;
             setIsSubmitting(false);
@@ -372,6 +395,11 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
     };
 
     const handleInterchangeRequest = async () => {
+        if (sendingRequest) return;
+        if (isDayLocked(sourceDay) || (interchangeMode === 'swap_date' && isDayLocked(targetDay))) {
+            showToast(SHIFT_LOCK_MESSAGE);
+            return;
+        }
         let message = "";
         let shiftIdToUpdate: string | null = null;
 
@@ -384,7 +412,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                 message = `Request day off on ${sourceDay.fullDate} (working day) and instead work on my off day ${targetDay.fullDate}.`;
                 shiftIdToUpdate = sourceDay.id || null;
             } else if (!sourceDay.active && targetDay.active) {
-                message = `Request to work on my off day ${targetDay.fullDate} and take ${sourceDay.fullDate} off instead.`;
+                message = `Request to work on my off day ${sourceDay.fullDate} and take ${targetDay.fullDate} off instead.`;
                 shiftIdToUpdate = targetDay.id || null;
             } else if (sourceDay.active && targetDay.active) {
                 message = `Swap my shift on ${sourceDay.fullDate} with shift on ${targetDay.fullDate}.`;
@@ -403,6 +431,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
             return;
         }
 
+        setSendingRequest(true);
         try {
             const response = await fetch('/api/requests/swap', {
                 method: 'POST',
@@ -429,13 +458,15 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
             }
         } catch {
             showToast("Submission failed.");
+        } finally {
+            setSendingRequest(false);
         }
     };
 
     const handleCancelRequest = async (requestId: string) => {
         setCancellingRequestId(requestId);
-        const { error } = await supabase.from('swap_requests').update({ status: 'cancelled' }).eq('id', requestId);
-        if (!error) {
+        const { data, error } = await supabase.from('swap_requests').update({ status: 'cancelled' }).eq('id', requestId).eq('status', 'pending').select('id');
+        if (!error && data?.length) {
             showToast("Request cancelled", "success");
             fetchEverything();
         } else {
@@ -458,6 +489,10 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
 
     const activeDayData = schedule.find(d => d.day === selectedDay);
     const todayStr = getAttendanceDate();
+    const isDayLocked = (day: CalendarDay | null | undefined) => Boolean(day && (
+        day.locked || schedule.find(current => current.fullDate === day.fullDate)?.locked ||
+        (day.fullDate === todayStr && (attendanceStatus === 'active' || attendanceStatus === 'completed'))
+    ));
 
     return (
         <div className="space-y-6">
@@ -506,6 +541,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
             </div>
             </section>
             <section aria-label="Selected shift" className="min-w-0 space-y-4">
+                {isDayLocked(activeDayData) && <p role="status" className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">Shift locked because attendance has started. Requests for other unworked days are still available.</p>}
                 <>
                     {activeDayData?.request ? (
                         <div key="request-status" className="bg-white border border-slate-200 rounded-xl p-5 relative overflow-hidden">
@@ -575,7 +611,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                                         </div>
                                     )}
 
-                                    {activeDayData.fullDate >= todayStr && (
+                                    {activeDayData.fullDate >= todayStr && !isDayLocked(activeDayData) && (
                                         <div className="pt-6 border-t border-slate-50 flex justify-center">
                                             <button onClick={() => {
                                                 setSourceDay(activeDayData);
@@ -693,7 +729,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                                         </p>
                                         <div className="grid grid-cols-5 gap-2 max-h-36 overflow-y-auto p-1 custom-scrollbar">
                                             {schedule.filter(d => {
-                                                if (!d.day || d.fullDate < todayStr) return false;
+                                                if (!d.day || d.fullDate < todayStr || isDayLocked(d)) return false;
                                                 if (d.day === sourceDay.day) return false;
                                                 if (!sourceDay.active) return d.active;
                                                 return true;
@@ -718,7 +754,7 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                                                     </div>
                                                 </div>
                                                 <div className="text-xs font-medium text-slate-600 bg-white p-2 rounded-xl">
-                                                    {sourceDay.active && !targetDay.active ? <>You will have <strong>{sourceDay.fullDate}</strong> off and work on <strong>{targetDay.fullDate}</strong> instead.</> : !sourceDay.active && targetDay.active ? <>You will work on <strong>{targetDay.fullDate}</strong> and take <strong>{sourceDay.fullDate}</strong> off.</> : sourceDay.active && targetDay.active ? <>Swap your shift from <strong>{sourceDay.fullDate}</strong> to <strong>{targetDay.fullDate}</strong>.</> : <>Both days are off – no change possible.</>}
+                                                    {sourceDay.active && !targetDay.active ? <>You will have <strong>{sourceDay.fullDate}</strong> off and work on <strong>{targetDay.fullDate}</strong> instead.</> : !sourceDay.active && targetDay.active ? <>You will work on <strong>{sourceDay.fullDate}</strong> and take <strong>{targetDay.fullDate}</strong> off.</> : sourceDay.active && targetDay.active ? <>Swap your shift from <strong>{sourceDay.fullDate}</strong> to <strong>{targetDay.fullDate}</strong>.</> : <>Both days are off – no change possible.</>}
                                                 </div>
                                             </div>
                                         )}
@@ -728,8 +764,9 @@ export default function EmployeeShiftView({ userId }: { userId: string }) {
                                     <label htmlFor="shift-change-reason" className="text-xs font-medium text-slate-500">Reason for change (optional)</label>
                                     <textarea id="shift-change-reason" value={interchangeNote} onChange={(e) => setInterchangeNote(e.target.value)} placeholder="E.g., Doctor appointment, Family emergency..." className="w-full bg-slate-50 border border-slate-100 rounded-xl p-4 text-xs font-medium text-slate-700 placeholder:text-slate-500 outline-none focus:border-slate-300 focus:bg-white transition-colors resize-none h-20" />
                                 </div>
-                                <button disabled={(interchangeMode === 'shift_type' && !selectedNewShift) || (interchangeMode === 'swap_date' && !targetDay)} onClick={handleInterchangeRequest} className="w-full bg-slate-900 text-white py-5 rounded-xl text-sm font-medium tracking-normal disabled:opacity-20 transition-colors">
-                                    Send request
+                                {(isDayLocked(sourceDay) || (interchangeMode === 'swap_date' && isDayLocked(targetDay))) && <p role="alert" className="text-sm text-rose-600">{SHIFT_LOCK_MESSAGE}</p>}
+                                <button disabled={sendingRequest || isDayLocked(sourceDay) || (interchangeMode === 'shift_type' && !selectedNewShift) || (interchangeMode === 'swap_date' && (!targetDay || isDayLocked(targetDay)))} onClick={handleInterchangeRequest} className="w-full bg-slate-900 text-white py-5 rounded-xl text-sm font-medium tracking-normal disabled:opacity-20 transition-colors">
+                                    {sendingRequest ? 'Sending request…' : 'Send request'}
                                 </button>
                             </div>
                     </WorkspaceDialog>

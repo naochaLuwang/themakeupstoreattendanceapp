@@ -4,6 +4,7 @@ import '@/components/workspace.css';
 import './employee.css';
 import NavWrapper from '@/components/employee/NavWrapper';
 import ThemeToggle from '@/components/ThemeToggle';
+import AppBrand from '@/components/AppBrand';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 
@@ -14,9 +15,8 @@ export default function EmployeeLayout({ children }: { children: React.ReactNode
             <Suspense fallback={null}><NavWrapper /></Suspense>
             <div id="employee-content" tabIndex={-1} className="employee-content">
                 <div className="employee-brand-mobile">
-                    <div>
-                        <p className="employee-wordmark">The Makeup Store</p>
-                        <p className="employee-brand-location">Wangkhei · Staff workspace</p>
+                    <div className="employee-mobile-brand">
+                        <AppBrand subtitle="Staff workspace" />
                     </div>
                     <ThemeToggle />
                 </div>

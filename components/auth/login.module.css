@@ -2,15 +2,15 @@
     --login-canvas: #f2f2ee;
     --login-ink: #20221f;
     --login-muted: #64665f;
-    --login-accent: #bd2048;
+    --login-accent: #704858;
     --login-line: #b9bab2;
     --login-field-border: #7f8178;
     --login-button: #20221f;
     --login-button-ink: #f9f9f5;
-    --login-button-hover: #bd2048;
+    --login-button-hover: #704858;
     --login-error: #a21c36;
     --login-error-surface: #f8e3e6;
-    --login-focus: #bd2048;
+    --login-focus: #704858;
     min-height: 100dvh;
     padding: 2rem clamp(1.5rem, 4.5vw, 5rem) 3rem;
     background: var(--login-canvas);
@@ -61,6 +61,7 @@
     color: var(--login-accent);
     padding-bottom: 0.06em;
 }
+.hrm { font-size: 0.35em; letter-spacing: -0.02em; color: var(--login-ink); }
 .caption {
     grid-column: 1 / 7;
     grid-row: 3;
@@ -202,30 +203,30 @@
         --login-canvas: #191b18;
         --login-ink: #f2f2ee;
         --login-muted: #b5b8ad;
-        --login-accent: #ff7896;
+        --login-accent: #d0a7b8;
         --login-line: #55594f;
         --login-field-border: #8b8f80;
         --login-button: #f2f2ee;
         --login-button-ink: #191b18;
-        --login-button-hover: #ff7896;
+        --login-button-hover: #d0a7b8;
         --login-error: #ffa7b7;
         --login-error-surface: #3a2529;
-        --login-focus: #ff7896;
+        --login-focus: #d0a7b8;
     }
 }
 :global(.dark) .page {
     --login-canvas: #191b18;
     --login-ink: #f2f2ee;
     --login-muted: #b5b8ad;
-    --login-accent: #ff7896;
+    --login-accent: #d0a7b8;
     --login-line: #55594f;
     --login-field-border: #8b8f80;
     --login-button: #f2f2ee;
     --login-button-ink: #191b18;
-    --login-button-hover: #ff7896;
+    --login-button-hover: #d0a7b8;
     --login-error: #ffa7b7;
     --login-error-surface: #3a2529;
-    --login-focus: #ff7896;
+    --login-focus: #d0a7b8;
 }
 @media (min-width: 900px) and (max-height: 800px) {
     .page { padding-block: 1.5rem; }
@@ -237,6 +238,7 @@
 }
 @media (max-width: 899px) {
     .page { padding-top: 1.5rem; }
+    .header > p { display: none; }
     .poster { grid-template-columns: repeat(6, minmax(0, 1fr)); margin-top: 2.5rem; row-gap: 0.5rem; }
     .masthead, .store { font-size: clamp(4rem, 20vw, 11rem); line-height: 0.86; }
     .store { grid-column: 1 / -1; }

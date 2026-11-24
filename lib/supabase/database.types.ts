@@ -1,3 +1,5 @@
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
+
 export type Database = {
   public: {
     Tables: {
@@ -99,6 +101,7 @@ export type Database = {
       }
       shifts: {
         Row: {
+          attendance_started_at: string | null
           id: string
           employee_id: string | null
           start_time: string
@@ -108,6 +111,7 @@ export type Database = {
           created_at: string | null
         }
         Insert: {
+          attendance_started_at?: string | null
           id?: string
           employee_id?: string | null
           start_time: string
@@ -117,6 +121,7 @@ export type Database = {
           created_at?: string | null
         }
         Update: {
+          attendance_started_at?: string | null
           id?: string
           employee_id?: string | null
           start_time?: string
@@ -183,6 +188,7 @@ export type Database = {
       }
       swap_requests: {
         Row: {
+          shift_snapshot: Json | null
           id: string
           requestor_id: string
           receiver_id: string | null
@@ -193,6 +199,7 @@ export type Database = {
           created_at: string | null
         }
         Insert: {
+          shift_snapshot?: Json | null
           id?: string
           requestor_id: string
           receiver_id?: string | null
@@ -203,6 +210,7 @@ export type Database = {
           created_at?: string | null
         }
         Update: {
+          shift_snapshot?: Json | null
           id?: string
           requestor_id?: string
           receiver_id?: string | null
@@ -1200,6 +1208,10 @@ export type Database = {
     }
     Views: Record<string, never>
     Functions: {
+      commit_shift_changes: {
+        Args: { p_changes: Json; p_expected: Json; p_request_id?: string; p_decision?: string }
+        Returns: undefined
+      }
       manual_trigger_checkout: {
         Args: Record<string, never>
         Returns: void

@@ -5,18 +5,18 @@ import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Home, History, Inbox, CalendarDays, User } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
+import AppBrand from '@/components/AppBrand';
+import { WORKSPACE_NAME } from '@/lib/branding';
+import { nativeFeedback, isNativeWorkspace } from '@/lib/native/experience';
 
 export default function BottomNav({ userId, initialCount }: { userId: string, initialCount: number }) {
     const pathname = usePathname();
     const supabase = createClient();
     const [pendingCount, setPendingCount] = useState(initialCount);
 
-    // --- HAPTIC FEEDBACK HELPER ---
     const triggerHaptic = () => {
-        if (typeof window !== 'undefined' && window.navigator.vibrate) {
-            // Short 10ms pulse for a "click" feel
-            window.navigator.vibrate(10);
-        }
+        if (isNativeWorkspace()) nativeFeedback('selection');
+        else navigator.vibrate?.(10);
     };
 
     useEffect(() => {
@@ -48,15 +48,14 @@ export default function BottomNav({ userId, initialCount }: { userId: string, in
     return (
         <nav aria-label="Employee navigation" className="employee-nav">
             <div className="employee-nav-inner">
-                <Link href="/employee" className="employee-nav-brand" aria-label="The Makeup Store — staff home">
-                    <p className="employee-wordmark">The Makeup Store</p>
-                    <p className="employee-brand-location">Wangkhei · Staff workspace</p>
+                <Link href="/employee" className="employee-nav-brand" aria-label={`${WORKSPACE_NAME} — staff home`}>
+                    <AppBrand subtitle="Staff workspace" />
                 </Link>
                 <div className="employee-nav-links">
                     {navLinks.map(link => {
                         const isActive = pathname === link.href || (link.href === '/employee/profile' && pathname === '/employee/payslips');
                         return (
-                            <Link key={link.href} href={link.href} onClick={triggerHaptic}
+                            <Link key={link.href} href={link.href} onClick={triggerHaptic} data-native-feedback="explicit"
                                 aria-current={isActive ? 'page' : undefined} className="employee-nav-link">
                                 <span className="employee-nav-icon" aria-hidden="true">
                                     {link.icon}

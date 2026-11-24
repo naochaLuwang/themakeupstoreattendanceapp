@@ -1,0 +1,45 @@
+{
+  "appName": "THE MAKEUP STORE HRM",
+  "appId": "in.themakeupstore.hrm",
+  "serverUrl": "https://attendance.themakeupstorewangkhei.com",
+  "versionName": "1.1",
+  "versionCode": 2,
+  "buildType": "debug",
+  "artifact": "the-makeup-store-hrm-debug.apk",
+  "bytes": 7459264,
+  "sha256": "3e11eb5ce0b648a93f88818b1d62bfb2799f68ec931b1f3c3e2db2ac380ac379",
+  "androidMinimumApi": 24,
+  "androidTargetApi": 36,
+  "checksPassed": [
+    "Gradle assembleDebug",
+    "Android unit tests: 2 passed",
+    "Android lint: 0 errors, 33 warnings",
+    "APK signature verification",
+    "Exact approved logo and packaged native assets",
+    "Restricted HTTPS workspace origin",
+    "No vibration permission; native system haptic feedback",
+    "Next.js production build",
+    "TypeScript",
+    "Changed-file ESLint",
+    "JavaScript regression tests: 34 passed"
+  ],
+  "nativeFeatures": [
+    "Animated offline-capable logo splash",
+    "System haptics for taps, swipes and results",
+    "Keyboard/dialog/history-aware Android Back",
+    "Keyboard-aware employee navigation",
+    "Theme-matched system bars",
+    "Native connection banner and retry/settings",
+    "Existing native document saving retained",
+    "Legacy PWA reconnect reload suppressed inside Android"
+  ],
+  "webDeployed": false,
+  "webDeploymentNeededFor": [
+    "Explicit updated attendance feedback hooks",
+    "Attendance status refresh on hrm:resume and hrm:connection",
+    "Updated PWA install/recovery guards"
+  ],
+  "compatibility": "Packaged native bridge provides generic tap/legacy swipe/toast feedback and suppresses older automatic self-heal reloads on the hosted workspace.",
+  "deviceSmokeTest": "Not performed: adb reported no attached devices; installed emulator image directory is empty.",
+  "preview": "output/mobile/native-splash-preview.html (design preview, not a device capture)"
+}

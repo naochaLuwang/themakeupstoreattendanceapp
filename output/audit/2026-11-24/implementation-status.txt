@@ -1,0 +1,12 @@
+The improvement review and source-snapshot.json describe the baseline BEFORE
+implementation. Their source-characterization scripts intentionally asserted
+the old defective behavior; they are historical evidence, not regression tests
+for the changed application.
+
+Improvement batch 1 adds worked-shift locking, shared request checks, permanent
+database attendance markers, transactional approval/publication and stale-state
+checks. See docs/shift-locking.txt and migration 005 for scope and deployment.
+Use tests/shifts.test.mjs and tests/shift-lock-database.py for current regression
+checks. Other review findings remain open unless explicitly covered there.
+
+Production migration and deployment have not been performed.

@@ -1,0 +1,128 @@
+Shift locking — improvement batch 1
+==================================
+
+Behavior
+--------
+After the first attendance event, a scheduled shift's employee, date, start/end
+times and label cannot be changed or deleted through ordinary scheduling.
+The lock remains after checkout, automatic checkout, attendance edits and
+attendance deletion. Both sides of a date interchange or peer exchange are
+checked. Today's active shift does not block requests for unrelated future days.
+
+Employees see a locked explanation instead of Request a change. Worked target
+days are excluded from the exchange picker. A request made before clock-in is
+rechecked during approval and rejected if attendance has since started; it
+remains pending so it can be cancelled or declined. Clock-out remains available.
+
+Bulk planning shows locked days; clear/preset tools preserve them. Publishing
+only sends actual changes and commits the whole batch atomically. The request
+review screen uses the same transaction boundary instead of separate browser
+writes. A concurrent edit, stale/cancelled request, failed child write or worked
+shift causes rollback, including request status. No partial publication is
+reported as a success.
+
+Schema and permissions
+----------------------
+Apply supabase/migrations/005_shift_attendance_lock.sql before deploying the web
+changes. This migration depends on the existing attendance, shifts, profiles and
+swap_requests tables. It does not depend on store-operations migrations 002–004;
+do not rerun those to install this feature.
+
+Added fields:
+  shifts.attendance_started_at timestamptz NULL
+    Backfilled from existing linked attendance, including completed records,
+    and unlinked/orphaned attendance on the employee's matching IST business
+    day. Triggers retain this marker permanently. Explicitly clearing it fails.
+  swap_requests.shift_snapshot jsonb NULL
+    Database-generated snapshot of affected schedules for new ordinary
+    requests. Detects changed times/assignments and added/removed target shifts.
+
+Private trigger functions guard direct schedule/request API writes and serialize
+attendance inserts/association changes with scheduling. A short PostgreSQL
+transaction advisory mutex also protects previously empty target dates. It is
+not held while GPS runs, while push is delivered, or while the browser waits
+for user input. Under heavy concurrent direct SQL mutations, PostgreSQL may
+abort a deadlock participant; retry from freshly loaded state instead of
+bypassing a guard. Normal app writes take the mutex before row locks.
+
+public.commit_shift_changes is SECURITY INVOKER; its implementation is in the
+non-exposed hrm_private schema. Only authenticated callers can enter it, and the
+implementation validates current profile role, employee scope and snapshots.
+Managers must have a non-null store matching every affected employee. Admins
+can manage eligible unworked shifts across stores. Trigger helpers have no
+public/anonymous/authenticated direct EXECUTE grant. Existing table RLS remains
+in place; this is not a replacement for base auth/profile permissions.
+
+The web API and compatibility Server Action share request validation, including
+attendance-read failures, ownership, eligible dates and both exchange sides.
+Preset labels match exactly. Both targets of an exchange are sent together.
+The unused employee-inbox handler that separately updated peer shifts was
+removed; the inbox remains a request-history screen with admin review.
+
+Compatibility
+-------------
+Existing schedules use the UTC date part to represent the displayed wall-clock
+schedule date. This migration preserves that convention; real attendance events
+use their IST business date. It does not convert existing scheduled times to a
+new timezone model or recalculate payroll. Overnight end offsets are preserved
+when moving a shift, and new overnight presets/bulk shifts end on the next day.
+New attendance linked to a shift must match its employee and starting business
+day. An existing bad/stale shift reference is rejected rather than silently
+recorded against another assignment.
+
+Older pending requests have no creation-time snapshot. They remain reviewable
+against fresh schedule snapshots, ownership/date/attendance checks, but the app
+cannot reconstruct what their schedule looked like before this migration.
+Malformed/ambiguous requests must be cancelled and submitted again. New request
+content is immutable; cancel and resubmit to change it.
+
+Accidental-checkout requests remain separate and usable. This batch does not
+repair the older override implementation or create an audited historical-shift
+correction tool. There is intentionally no ordinary admin bypass for a worked
+shift. Future attendance/payroll/correction improvements are separate batches.
+
+Installation and deployment
+---------------------------
+1. Inspect the live base schema, policies, column grants and existing triggers.
+   In particular, confirm profiles.role/store_id cannot be changed by employees
+   and check any unique employee/date constraint used by peer exchanges. This
+   repository does not contain the original base schema. Preserve existing
+   indexes on attendance.shift_id and employee_id/check_in; review missing
+   lookup indexes for larger datasets before running the backfill.
+2. Test 005 on a staging clone with the real base constraints/triggers. It is
+   transactional and was tested twice in an isolated PostgreSQL 17 fixture, but
+   the fixture is not a copy of the production schema. Existing conflicting
+   uniqueness constraints can reject an exchange atomically; they must never
+   be bypassed with partial writes.
+3. Apply ONLY migration 005 through the project's authorized migration process.
+   It backfills lock metadata and notifies PostgREST to reload its schema cache.
+4. Deploy the Next.js changes to the existing HTTPS host. Until the RPC exists,
+   approval and publish fail closed with an installation message. Do not deploy
+   UI-only changes and assume the database lock is active.
+5. Confirm direct update/delete protections, both exchange sides, stale browser
+   tabs, completed days, future eligible days, manager store scope and the
+   separate re-entry/clock-out flows. Verify with real employee/admin sessions.
+6. The Android package loads the hosted app: deploy web changes separately.
+   Rebuilding the APK alone does not enable this feature.
+
+No production migration or web deployment was performed during this batch.
+
+Validation
+----------
+  npm run typecheck
+  node --test tests/shifts.test.mjs tests/attendance-location.test.mjs
+  ESLint on every changed application/test TypeScript/JavaScript file
+  python3 tests/shift-lock-database.py
+
+The database test requires a LOCAL PostgreSQL 17 owner named audit_owner on the
+/private/tmp Unix socket, port 55439 (TCP need not be enabled). It creates and
+deletes a uniquely named disposable database and never reads .env or contacts
+Supabase. It covers backfill/rerun, active/completed/permanent locks, both request
+sides, rollback, stale snapshots, cancellation/replay, role/store permissions,
+legacy unlinked attendance and actual concurrent transactions in both orders.
+
+The full repository lint command has existing failures in unrelated source and
+generated Android/PWA/build files. Changed-file ESLint is checked separately;
+the full lint limitation must remain visible in release verification.
+
+Reference: https://supabase.com/docs/guides/database/functions

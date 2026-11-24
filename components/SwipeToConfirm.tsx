@@ -3,6 +3,7 @@
 import { useId, useRef, useState, type PointerEvent } from 'react';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import styles from './SwipeToConfirm.module.css';
+import { nativeFeedback } from '@/lib/native/experience';
 
 type SwipeToConfirmProps = {
     label: string;
@@ -16,7 +17,7 @@ type SwipeToConfirmProps = {
 export default function SwipeToConfirm({ label, busyLabel = 'Saving attendanceâ€¦', disabled = false, busy = false, variant = 'start', onConfirm }: SwipeToConfirmProps) {
     const helpId = useId();
     const trackRef = useRef<HTMLDivElement>(null);
-    const dragRef = useRef<{ pointerId: number; startX: number; distance: number; max: number } | null>(null);
+    const dragRef = useRef<{ pointerId: number; startX: number; distance: number; max: number; armed: boolean } | null>(null);
     const confirmingRef = useRef(false);
     const [offset, setOffset] = useState(0);
     const [confirming, setConfirming] = useState(false);
@@ -26,6 +27,7 @@ export default function SwipeToConfirm({ label, busyLabel = 'Saving attendanceâ€
         if (disabled || busy || confirmingRef.current) return;
         confirmingRef.current = true;
         setConfirming(true);
+        nativeFeedback('impact');
         try {
             await onConfirm();
         } finally {
@@ -44,7 +46,7 @@ export default function SwipeToConfirm({ label, busyLabel = 'Saving attendanceâ€
         if (blocked || !event.isPrimary || event.button !== 0 || !trackRef.current) return;
         const max = trackRef.current.clientWidth - event.currentTarget.offsetWidth - 12;
         if (max <= 0) return;
-        dragRef.current = { pointerId: event.pointerId, startX: event.clientX, distance: 0, max };
+        dragRef.current = { pointerId: event.pointerId, startX: event.clientX, distance: 0, max, armed: false };
         event.currentTarget.setPointerCapture(event.pointerId);
     }
 
@@ -52,6 +54,9 @@ export default function SwipeToConfirm({ label, busyLabel = 'Saving attendanceâ€
         const drag = dragRef.current;
         if (!drag || event.pointerId !== drag.pointerId) return;
         drag.distance = Math.max(0, Math.min(drag.max, event.clientX - drag.startX));
+        const armed = drag.distance >= drag.max * 0.9;
+        if (armed && !drag.armed) nativeFeedback('selection');
+        drag.armed = armed;
         setOffset(drag.distance);
     }
 
@@ -66,7 +71,7 @@ export default function SwipeToConfirm({ label, busyLabel = 'Saving attendanceâ€
     }
 
     return (
-        <div className={styles.control}>
+        <div className={styles.control} data-native-feedback="explicit">
             <div ref={trackRef} className={styles.track} data-variant={variant} data-busy={busy || confirming} aria-busy={busy || confirming}>
                 <span className={styles.label} style={{ opacity: offset > 0 ? 0.35 : 1 }} aria-hidden="true">
                     {busy || confirming ? busyLabel : label}

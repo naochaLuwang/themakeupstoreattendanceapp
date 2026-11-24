@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import ThemeToggle from '@/components/ThemeToggle';
+import AppBrand from '@/components/AppBrand';
+import { WORKSPACE_NAME } from '@/lib/branding';
 import {
     Activity, Calendar, Palmtree, LogOut, Search, RefreshCcw,
     CreditCard, BarChart3, ShieldCheck, MoreHorizontal, X, MapPin, Store,
@@ -59,11 +61,8 @@ export default function AdminNav() {
     return (
         <>
             <aside className="admin-sidebar">
-                <Link href="/admin" className="admin-brand" aria-label="The Makeup Store — admin home">
-                    <span>
-                        <span className="admin-brand-name">The Makeup Store</span>
-                        <span className="admin-brand-location">Wangkhei · Administration</span>
-                    </span>
+                <Link href="/admin" className="admin-brand" aria-label={`${WORKSPACE_NAME} — admin home`}>
+                    <AppBrand subtitle="Administration" />
                 </Link>
 
                 <nav aria-label="Admin navigation" className="admin-sidebar-links">
@@ -130,7 +129,7 @@ export default function AdminNav() {
                     <div className="flex items-center justify-between gap-4 mb-4">
                         <div>
                             <h2 id="admin-more-title" className="text-lg font-medium">Management & reports</h2>
-                            <p className="admin-sheet-description">The Makeup Store · Wangkhei</p>
+                            <p className="admin-sheet-description">{WORKSPACE_NAME}</p>
                         </div>
                         <button type="button" onClick={() => setIsMenuOpen(false)} aria-label="Close navigation" className="admin-icon-button">
                             <X size={20} strokeWidth={1.5} aria-hidden="true" />

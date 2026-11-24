@@ -7,6 +7,7 @@
 .admin-content-inner { width: 100%; max-width: 1440px; margin: 0 auto; }
 
 .admin-sidebar { display: none; }
+.admin-brand-mobile { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--store-border); }
 
 .admin-brand { display: flex; align-items: center; gap: 12px; padding: 8px 8px 32px; }
 
@@ -128,6 +129,7 @@
 }
 
 @media (min-width: 1024px) {
+  .admin-brand-mobile { display: none; }
   .admin-sidebar {
     position: sticky; top: 0; display: flex; flex-direction: column;
     width: 256px; height: 100dvh; flex-shrink: 0; overflow-y: auto;

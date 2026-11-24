@@ -1,0 +1,22 @@
+{
+  "mode": "Built-in image generation",
+  "reference": "/Users/somojitarambam/Documents/THE MAKEUP STORE/2.png",
+  "base": "Create ONE finished home-screen app icon concept for THE MAKEUP STORE's combined employee attendance and store operations app.\nReference image: the user's original black monogram. Retain its distinctive family resemblance through paired parallel diagonal strokes, open asymmetric M construction and rounded ends. The M MAY be substantially redesigned; do not simply paste the original logo over another icon.\nCritical brief: the single compact symbol must communicate BOTH staff attendance/check-in AND physical store operations. Integrate meanings into one simple visual, not an assortment of separate pictograms. Bold clean geometry readable at 32–48px. Flat vector-style design, uniform solid colors, optical balance, generous negative space.\nOne square image, pure white background, centered symbol with roughly 15% margin. Palette: near-black #171917 and muted plum #704858, white cutouts. No text, labels, multiple concepts, phone mockups, gradients, shadows, texture, watermarks, circular clock outlines, floating notification badges, tiny details or generic font M.",
+  "variants": [
+    {
+      "slug": "05-storefront-check",
+      "name": "Storefront check",
+      "direction": "DIRECTION A — STOREFRONT + CHECK-IN. Design a minimal recognizable storefront whose bold angular structure is a custom M related to the reference. A very simple horizontal shop canopy with only two or three broad rounded sections, two side uprights, and the reference's paired diagonal rhythm integrated into the interior structure. Shape one diagonal pair into a clear verification check INSIDE the storefront. The storefront must be immediately readable as a shop, and the check must be clearly readable as staff present / operations complete. Use near-black for the shop/M structure and plum only for the integrated check. Aim for one memorable unified app mark, not an M with an awning pasted above it. Prioritize clarity over exact reproduction of the original."
+    },
+    {
+      "slug": "06-operations-checklist",
+      "name": "Operations checklist",
+      "direction": "DIRECTION B — SHIFT CHECKLIST. Create a bold compact checklist/clipboard silhouette that is also a distinctive custom M. Use a simple near-black open rectangular clipboard body with a thick small top clip; inside it, sculpt the user's paired diagonal monogram strokes into one large plum check/M hybrid. Include just ONE short thick horizontal completion line beside the check if needed, no tiny multiple rows. The overall reading must be a staff shift checklist: clocked in, ready to run the store. The inner mark must have the original logo's characteristic double-diagonal geometry and rounded ends, not a stock tick or ordinary M. Strong silhouette, minimal parts, no external badges."
+    },
+    {
+      "slug": "07-staff-store-badge",
+      "name": "Staff and store",
+      "direction": "DIRECTION C — STAFF BADGE + STORE. Create a compact staff identification badge with a subtle storefront roof/canopy built into its top edge, and a strong custom M/check monogram integrated into its lower half. A single simple circular head and very minimal shoulder curve at the top center signify an employee; below, the reference logo's paired diagonal rounded strokes form a distinctive plum verification M. The badge/shop shape is near-black and open to keep clean white space. The main reading should be staff checked in and responsible for the shop. Keep the icon exceptionally simple, with no more than five or six bold visual elements. It must be more unified than an ID card containing a tiny logo: the M/check should form part of the badge's actual structure."
+    }
+  ]
+}

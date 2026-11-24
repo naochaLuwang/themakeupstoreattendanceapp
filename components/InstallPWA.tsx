@@ -1,17 +1,24 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { Download, X } from 'lucide-react';
+import { isNativeWorkspace } from '@/lib/native/experience';
+
+interface InstallPromptEvent extends Event {
+    prompt(): Promise<void>;
+    userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
 
 export default function InstallPWA() {
     const [supportsPWA, setSupportsPWA] = useState(false);
-    const [promptInstall, setPromptInstall] = useState<any>(null);
+    const [promptInstall, setPromptInstall] = useState<InstallPromptEvent | null>(null);
     const [isVisible, setIsVisible] = useState(true);
 
     useEffect(() => {
-        const handler = (e: any) => {
+        if (isNativeWorkspace()) return;
+        const handler = (e: Event) => {
             e.preventDefault();
             setSupportsPWA(true);
-            setPromptInstall(e);
+            setPromptInstall(e as InstallPromptEvent);
         };
 
         window.addEventListener("beforeinstallprompt", handler);
@@ -34,7 +41,7 @@ export default function InstallPWA() {
     if (!supportsPWA || !isVisible) return null;
 
     return (
-        <div className="fixed bottom-6 left-4 right-4 md:bottom-12 md:left-auto md:right-12 md:w-80 z-[100] animate-in slide-in-from-bottom-5 duration-700">
+        <div data-native-install className="fixed bottom-6 left-4 right-4 md:bottom-12 md:left-auto md:right-12 md:w-80 z-[100] animate-in slide-in-from-bottom-5 duration-700">
             <div className="bg-black text-white p-5 rounded-[2rem] shadow-2xl flex flex-col gap-4 border border-white/10">
                 <div className="flex items-start justify-between">
                     <div className="flex gap-3">
@@ -44,7 +51,7 @@ export default function InstallPWA() {
                         <div>
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-1">Mobile App Available</p>
                             <p className="text-[11px] text-neutral-400 leading-relaxed font-medium">
-                                Install the portal for faster access and offline logs.
+                                Add the workspace to your home screen for faster access.
                             </p>
                         </div>
                     </div>

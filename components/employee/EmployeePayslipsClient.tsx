@@ -22,7 +22,7 @@ export default function EmployeePayslipsClient({ history }: { history: any[] }) 
 
             doc.setFontSize(22);
             doc.setFont("times", "bold");
-            doc.text("THE MAKEUP STORE WANGKHEI", 105, imgElement ? 45 : 25, { align: "center" });
+            doc.text("THE MAKEUP STORE", 105, imgElement ? 45 : 25, { align: "center" });
 
             doc.setFontSize(10);
             doc.setFont("helvetica", "normal");

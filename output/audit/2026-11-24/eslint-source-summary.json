@@ -1,0 +1,393 @@
+{
+  "scope": "app components lib proxy.ts next.config.ts",
+  "scanned_files": 196,
+  "errors": 216,
+  "warnings": 29,
+  "files": [
+    {
+      "file": "app/(auth)/signout/route.ts",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/payroll/AdvanceForm.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/payroll/History.tsx",
+      "errors": 2,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/payroll/PayrollTable.tsx",
+      "errors": 6,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/reports/consolidated/page.tsx",
+      "errors": 5,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/reports/graphs/page.tsx",
+      "errors": 18,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/reports/reliability/page.tsx",
+      "errors": 3,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/roaster/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/store-operations/audits/audits/[id]/AuditDetailView.tsx",
+      "errors": 1,
+      "warnings": 2
+    },
+    {
+      "file": "app/(dashboard)/admin/store-operations/daily-checklist/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/store-operations/damage-reports/[id]/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/store-operations/damage-reports/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/store-operations/incidents/[id]/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/store-operations/incidents/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/store-operations/restocking/[id]/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/store-operations/restocking/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/store-operations/shelf-inspection/[id]/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/store-operations/shelf-inspection/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/store-operations/tasks/[id]/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/store-operations/tasks/page.tsx",
+      "errors": 2,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/store-operations/testers/[id]/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/store-operations/testers/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/admin/weekoff-request/page.tsx",
+      "errors": 9,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/employee/store-operations/damage-reports/[id]/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/employee/store-operations/damage-reports/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/employee/store-operations/incidents/[id]/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/employee/store-operations/incidents/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/employee/store-operations/restocking/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/employee/store-operations/shelf-inspection/[id]/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/employee/store-operations/shelf-inspection/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/employee/store-operations/tasks/[id]/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/employee/store-operations/tasks/page.tsx",
+      "errors": 3,
+      "warnings": 0
+    },
+    {
+      "file": "app/(dashboard)/employee/store-operations/testers/page.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/actions/admin.ts",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/actions/attendance-override.ts",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/actions/store-ops/daily-checklist.ts",
+      "errors": 3,
+      "warnings": 0
+    },
+    {
+      "file": "app/actions/store-ops/restocking.ts",
+      "errors": 2,
+      "warnings": 0
+    },
+    {
+      "file": "app/actions/store-ops/tasks.ts",
+      "errors": 2,
+      "warnings": 0
+    },
+    {
+      "file": "app/api/admin/test-push/route.ts",
+      "errors": 2,
+      "warnings": 0
+    },
+    {
+      "file": "app/api/attendance/clock-in/route.ts",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/api/attendance/clock-out/route.ts",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/api/auth/login/route.ts",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/api/reports/reliability/route.ts",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "app/api/requests/swap/route.ts",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "components/InstallPWA.tsx",
+      "errors": 2,
+      "warnings": 0
+    },
+    {
+      "file": "components/admin/AdminDashboard.tsx",
+      "errors": 12,
+      "warnings": 1
+    },
+    {
+      "file": "components/admin/AdminShiftCalendar.tsx",
+      "errors": 6,
+      "warnings": 2
+    },
+    {
+      "file": "components/admin/AttendanceLogTable.tsx",
+      "errors": 4,
+      "warnings": 1
+    },
+    {
+      "file": "components/admin/AttendanceOversight.tsx",
+      "errors": 8,
+      "warnings": 1
+    },
+    {
+      "file": "components/admin/BulkScheduler.tsx",
+      "errors": 7,
+      "warnings": 0
+    },
+    {
+      "file": "components/admin/GeotagAnalysisClient.tsx",
+      "errors": 2,
+      "warnings": 0
+    },
+    {
+      "file": "components/admin/LeaveManagementWrapper.tsx",
+      "errors": 8,
+      "warnings": 1
+    },
+    {
+      "file": "components/admin/OverridesList.tsx",
+      "errors": 3,
+      "warnings": 1
+    },
+    {
+      "file": "components/admin/PresetManager.tsx",
+      "errors": 1,
+      "warnings": 1
+    },
+    {
+      "file": "components/employee/ActivityLogViews.tsx",
+      "errors": 2,
+      "warnings": 1
+    },
+    {
+      "file": "components/employee/EmployeePayslipsClient.tsx",
+      "errors": 2,
+      "warnings": 0
+    },
+    {
+      "file": "components/employee/LeaveRequestView.tsx",
+      "errors": 3,
+      "warnings": 1
+    },
+    {
+      "file": "components/employee/SwapInbox.tsx",
+      "errors": 12,
+      "warnings": 0
+    },
+    {
+      "file": "components/store-ops/ImageUpload.tsx",
+      "errors": 0,
+      "warnings": 1
+    },
+    {
+      "file": "components/store-ops/audits/AuditRunner.tsx",
+      "errors": 1,
+      "warnings": 2
+    },
+    {
+      "file": "components/store-ops/daily-checklist/ChecklistTemplateList.tsx",
+      "errors": 3,
+      "warnings": 0
+    },
+    {
+      "file": "components/store-ops/daily-checklist/DailyChecklistView.tsx",
+      "errors": 4,
+      "warnings": 1
+    },
+    {
+      "file": "components/store-ops/damage-reports/DamageReportCard.tsx",
+      "errors": 0,
+      "warnings": 1
+    },
+    {
+      "file": "components/store-ops/damage-reports/DamageReportDetail.tsx",
+      "errors": 6,
+      "warnings": 2
+    },
+    {
+      "file": "components/store-ops/damage-reports/DamageReportList.tsx",
+      "errors": 0,
+      "warnings": 1
+    },
+    {
+      "file": "components/store-ops/incidents/IncidentCard.tsx",
+      "errors": 0,
+      "warnings": 1
+    },
+    {
+      "file": "components/store-ops/incidents/IncidentDetail.tsx",
+      "errors": 4,
+      "warnings": 2
+    },
+    {
+      "file": "components/store-ops/incidents/IncidentList.tsx",
+      "errors": 0,
+      "warnings": 1
+    },
+    {
+      "file": "components/store-ops/restocking/RestockDetail.tsx",
+      "errors": 10,
+      "warnings": 0
+    },
+    {
+      "file": "components/store-ops/shelf-inspection/ShelfInspectionCard.tsx",
+      "errors": 1,
+      "warnings": 1
+    },
+    {
+      "file": "components/store-ops/shelf-inspection/ShelfInspectionDetail.tsx",
+      "errors": 7,
+      "warnings": 2
+    },
+    {
+      "file": "components/store-ops/shelf-inspection/ShelfInspectionList.tsx",
+      "errors": 0,
+      "warnings": 1
+    },
+    {
+      "file": "components/store-ops/tasks/TaskDetail.tsx",
+      "errors": 9,
+      "warnings": 1
+    },
+    {
+      "file": "components/store-ops/tasks/TaskForm.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "components/store-ops/testers/TesterDetail.tsx",
+      "errors": 6,
+      "warnings": 0
+    },
+    {
+      "file": "components/store-ops/testers/TesterList.tsx",
+      "errors": 1,
+      "warnings": 0
+    },
+    {
+      "file": "lib/push.ts",
+      "errors": 2,
+      "warnings": 0
+    }
+  ]
+}

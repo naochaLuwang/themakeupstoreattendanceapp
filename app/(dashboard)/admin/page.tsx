@@ -4,6 +4,7 @@ import LiveStatusList from '@/components/admin/LiveStatusList';
 import AdminPageSkeleton from '@/components/admin/AdminPageSkeleton';
 import AdminPushManager from '@/components/admin/AdminPushManager';
 import { createClient } from '@/lib/supabase/server';
+import { WORKSPACE_NAME } from '@/lib/branding';
 
 export default async function AdminLivePage() {
     const supabase = await createClient();
@@ -13,7 +14,7 @@ export default async function AdminLivePage() {
         <div className="space-y-8">
             <header className="flex flex-col xl:flex-row justify-between items-start gap-6">
                 <div>
-                    <p className="text-xs text-slate-500 mb-3">The Makeup Store · Wangkhei</p>
+                    <p className="text-xs text-slate-500 mb-3">{WORKSPACE_NAME}</p>
                     <h1 className="text-3xl font-medium text-slate-900">Live presence</h1>
                     <p className="text-sm text-slate-500 mt-2">Who’s on the floor, their shifts, and attendance updates</p>
                 </div>

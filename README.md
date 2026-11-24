@@ -33,13 +33,42 @@
 - Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
   - Environment variables automatically assigned to Vercel project
 
+## Display branding
+
+The sign-in screen, admin and employee workspaces, and browser titles display **THE MAKEUP STORE HRM**. Shared display branding lives in `lib/branding.ts` and `components/AppBrand.tsx`; the approved logo is `public/branding/the-makeup-store-hrm.png`. The project identity, installed-app names, and business name on payroll documents are retained.
+
+## Android app (Capacitor)
+
+The Android package uses the approved HRM logo for its launcher and splash screen, and opens `https://attendance.themakeupstorewangkhei.com`. Its Android application ID is `in.themakeupstore.hrm`. The repository name and existing web/PWA identity are retained.
+
+This first Android build is an online wrapper: login, API routes, Server Actions, and Supabase access continue through the hosted Next.js app. Web changes must be deployed to that host separately. A bundled connection-error page provides a retry action; it does not save attendance offline. Location permissions are requested when the existing clock-in flow needs them. PDF/CSV downloads use Android's document picker, without broad storage access.
+
+Android version **1.1** adds a native animated launch screen using the approved logo, system haptics, keyboard-aware navigation, theme-matched system bars, native connection feedback and Android Back behavior. Most affordances are packaged in the APK; explicit attendance feedback/background refresh changes also have web source updates. See [Android experience notes](docs/android-experience.txt) and the [animated design preview](output/mobile/native-splash-preview.html).
+
+Requirements: Node.js 22+, JDK 21, and the Android SDK with platform/build tools 36. The scripts detect the usual macOS SDK and Homebrew JDK 21 locations; otherwise set `ANDROID_HOME` and `JAVA_HOME`.
+
+```bash
+npm install
+npm run android:build   # Generate assets, sync Capacitor, and build the installable debug APK
+npm run android:open    # Open the native project in Android Studio
+npm run android:run     # Run on an attached Android device or emulator
+```
+
+The APK and SHA-256 checksum are written to `output/android/`. The APK uses the local Android debug certificate and is intended for internal testing. `npm run android:bundle` builds an unsigned release bundle; public distribution requires a release signing key. Signing keys and generated build assets are ignored by Git.
+
+Change the host in `mobile/app.json`, or set `CAPACITOR_SERVER_URL` to another trusted HTTPS origin before syncing/building. `npm run android:assets` regenerates Android artwork from `public/branding/the-makeup-store-hrm.png`. Only Android is included in this phase. Native push notifications require separate Firebase setup; the current package does not configure FCM.
+
+Capacitor documents [`server.url`](https://capacitorjs.com/docs/config) for live reload. This package deliberately uses a single HTTPS host as an internal web wrapper; review that architecture and release signing before public store distribution. See the official [Android workflow](https://capacitorjs.com/docs/android) and [asset generation guide](https://capacitorjs.com/docs/guides/splash-screens-and-icons).
+
 ## Color theme
 
-Use the Light/Dark buttons on the sign-in page or in the workspace navigation. Admins can find them in the sidebar on desktop and the **More** menu on mobile. Employees can use the workspace header on mobile and the navigation bar on desktop.
+Use the sun/moon icon on the sign-in page or in the workspace navigation to switch between light and dark themes. Admins can find it in the sidebar on desktop and the **More** menu on mobile. Employees can use the workspace header on mobile and the navigation bar on desktop. The control's tooltip and accessible label describe the theme it switches to.
 
 The app follows the device theme until a selection is made. The selection is saved in this browser and synced across open tabs. The shared provider in `components/ThemeProvider.tsx` uses the existing `next-themes` dependency; workspace colors remain in `components/workspace.css`. No database changes are required.
 
 ## Swipe attendance
+
+Worked-shift protection is implemented in migration `005_shift_attendance_lock.sql` and the shared scheduling actions. It locks ordinary schedule changes after attendance starts, preserves the lock after checkout, and applies exchanges/publications atomically. Apply the migration before deploying these web changes. See [shift-locking documentation](docs/shift-locking.txt) for schema details, compatibility, validation and deployment order.
 
 On **My shifts**, drag the arrow to the right edge and release to clock in or out. Taps and incomplete swipes do not submit. Keyboard and screen reader users can activate the arrow to confirm. The control stays locked while a request is in progress, and completion is shown after the server confirms attendance.
 

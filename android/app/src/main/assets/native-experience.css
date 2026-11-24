@@ -1,0 +1,15 @@
+html.hrm-native {
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+  scrollbar-width: none;
+  scroll-padding-block: 20px 96px;
+}
+html.hrm-native body { overscroll-behavior-y: none; }
+.hrm-native :is(button, a, [role="button"]) { touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+.hrm-native :is(input, textarea, [contenteditable="true"]) { -webkit-user-select: text; user-select: text; }
+.hrm-native :is(button, a, [role="button"]):active { opacity: .78; }
+.hrm-native :is(input, select, textarea) { scroll-margin-block: 24px 120px; }
+.hrm-native[data-native-keyboard] .employee-nav { visibility: hidden; pointer-events: none; }
+.hrm-native[data-native-keyboard] .employee-content { padding-bottom: 24px; }
+.hrm-native [data-native-install] { display: none !important; }
+@media (prefers-reduced-motion: reduce) { .hrm-native * { scroll-behavior: auto !important; } }

@@ -2,6 +2,7 @@
 'use server'
 import { createClient } from '@/lib/supabase/server';
 import { sendPushNotification } from '@/lib/push';
+import { submitShiftRequest } from '@/lib/shifts/service';
 
 export async function createLeaveRequestAction(userId: string, startDate: string, endDate: string, reason: string) {
     const supabase = await createClient();
@@ -58,16 +59,12 @@ export async function createSwapRequestAction(userId: string, shiftId: string, m
         .single();
 
     // 2. Insert swap request
-    const { data, error } = await supabase.from('swap_requests').insert([{
-        requestor_id: userId,
-        receiver_id: userId, // Current app handles self-request for admin override
-        shift_id: shiftId,
-        message,
-        note: note?.trim() || null,
-        status: 'pending'
-    }]).select().single();
-
-    if (error) return { error: error.message };
+    let data;
+    try {
+        data = await submitShiftRequest(supabase, userId, shiftId, message, note);
+    } catch (error: unknown) {
+        return { error: error instanceof Error ? error.message : 'Could not submit the shift request.' };
+    }
 
     // 3. Trigger Push Notification
     const name = profile?.full_name || 'An employee';

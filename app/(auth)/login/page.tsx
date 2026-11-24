@@ -3,6 +3,8 @@ import localFont from 'next/font/local';
 import { Suspense } from 'react';
 import LoginForm from '@/components/LoginForm';
 import ThemeToggle from '@/components/ThemeToggle';
+import AppBrand from '@/components/AppBrand';
+import { WORKSPACE_NAME } from '@/lib/branding';
 import styles from '@/components/auth/login.module.css';
 
 const displayFont = localFont({
@@ -14,25 +16,25 @@ const displayFont = localFont({
 
 export const metadata: Metadata = {
     title: 'Sign in',
-    description: 'Sign in to your attendance and team workspace at THE MAKEUP STORE WANGKHEI.',
+    description: `Sign in to ${WORKSPACE_NAME} for attendance, shifts, and store operations.`,
 };
 
 export default function LoginPage() {
     return (
         <div className={styles.page + ' ' + displayFont.variable}>
             <header className={styles.header}>
-                <p>Wangkhei</p>
-                <p>Staff attendance</p>
+                <AppBrand />
+                <p>Staff workspace</p>
                 <ThemeToggle />
             </header>
 
             <div className={styles.poster}>
                 <p className={styles.masthead}>THE MAKEUP</p>
-                <p className={styles.store}>STORE</p>
+                <p className={styles.store}>STORE<span className={styles.hrm}> HRM</span></p>
 
                 <div className={styles.caption}>
-                    <p>Attendance, shifts<br />and time off</p>
-                    <span>For the team at THE MAKEUP STORE WANGKHEI</span>
+                    <p>Attendance, people<br />and store operations</p>
+                    <span>Your team workspace at THE MAKEUP STORE</span>
                 </div>
 
                 <section className={styles.signInPanel} aria-labelledby="login-title">

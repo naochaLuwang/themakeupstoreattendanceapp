@@ -1,0 +1,42 @@
+✔ a recent, accurate nearby position needs no GPS watch (45.243459ms)
+✔ a quick timeout falls back to fresh GPS and releases the watch (11.0725ms)
+✔ imprecise and stale readings are refined until a fresh accurate fix arrives (9.09325ms)
+✔ an outside quick fix is retried before rejecting someone at the store (6.437667ms)
+✔ permission denial gives actionable feedback without repeated prompts (6.370292ms)
+✔ persistent poor accuracy ends with guidance and stops tracking (18.086959ms)
+✔ a stalled location provider has a deadline (27.637125ms)
+✔ leaving the page cancels GPS refinement and clears the watch (11.372959ms)
+✔ unsupported location fails clearly (5.533375ms)
+✔ store day is correct before UTC midnight (15.292584ms)
+✔ native bootstrap is idempotent and reports readiness once (2.076ms)
+✔ offline/reconnect and legacy generic recovery never reload or replay a form (1.090417ms)
+✔ native reconnect suppresses the legacy PWA online-reload callback (1.0045ms)
+✔ Android back closes the open dialog and respects a prevented cancellation (0.498291ms)
+✔ keyboard and resume emit app state without triggering navigation (0.412542ms)
+✔ only actual enabled user interactions receive generic tap feedback (0.468666ms)
+✔ legacy attendance swipes buzz at the threshold and release without submitting (0.805625ms)
+✔ the actual recovery script ignores native recovery and generic AbortError failures (7.241375ms)
+✔ browser chunk recovery can reload only once per minute (2.003584ms)
+✔ attendance permanently locks its exact shift, regardless of checkout state (0.515125ms)
+✔ unlinked attendance uses the IST business date, including before UTC midnight (12.2ms)
+✔ date exchanges identify the actual working shift from either direction (0.499041ms)
+✔ moving a schedule preserves its duration and overnight end offset (0.107ms)
+✔ submission rejects linked completed attendance and never writes a request (19.18625ms)
+✔ active attendance on today’s shift does not block a future unworked request (11.896459ms)
+✔ either side of a date exchange is checked for attendance (9.41475ms)
+✔ failed attendance reads stop a request instead of treating it as unworked (8.9045ms)
+✔ foreign and past shifts are rejected before submission (11.24ms)
+✔ approval uses one RPC with the exact preset and expected schedule snapshot (7.185292ms)
+✔ two-day approval submits both sides together and preserves IDs on their dates (7.648125ms)
+✔ an overnight preset keeps its end on the following day (6.535042ms)
+✔ peer approval sends both employee assignments in the same transaction (8.778333ms)
+✔ cancelled requests cannot be approved and database conflicts are shown clearly (6.550958ms)
+✔ missing migration fails closed with an actionable message (6.260041ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 353.921958

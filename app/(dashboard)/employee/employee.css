@@ -6,6 +6,7 @@
 .employee-content-inner { min-width: 0; }
 .employee-brand-mobile { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--store-border); }
 .employee-theme-desktop { display: none; }
+.employee-mobile-brand { flex: 1; min-width: 168px; }
 .employee-wordmark { font-size: 15px; font-weight: 600; color: var(--store-ink); }
 .employee-brand-location { margin-top: 4px; font-size: 12px; color: var(--store-muted); }
 .employee-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 80; background: var(--store-surface); border-top: 1px solid var(--store-border); }
@@ -67,7 +68,7 @@
   .employee-nav { position: sticky; top: 0; bottom: auto; border-top: 0; border-bottom: 1px solid var(--store-border); }
   .employee-nav-inner { padding: 16px 24px; gap: 16px; }
   .employee-theme-desktop { display: flex; flex-shrink: 0; }
-  .employee-nav-brand { display: block; flex-shrink: 0; }
+  .employee-nav-brand { display: block; flex-shrink: 0; width: 240px; }
   .employee-nav-links { display: flex; flex: 1; width: auto; justify-content: flex-end; gap: 4px; }
   .employee-nav-link { flex-direction: row; gap: 8px; min-height: 40px; padding: 8px 12px; font-size: 14px; }
   .employee-brand-mobile { display: none; }

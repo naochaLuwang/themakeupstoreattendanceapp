@@ -1,5 +1,5 @@
 Employee interface review — 23 November 2026
-THE MAKEUP STORE WANGKHEI
+THE MAKEUP STORE
 
 Direction
 Product: Staff shifts, attendance, requests, and everyday store work.

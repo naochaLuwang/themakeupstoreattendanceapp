@@ -1,0 +1,108 @@
+Android experience — version 1.1 (debug versionCode 2)
+====================================================
+
+Included in the APK
+-------------------
+• Native launch screen using the approved logo PNG unchanged, with a brief
+  vertical scan/reveal and wordmark fade. It is available before the website
+  loads, has light/dark appearances, and honors Android's animation setting.
+  It is shown on activity launch, not between workspace screens or on resume.
+• The launch animation lasts about 820 ms; the workspace is revealed after
+  its first visible page with an 850 ms minimum. Reduced motion removes that
+  minimum. A slow connection gets a loading message and then native Retry /
+  Connection settings controls after 14 seconds. The logo is not looped forever.
+• System haptic feedback for enabled buttons/navigation, swipe threshold/release
+  and confirmed success/error notices. Android touch-feedback settings are
+  respected; no vibration permission or forced vibration pattern is requested.
+• Android Back hides the keyboard first, closes open dialogs/menus next, then
+  navigates back within the workspace. At login/home/root it backgrounds the
+  task instead of exposing old login history or immediately finishing activity.
+• Keyboard resize uses the existing Capacitor SystemBars inset handling. The
+  bottom employee navigation hides while typing, and the focused input stays
+  visible. System bars and the native connection banner follow the page theme;
+  the last resolved theme is retained for the next launch.
+• A native offline banner preserves the current screen. Startup/page failures
+  get native retry controls. No reconnection event automatically reloads a form,
+  repeats a POST, or replays an attendance operation. A banner tap opens Android
+  connection settings. Explicit Retry retries the failed main-frame page as GET.
+• Native touch handling removes the WebView's overscroll glow and browser tap
+  highlight, while preserving input selection, accessibility, zoom settings and
+  ordinary browser behavior outside the APK. Existing PDF/CSV native document
+  saving and location permission handling remain in place.
+
+Architecture and deployment
+---------------------------
+MainActivity and BrandLaunchView provide Android UI. AppExperiencePlugin exposes
+small foreground UI methods (feedback, appearance, ready) only to the configured
+HTTPS workspace origin. The existing ReportFiles plugin remains registered.
+
+mobile/native-experience.js and .css are copied into Android assets by
+scripts/prepare-mobile.mjs and injected into the configured workspace after its
+page is visible. This lets most native affordances work against the currently
+hosted website without deploying it. The connection banner is a native sibling
+of WebView, so it does not insert nodes into React's hydration root.
+
+The packaged bridge also recognizes the existing attendance swipe and success/
+error toasts as a compatibility path. lib/native/experience.ts provides explicit
+feedback for the updated web code; controls with explicit feedback are excluded
+from generic tap detection, and native duplicate events are coalesced.
+
+Source changes to the web app add explicit attendance feedback, refresh attendance
+when returning from the background, suppress PWA install prompts inside Android,
+and stop generic network/AbortError automatic reloads. Those web changes need a
+separate web deployment to activate on the hosted app. The native bridge includes
+a compatibility override for the older page's generic self-heal reload function.
+It also captures Android's browser online event before the legacy next-pwa
+reload-on-online callback. Native reconnects are exposed as hrm:connection;
+the updated attendance screen performs read-only status refreshes on reconnect.
+The app still uses the HTTPS Next.js server for login, attendance and operations;
+this batch does not create an offline attendance queue or a native database.
+
+Keep the pending shift-lock migration/deployment order in docs/shift-locking.txt
+when eventually deploying the full web worktree. Building this APK does not apply
+database migrations or deploy the web source. No production deployment was done.
+
+Build and verification
+----------------------
+  npm run android:build
+  node --test tests/native-experience.test.mjs
+  npm run typecheck
+  (in android, using JDK 21)
+  ./gradlew :app:testDebugUnitTest :app:lintDebug --no-daemon
+
+The build prepares the approved logo, local brand font and its license, offline
+page, native bridge assets and launcher graphics. It syncs Capacitor and writes
+output/android/the-makeup-store-hrm-debug.apk plus a SHA-256 checksum.
+
+The local motion preview is output/mobile/native-splash-preview.html; Replay
+restarts it. Its PNG is a rendered design preview, not an Android device capture.
+
+Java tests cover workspace-origin restrictions and root Back policy. JavaScript
+tests cover bootstrap idempotency, dialog Back handling, trusted tap feedback,
+keyboard/resume signals, legacy swipe feedback and no automatic reload/replay.
+Unit tests and lint do not establish device-specific tactile/IME behavior.
+
+Real-device acceptance checks
+-----------------------------
+1. Install/update the debug APK over the previous debug build (same app ID/key).
+   Cold launch with good internet: one brief branded animation and workspace.
+2. Launch in airplane mode: local branding and native retry/settings controls,
+   with no blank screen or endless spinner. Reconnect and explicitly retry.
+3. While a form is open, disconnect/reconnect; verify the current form remains.
+4. Test navigation taps, incomplete/complete attendance swipes, a confirmed save
+   and a rejected action. Turn Android touch vibration off and verify it is honored.
+5. Focus a low input; verify the keyboard does not obscure it, bottom navigation
+   hides, and Back dismisses keyboard before the dialog. Then verify subpage Back
+   and root Back/background behavior without returning to old login history.
+6. Switch light/dark, reopen, rotate, enlarge system text and disable animations.
+   Verify readability and scrollable retry controls on a short/landscape screen.
+7. Test the existing location permission flow and native PDF/CSV document saving.
+
+No device/emulator was connected for physical splash, haptic or keyboard tests.
+No large emulator-image download was performed for this batch.
+
+Implementation references
+--------------------------
+https://capacitorjs.com/docs/android/custom-code
+https://capacitorjs.com/docs/apis/system-bars
+https://developer.android.com/develop/ui/views/haptics/haptic-feedback

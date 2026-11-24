@@ -11,16 +11,14 @@ export default function ThemeToggle() {
     // The saved preference is only available in the browser after hydration.
     useEffect(() => setMounted(true), []);
 
+    const isDark = mounted && resolvedTheme === 'dark';
+    const label = mounted ? `Switch to ${isDark ? 'light' : 'dark'} theme` : 'Change color theme';
+
     return (
-        <div className="theme-toggle" role="group" aria-label="Color theme">
-            <button type="button" onClick={() => setTheme('light')}
-                aria-pressed={mounted && resolvedTheme === 'light'} disabled={!mounted}>
-                <Sun size={16} aria-hidden="true" /> Light
-            </button>
-            <button type="button" onClick={() => setTheme('dark')}
-                aria-pressed={mounted && resolvedTheme === 'dark'} disabled={!mounted}>
-                <Moon size={16} aria-hidden="true" /> Dark
-            </button>
-        </div>
+        <button type="button" className="theme-toggle" disabled={!mounted}
+            aria-label={label} title={label}
+            onClick={() => setTheme(isDark ? 'light' : 'dark')}>
+            {isDark ? <Sun size={18} strokeWidth={1.5} aria-hidden="true" /> : <Moon size={18} strokeWidth={1.5} aria-hidden="true" />}
+        </button>
     );
 }

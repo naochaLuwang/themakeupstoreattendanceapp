@@ -1,5 +1,5 @@
 # Store Operations Module
-Project: THE MAKEUP STORE WANGKHEI
+Project: THE MAKEUP STORE
 
 ## Objective
 

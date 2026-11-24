@@ -1,0 +1,29 @@
+{
+  "batch": "1 \u2014 worked-shift locking",
+  "production_build": "passed (Next.js 16.1.6, webpack)",
+  "typescript": "passed; rerun after generated build files stabilized",
+  "changed_file_eslint": "passed, zero errors or warnings",
+  "typescript_tests": {
+    "passed": 25,
+    "command": "node --test tests/shifts.test.mjs tests/attendance-location.test.mjs"
+  },
+  "postgresql_integration": {
+    "passed": 21,
+    "command": "python3 tests/shift-lock-database.py",
+    "environment": "Disposable local PostgreSQL 17 database; no production credentials/data"
+  },
+  "full_repository_eslint": {
+    "status": "fails in unrelated source/generated files",
+    "errors": 26564,
+    "warnings": 31
+  },
+  "migration": "supabase/migrations/005_shift_attendance_lock.sql",
+  "production_migration_applied": false,
+  "web_deployed": false,
+  "device_testing": "not performed",
+  "notes": [
+    "Existing uncommitted product changes preserved.",
+    "Generated tracked service worker restored to its verified pre-build baseline.",
+    "Historical audit characterization scripts describe pre-implementation behavior; use current regression tests."
+  ]
+}
