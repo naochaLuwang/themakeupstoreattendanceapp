@@ -26,7 +26,7 @@ export interface StationSnapshot {
     tokenId?: string; expiresAt?: string; requestId?: string; pairingCode?: string; qrValue?: string;
 }
 export interface StationManagementData {
-    stations: AttendanceStation[]; devices: StationDevice[]; stores: { id: string; name: string | null }[]; serverNow: string;
+    stations: AttendanceStation[]; devices: StationDevice[]; stores: { id: string; name: string | null; smartQrEnabled?: boolean; policyUpdatedAt?: string | null }[]; serverNow: string;
 }
 type Table<Row, Required extends keyof Row> = { Row: { [Key in keyof Row]: Row[Key] }; Insert: Pick<Row, Required> & Partial<Omit<Row, Required>>; Update: Partial<Row>; Relationships: [] };
 export type StationTables = {

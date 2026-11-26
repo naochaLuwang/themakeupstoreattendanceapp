@@ -21,7 +21,15 @@ export async function stationAdminList(): Promise<StationReply<StationManagement
     const { data: { user } } = await client.auth.getUser();
     if (!user) return stationError({ message: 'Sign in to manage attendance stations.', code: '42501' });
     const { data, error } = await client.rpc('attendance_station_admin', { p_command: { action: 'list' } });
-    return reply<StationManagementData>(data, error);
+    const result = reply<StationManagementData>(data, error);
+    if (!result.success) return result;
+    const { data: policies, error: policyError } = await client.from('attendance_policies').select('store_id,smart_qr_enabled,updated_at');
+    if (policyError) return stationError({ message: 'Branch QR settings could not be loaded. Refresh attendance stations.' });
+    const byStore = new Map(policies.map(policy => [policy.store_id, policy]));
+    return { success: true, data: { ...result.data, stores: result.data.stores.map(store => {
+        const policy = byStore.get(store.id);
+        return { ...store, smartQrEnabled: policy?.smart_qr_enabled ?? false, policyUpdatedAt: policy?.updated_at ?? null };
+    }) } };
 }
 export async function stationAdminCommand(command: StationAdminCommand): Promise<StationReply<AttendanceStation>> {
     try {

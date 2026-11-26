@@ -4,6 +4,9 @@ import { resolve, dirname } from 'node:path';
 import vm from 'node:vm';
 import test from 'node:test';
 import ts from 'typescript';
+import * as React from 'react';
+import * as jsxRuntime from 'react/jsx-runtime';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 const employee = '00000000-0000-4000-8000-000000000001';
 const confirmationId = '10000000-0000-4000-8000-000000000001';
@@ -16,7 +19,7 @@ function loader(overrides = {}, globals = {}) {
     function load(file) {
         if (cache.has(file)) return cache.get(file);
         const compiledModule = { exports: {} }; cache.set(file, compiledModule.exports);
-        const source = ts.transpileModule(readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } }).outputText;
+        const source = ts.transpileModule(readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX } }).outputText;
         const factory = vm.runInNewContext(`(function(require,module,exports){${source}\n})`, { Date, Number, Error, URL, DOMException, AbortController, ...globals });
         factory(name => overrides[name] || load(name.startsWith('@/') ? resolve(name.slice(2) + '.ts') : resolve(dirname(file), name + '.ts')), compiledModule, compiledModule.exports);
         return compiledModule.exports;
@@ -99,4 +102,94 @@ test('a synchronous camera refusal clears its deadline and abort listener', asyn
     const app = camera({ getUserMedia: () => { throw new DOMException('Denied', 'NotAllowedError'); } });
     await assert.rejects(app.startAttendanceCamera(app.video, () => {}, new AbortController().signal), { name: 'NotAllowedError' });
     assert.equal(app.timers.size, 0);
+});
+
+function settingsService({ user = employee, role = 'admin', existing = null, writeError = null, conflict = false, installed = true, coords = { lat: 0, lng: 0 } } = {}) {
+    const writes = []; const filters = [];
+    const branch = '10000000-0000-4000-8000-000000000001';
+    const client = {
+        auth: { getUser: async () => ({ data: { user: user ? { id: user } : null }, error: null }) },
+        rpc: async () => ({ data: installed ? { success: false, error: 'ATTENDANCE_FORBIDDEN: employee access required' } : null, error: installed ? null : { code: 'PGRST202' } }),
+        from(table) {
+            const query = {
+                select() { return query; },
+                eq(key, value) { filters.push([key, value]); return query; },
+                insert(values) { writes.push({ operation: 'insert', values }); return query; },
+                update(values) { writes.push({ operation: 'update', values }); return query; },
+                async single() {
+                    if (table === 'profiles') return { data: { role }, error: null };
+                    if (table === 'stores') return { data: coords, error: null };
+                    return { data: writeError ? null : { store_id: branch, smart_qr_enabled: writes.at(-1).values.smart_qr_enabled, updated_at: '2026-11-26T10:00:00Z' }, error: writeError };
+                },
+                async maybeSingle() { return conflict ? { data: null, error: null } : query.single(); },
+            };
+            return query;
+        },
+    };
+    const load = loader({ '@/lib/supabase/server': { createClient: async () => client } });
+    return { ...load(resolve('lib/attendance/smart-scan/settings.ts')), writes, filters, command: { storeId: branch, enabled: true, expectedUpdatedAt: existing } };
+}
+
+test('branch QR settings reject unauthenticated and non-admin changes without writing', async () => {
+    for (const options of [{ user: null }, { role: 'employee' }, { role: 'manager' }]) {
+        const app = settingsService(options);
+        assert.equal((await app.saveSmartScanSettings(app.command)).success, false);
+        assert.equal(app.writes.length, 0);
+    }
+});
+test('first branch opt-in creates its missing policy and requires the attendance engine', async () => {
+    const app = settingsService();
+    assert.equal((await app.saveSmartScanSettings(app.command)).success, true);
+    assert.equal(app.writes[0].operation, 'insert');
+    assert.equal(app.writes[0].values.enforce_engine, true);
+    assert.equal(app.writes[0].values.created_by, employee);
+    assert.equal(app.writes[0].values.smart_qr_enabled, true);
+    assert.equal('max_accuracy_meters' in app.writes[0].values, false);
+    assert.equal('require_location_metadata' in app.writes[0].values, false);
+});
+test('disabling QR preserves enforcement and uses the displayed policy version', async () => {
+    const stamp = '2026-11-26T09:00:00Z'; const app = settingsService({ existing: stamp });
+    assert.equal((await app.saveSmartScanSettings({ ...app.command, enabled: false })).success, true);
+    assert.equal(app.writes[0].operation, 'update');
+    assert.equal(app.writes[0].values.smart_qr_enabled, false);
+    assert.equal('enforce_engine' in app.writes[0].values, false);
+    assert.ok(app.filters.some(([key, value]) => key === 'updated_at' && value === stamp));
+});
+test('concurrent policy updates and first-insert races require a refresh', async () => {
+    for (const options of [{ existing: '2026-11-26T09:00:00Z', conflict: true }, { writeError: { code: '23505' } }]) {
+        const app = settingsService(options);
+        assert.equal((await app.saveSmartScanSettings(app.command)).code, 'CONFLICT');
+        assert.equal(app.writes.length, 1);
+    }
+});
+test('missing redemption migration, invalid coordinates and invalid settings cannot enable scanning', async () => {
+    for (const options of [{ installed: false }, { coords: { lat: null, lng: 0 } }, { coords: { lat: Infinity, lng: 0 } }]) {
+        const app = settingsService(options);
+        assert.equal((await app.saveSmartScanSettings(app.command)).success, false);
+        assert.equal(app.writes.length, 0);
+    }
+    for (const patch of [{ storeId: 'bad' }, { enabled: 'true' }, { expectedUpdatedAt: undefined }, { expectedUpdatedAt: 'bad' }]) {
+        const app = settingsService();
+        assert.equal((await app.saveSmartScanSettings({ ...app.command, ...patch })).success, false);
+        assert.equal(app.writes.length, 0);
+    }
+});
+test('Smart Scan stays discoverable for disabled branches, days off, completed shifts and loading states', () => {
+    const load = loader({
+        react: { ...React, useEffect() {}, useRef: () => ({ current: null }) },
+        'react/jsx-runtime': jsxRuntime,
+        'next/link': { default: ({ children, ...props }) => jsxRuntime.jsx('a', { ...props, children }) },
+        'lucide-react': { CheckCircle2: () => null, Loader2: () => null, MapPin: () => null, ScanLine: () => null },
+        '@/components/SwipeToConfirm': { default: () => jsxRuntime.jsx('button', { children: 'Swipe attendance' }) },
+        '@/lib/attendance/schedule': { attendanceTime: () => '10:00', scheduleDateLabel: () => 'Today', workedDuration: () => '' },
+        '@/lib/attendance/date': { getAttendanceDate: () => '2026-11-26' },
+    });
+    const { default: Card } = load(resolve('components/employee/EmployeeAttendanceCard.tsx'));
+    for (const state of [{ status: 'idle', smartQrEnabled: false }, { status: 'checking', smartQrEnabled: true }, { status: 'completed', smartQrEnabled: true }, { status: 'idle', smartQrEnabled: true }]) {
+        const html = renderToStaticMarkup(Card({ today: '2026-11-26', day: null, nextShift: null, ...state }));
+        assert.match(html, /href="\/employee\/smart-scan"/);
+        if (!state.smartQrEnabled) assert.match(html, /Ask your administrator/);
+    }
+    const html = renderToStaticMarkup(Card({ today: '2026-11-26', status: 'idle', day: { active: true }, smartQrEnabled: false }));
+    assert.match(html, /Swipe attendance/);
 });

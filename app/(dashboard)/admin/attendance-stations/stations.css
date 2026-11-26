@@ -33,6 +33,7 @@
 .station-pair-form > p { margin: 0; }
 .station-admin-error { padding: 16px; border: 1px solid var(--store-negative); border-radius: 12px; background: var(--store-negative-soft); color: var(--store-negative); font-size: 13px; }
 .station-admin-notice { padding: 16px; border-radius: 12px; background: var(--store-positive-soft); color: var(--store-positive); font-size: 13px; }
+.station-branch-help { margin-top: 8px; color: var(--store-muted); font-size: 14px; line-height: 1.6; }
 .station-admin-empty { text-align: center; padding-block: 48px; }
 .station-admin-empty svg { margin: 0 auto 16px; color: var(--store-accent); }
 .station-admin-empty p { margin: 12px auto 0; max-width: 460px; color: var(--store-muted); font-size: 13px; line-height: 1.7; }

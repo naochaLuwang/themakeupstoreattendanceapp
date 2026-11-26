@@ -282,5 +282,6 @@
 .employee-shell [class~='bg-neutral-50'] { background-color: var(--store-raised); }
 
 /* Branch-enabled Smart Scan, with the existing manual control retained. */
+.employee-smart-scan-entry { margin-top: 16px; }
 .employee-smart-scan-link { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; border-radius: 14px; background: var(--store-accent); color: var(--store-on-solid); font-size: 14px; font-weight: 500; }
 .employee-manual-attendance > summary { cursor: pointer; min-height: 44px; padding: 12px 0; color: var(--store-muted); text-align: center; font-size: 12px; }

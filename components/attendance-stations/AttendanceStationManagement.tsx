@@ -1,7 +1,7 @@
 'use client';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { Plus, ExternalLink, Pencil, ShieldCheck, RefreshCw, Monitor, Unplug } from 'lucide-react';
-import { loadAttendanceStations, manageAttendanceStation } from '@/app/actions/attendance-stations';
+import { loadAttendanceStations, manageAttendanceStation, updateBranchSmartScan } from '@/app/actions/attendance-stations';
 import { stationDefaults, type AttendanceStation, type StationManagementData, type StationReply, type StationSettings } from '@/lib/attendance/stations/types';
 
 export default function AttendanceStationManagement({ initial }: { initial: StationReply<StationManagementData> }) {
@@ -49,12 +49,24 @@ export default function AttendanceStationManagement({ initial }: { initial: Stat
         setEditing(station); setDraft({ store_id: station.store_id, name: station.name, refresh_seconds: station.refresh_seconds, validity_seconds: station.validity_seconds,
             heartbeat_seconds: station.heartbeat_seconds, offline_seconds: station.offline_seconds, credential_days: station.credential_days }); setShowForm(true);
     };
+    const setBranchScan = async (store: StationManagementData['stores'][number]) => {
+        if (mutation.current) return;
+        mutation.current = true; refreshVersion.current += 1; setBusy(true); setError(null); setNotice(null);
+        try {
+            const result = await updateBranchSmartScan({ storeId: store.id, enabled: !store.smartQrEnabled, expectedUpdatedAt: store.policyUpdatedAt ?? null });
+            if (!result.success) { setError(result.error); return; }
+            setNotice(result.data.smart_qr_enabled ? 'Smart Scan enabled. Employees can scan an authorized branch display from Home.' : 'Smart Scan disabled. Employees can use manual attendance.');
+            await refresh();
+        } catch { setError('The change could not be confirmed. Refresh branch settings before retrying.'); }
+        finally { mutation.current = false; setBusy(false); }
+    };
     const stale = Boolean(editing && data?.stations.find(station => station.id === editing.id)?.updated_at !== editing.updated_at);
     return <div className="station-management space-y-6">
         <header className="station-management-heading"><div><h1>Attendance stations</h1><p>Authorize branch displays and manage rotating attendance codes.</p></div><button type="button" disabled={busy || !data?.stores.length} className="station-admin-primary" onClick={() => { setEditing(null); setDraft({ ...stationDefaults, name: '', store_id: data?.stores[0]?.id || '' }); setShowForm(true); }}><Plus size={17} />New station</button></header>
-        <p className="station-setup-note"><ShieldCheck size={18} aria-hidden="true" />Enable Smart Scan for each branch after deployment and verification. Displays follow that branch’s attendance settings.</p>
+        <p className="station-setup-note"><ShieldCheck size={18} aria-hidden="true" />Enable Smart Scan for your branch, then open and authorize a display on a store computer or tablet. Employees sign in on their phones and choose Home → Smart Scan.</p>
         {error && <div role="alert" className="station-admin-error"><p>{error}</p><button type="button" disabled={busy} onClick={() => void refresh(true)}><RefreshCw size={15} />Refresh status</button></div>}
         {notice && <p role="status" className="station-admin-notice">{notice}</p>}
+        {Boolean(data?.stores.length) && <section className="station-admin-card" aria-labelledby="branch-smart-scan"><h2 id="branch-smart-scan">Branch Smart Scan</h2><p className="station-branch-help">Camera and location access are required when scanning. Manual attendance stays available.</p><div className="station-device-list">{data?.stores.map(store => <div key={store.id}><div><strong>{store.name || 'Unnamed branch'}</strong><p>{store.smartQrEnabled ? 'Smart Scan enabled' : 'Smart Scan disabled'}</p></div><button type="button" className="station-admin-primary" disabled={busy} aria-label={`${store.smartQrEnabled ? 'Disable' : 'Enable'} Smart Scan for ${store.name || 'this branch'}`} onClick={() => void setBranchScan(store)}>{store.smartQrEnabled ? 'Disable Smart Scan' : 'Enable Smart Scan'}</button></div>)}</div></section>}
         {showForm && <form className="station-admin-form" onSubmit={event => { event.preventDefault(); void save(editing ? { action: 'update', stationId: editing.id, settings: draft, active: editing.active, expectedUpdatedAt: editing.updated_at } : { action: 'create', settings: draft }); }}>
             <h2>{editing ? 'Edit station' : 'New station'}</h2>
             <div className="station-form-grid"><label htmlFor={`${id}-name`}>Station name<input id={`${id}-name`} required minLength={2} maxLength={80} value={draft.name} onChange={e => setDraft(v => ({ ...v, name: e.target.value }))} placeholder="E.g. Billing counter" /></label>

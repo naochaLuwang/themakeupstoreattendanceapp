@@ -93,9 +93,13 @@ export default function EmployeeAttendanceCard(props: Props) {
                     </>
                 )}
             </div>
+            <div className="employee-smart-scan-entry">
+                <Link href="/employee/smart-scan" className="employee-smart-scan-link"><ScanLine size={20} aria-hidden="true" />Smart Scan</Link>
+                {!props.smartQrEnabled && <p className="employee-attendance-hint">QR attendance is not enabled for your branch. Ask your administrator to enable it in Attendance stations.</p>}
+            </div>
             {(working || canClockIn) && (
                 <div className="employee-attendance-action">
-                    {props.smartQrEnabled ? <><Link href="/employee/smart-scan" className="employee-smart-scan-link"><ScanLine size={20} aria-hidden="true" />Smart Scan</Link><details ref={manual} id="manual-attendance" className="employee-manual-attendance"><summary>Use manual attendance</summary>{manualControl}</details></> : manualControl}
+                    {props.smartQrEnabled ? <details ref={manual} id="manual-attendance" className="employee-manual-attendance"><summary>Use manual attendance</summary>{manualControl}</details> : manualControl}
                 </div>
             )}
             {completed && (props.reEntryUnavailable ? <p className="employee-attendance-hint">{props.reEntryUnavailable}</p> : (

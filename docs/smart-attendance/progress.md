@@ -1,5 +1,7 @@
 # Development progress
 
+**26 November 2026:** Live Main Branch QR attendance is now enabled after finding its missing attendance policy. Hosted scanner API and required checkout columns are present; no migration or web deployment was performed in this session. Zero authorized displays remain, so store-device pairing is required. Home discoverability and admin branch controls are fixed locally and verified; deployment to Hostinger remains pending. See [current Smart Scan status](smart-scan.md#live-configuration-update--26-november-2026). The original module checkpoints below record the earlier development state.
+
 - [x] Read implementation brief and repository instructions.
 - [x] Audit web/native architecture and attendance entry paths.
 - [x] Record architecture decisions and incremental plan.

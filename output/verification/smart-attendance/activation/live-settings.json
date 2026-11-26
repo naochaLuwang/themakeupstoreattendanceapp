@@ -1,0 +1,16 @@
+{
+  "verifiedAt": "2026-11-26T15:18:32.824Z",
+  "branchName": "Main Branch",
+  "storeId": "40501bbf-78bc-4ec0-b458-1a42f4c9c401",
+  "smartQrEnabled": true,
+  "enforceEngine": true,
+  "policyCreated": true,
+  "requireLocationMetadata": false,
+  "requireSessionBinding": false,
+  "locationSettingsPreserved": true,
+  "activeStations": 2,
+  "authorizedDisplays": 0,
+  "hostedScanEndpointPresent": true,
+  "employeePhysicalScanTested": false,
+  "localUiChangesDeployed": false
+}

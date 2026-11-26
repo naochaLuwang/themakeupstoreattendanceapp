@@ -1,5 +1,17 @@
 # Employee Smart Scan — module 4
 
+## Live configuration update — 26 November 2026
+
+Main Branch had no `attendance_policies` row, so both the employee Home action and scanner defaulted to disabled despite existing stations and a hosted scanner API. An authorized configuration update created its policy with `smart_qr_enabled=true` and `enforce_engine=true`. Read-back verified both flags, the existing location/radius, and unchanged manual strictness defaults. This session applied no migrations and deployed no web code. The historical local implementation notes below describe the original module checkpoint.
+
+Two active stations exist, but the live check found **zero authorized displays**. On a store computer or tablet, open **Admin → Attendance stations → Open display**, start authorization, then enter its displayed pairing code under **Authorize display** in the admin workspace. Verify the physical device before approval. Employees must sign in with an employee or manager account, reopen Home and choose **Smart Scan**, or go directly to `/employee/smart-scan`. The code rotates automatically after pairing. Administrators manage stations and do not have employee scan access.
+
+The accompanying source fix keeps the Home **Smart Scan** link visible even when branch setup is incomplete, a shift is complete, no shift is scheduled, or attendance is loading. Disabled branches get setup guidance; manual controls retain their original eligibility. **Branch Smart Scan** controls on the admin stations page create a missing policy or update its displayed version, enforce admin authorization and database RLS, check scanner installation/location before enabling, and preserve unrelated settings. Disabling QR retains engine enforcement and attendance history. No new schema or migration is needed. These UI improvements still require deployment to the existing Hostinger website; installing the same APK alone does not publish them.
+
+Verification: production web build, standalone TypeScript, changed-file ESLint, all 108 Node tests, and disposable PostgreSQL scanner/engine/station/shift suites pass. Repository-wide `npm run lint` includes generated `.next` files and failed while those build files were being regenerated; scoped source lint passes. No physical employee scan was performed. Live configuration evidence is in `output/verification/smart-attendance/activation/live-settings.json`.
+
+## Original module checkpoint — 24 November 2026
+
 Implemented locally, 24 November 2026. This adds employee camera scanning, authenticated QR redemption through the attendance engine, fresh foreground location, explicit clock-out confirmation, feedback and manual fallback. No branch has been enabled, no hosted migration/deployment was performed, and no physical Android camera was tested.
 
 ## Employee experience
