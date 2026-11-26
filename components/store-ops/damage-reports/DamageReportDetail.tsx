@@ -1,4 +1,7 @@
 'use client'
+import {runOperation} from '@/lib/store-ops/client-action';
+
+import StoreImage from '@/components/store-ops/StoreImage'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -46,7 +49,7 @@ export default function DamageReportDetail({ report, userRole, basePath }: Damag
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'damage_reports', filter: `id=eq.${report.id}` },
         (payload) => {
-          if (payload.new) setCurrentReport(prev => ({ ...prev, ...payload.new as any }))
+          if (payload.new) setCurrentReport(prev => ({ ...prev, ...payload.new as Partial<DamageReportWithRelations> }))
         }
       )
       .on('postgres_changes',
@@ -54,11 +57,11 @@ export default function DamageReportDetail({ report, userRole, basePath }: Damag
         async () => {
           const { data } = await supabase
             .from('damage_comments')
-            .select('*, profiles:created_by(full_name)')
+            .select('*, profiles:profiles!created_by(full_name)')
             .eq('damage_report_id', report.id)
             .order('created_at', { ascending: true })
           if (data) {
-            setCurrentReport(prev => ({ ...prev, damage_comments: data as any }))
+            setCurrentReport(prev => ({ ...prev, damage_comments: data as DamageReportWithRelations['damage_comments'] }))
           }
         }
       )
@@ -68,7 +71,7 @@ export default function DamageReportDetail({ report, userRole, basePath }: Damag
   }, [report.id, supabase])
 
   const handleApprove = async () => {
-    const result = await approveDamageReport(currentReport.id)
+    const result = await runOperation(() => approveDamageReport(currentReport.id))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Damage report approved')
@@ -77,7 +80,7 @@ export default function DamageReportDetail({ report, userRole, basePath }: Damag
   }
 
   const handleReject = async () => {
-    const result = await rejectDamageReport(currentReport.id)
+    const result = await runOperation(() => rejectDamageReport(currentReport.id))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Damage report rejected')
@@ -86,7 +89,7 @@ export default function DamageReportDetail({ report, userRole, basePath }: Damag
   }
 
   const handleArchive = async () => {
-    const result = await archiveDamageReport(currentReport.id)
+    const result = await runOperation(() => archiveDamageReport(currentReport.id))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Damage report archived')
@@ -96,7 +99,7 @@ export default function DamageReportDetail({ report, userRole, basePath }: Damag
 
   const handleDelete = async () => {
     if (!confirm('Delete this damage report permanently?')) return
-    const result = await deleteDamageReport(currentReport.id)
+    const result = await runOperation(() => deleteDamageReport(currentReport.id))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Damage report deleted')
@@ -108,7 +111,7 @@ export default function DamageReportDetail({ report, userRole, basePath }: Damag
     e.preventDefault()
     if (!comment.trim()) return
     setSubmitting(true)
-    const result = await addDamageComment(currentReport.id, comment.trim())
+    const result = await runOperation(() => addDamageComment(currentReport.id, comment.trim()))
     if (result.error) {
       toast.error(result.error)
     } else {
@@ -144,6 +147,7 @@ export default function DamageReportDetail({ report, userRole, basePath }: Damag
         </div>
 
         <div className="flex items-center gap-2">
+          {isManager && currentReport.status !== 'archived' && <button type="button" onClick={() => router.push(`${basePath}/${report.id}/edit`)} className="rounded-lg border px-4 py-2 text-sm">Edit</button>}
           {currentReport.status === 'pending' && isManager && (
             <>
               <button onClick={handleApprove} className="flex items-center gap-1.5 px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-all">
@@ -207,13 +211,14 @@ export default function DamageReportDetail({ report, userRole, basePath }: Damag
                       onClick={() => setSelectedImage(img.url)}
                       className="aspect-square rounded-xl overflow-hidden bg-slate-100 w-full"
                     >
-                      <img src={img.url} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform" />
+                      <StoreImage src={img.url} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform" />
                     </button>
                     {isAdmin && (
                       <button
                         onClick={async () => {
-                          await deleteDamageImage(img.id)
-                          toast.success('Image removed')
+                          const result = await runOperation(() => deleteDamageImage(img.id))
+                          if (result.error) toast.error(result.error)
+                          else toast.success('Image removed')
                         }}
                         className="absolute top-1 right-1 p-1 bg-black/50 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
                       >
@@ -242,12 +247,12 @@ export default function DamageReportDetail({ report, userRole, basePath }: Damag
                 currentReport.damage_comments.map((c) => (
                   <div key={c.id} className="flex gap-3 p-3 bg-slate-50 rounded-xl">
                     <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-[8px] font-black shrink-0 uppercase">
-                      {(c as any).profiles?.full_name?.charAt(0) || '?'}
+                      {c.profiles?.full_name?.charAt(0) || '?'}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] font-black text-slate-900 uppercase">
-                          {(c as any).profiles?.full_name || 'Unknown'}
+                          {c.profiles?.full_name || 'Unknown'}
                         </span>
                         <span className="text-[8px] font-bold text-slate-400">
                           {new Date(c.created_at).toLocaleDateString()}
@@ -331,7 +336,7 @@ export default function DamageReportDetail({ report, userRole, basePath }: Damag
           >
             <X size={24} />
           </button>
-          <img
+          <StoreImage
             src={selectedImage}
             alt="Full size"
             className="max-w-full max-h-[90vh] object-contain rounded-2xl"
@@ -343,7 +348,7 @@ export default function DamageReportDetail({ report, userRole, basePath }: Damag
   )
 }
 
-function DetailItem({ icon: Icon, label, value }: { icon: any; label: string; value: string }) {
+function DetailItem({ icon: Icon, label, value }: { icon: import('lucide-react').LucideIcon; label: string; value: string }) {
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400 uppercase tracking-wider">
@@ -355,7 +360,7 @@ function DetailItem({ icon: Icon, label, value }: { icon: any; label: string; va
   )
 }
 
-function TimelineItem({ icon: Icon, label, value, date, active }: { icon: any; label: string; value: string; date: string; active?: boolean }) {
+function TimelineItem({ icon: Icon, label, value, date, active }: { icon: import('lucide-react').LucideIcon; label: string; value: string; date: string; active?: boolean }) {
   return (
     <div className="flex gap-3">
       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${active ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400'}`}>

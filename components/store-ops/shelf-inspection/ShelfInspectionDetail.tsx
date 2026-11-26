@@ -1,4 +1,7 @@
 'use client'
+import {runOperation} from '@/lib/store-ops/client-action';
+
+import StoreImage from '@/components/store-ops/StoreImage'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -14,7 +17,7 @@ import {
 } from '@/app/actions/store-ops/shelf-inspection'
 import type { ShelfInspectionWithRelations } from '@/lib/store-ops/types'
 import { canManageApprovals, canDelete } from '@/lib/store-ops/permissions'
-import { INSPECTION_STATUSES } from '@/lib/store-ops/constants'
+
 
 interface ShelfInspectionDetailProps {
   inspection: ShelfInspectionWithRelations
@@ -51,7 +54,7 @@ export default function ShelfInspectionDetail({ inspection, userRole, basePath }
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'shelf_inspections', filter: `id=eq.${inspection.id}` },
         (payload) => {
-          if (payload.new) setCurrentInspection(prev => ({ ...prev, ...payload.new as any }))
+          if (payload.new) setCurrentInspection(prev => ({ ...prev, ...payload.new as Partial<ShelfInspectionWithRelations> }))
         }
       )
       .on('postgres_changes',
@@ -59,11 +62,11 @@ export default function ShelfInspectionDetail({ inspection, userRole, basePath }
         async () => {
           const { data } = await supabase
             .from('inspection_comments')
-            .select('*, profiles:created_by(full_name)')
+            .select('*, profiles:profiles!created_by(full_name)')
             .eq('inspection_id', inspection.id)
             .order('created_at', { ascending: true })
           if (data) {
-            setCurrentInspection(prev => ({ ...prev, inspection_comments: data as any }))
+            setCurrentInspection(prev => ({ ...prev, inspection_comments: data as ShelfInspectionWithRelations['inspection_comments'] }))
           }
         }
       )
@@ -73,17 +76,17 @@ export default function ShelfInspectionDetail({ inspection, userRole, basePath }
   }, [inspection.id, supabase])
 
   const handleApprove = async () => {
-    const result = await approveShelfInspection(currentInspection.id)
+    const result = await runOperation(() => approveShelfInspection(currentInspection.id))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Inspection approved')
-      setCurrentInspection(prev => ({ ...prev, reviewed_by: 'approved', reviewed_at: new Date().toISOString() }))
+      if (result.data) setCurrentInspection(prev => ({ ...prev, ...result.data }))
     }
   }
 
   const handleDelete = async () => {
     if (!confirm('Delete this inspection permanently?')) return
-    const result = await deleteShelfInspection(currentInspection.id)
+    const result = await runOperation(() => deleteShelfInspection(currentInspection.id))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Inspection deleted')
@@ -95,7 +98,7 @@ export default function ShelfInspectionDetail({ inspection, userRole, basePath }
     e.preventDefault()
     if (!comment.trim()) return
     setSubmitting(true)
-    const result = await addInspectionComment(currentInspection.id, comment.trim())
+    const result = await runOperation(() => addInspectionComment(currentInspection.id, comment.trim()))
     if (result.error) {
       toast.error(result.error)
     } else {
@@ -131,6 +134,7 @@ export default function ShelfInspectionDetail({ inspection, userRole, basePath }
         </div>
 
         <div className="flex items-center gap-2">
+          {isManager && <button type="button" onClick={() => router.push(`${basePath}/${inspection.id}/edit`)} className="rounded-lg border px-4 py-2 text-sm">Edit</button>}
           {!isReviewed && isManager && (
             <button onClick={handleApprove} className="flex items-center gap-1.5 px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-all">
               <Check size={13} /> Approve
@@ -180,7 +184,7 @@ export default function ShelfInspectionDetail({ inspection, userRole, basePath }
                       onClick={() => setSelectedImage(img.url)}
                       className="aspect-square rounded-xl overflow-hidden bg-slate-100 w-full"
                     >
-                      <img src={img.url} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform" />
+                      <StoreImage src={img.url} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform" />
                     </button>
                   </div>
                 ))}
@@ -204,12 +208,12 @@ export default function ShelfInspectionDetail({ inspection, userRole, basePath }
                 currentInspection.inspection_comments.map((c) => (
                   <div key={c.id} className="flex gap-3 p-3 bg-slate-50 rounded-xl">
                     <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-[8px] font-black shrink-0 uppercase">
-                      {(c as any).profiles?.full_name?.charAt(0) || '?'}
+                      {c.profiles?.full_name?.charAt(0) || '?'}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] font-black text-slate-900 uppercase">
-                          {(c as any).profiles?.full_name || 'Unknown'}
+                          {c.profiles?.full_name || 'Unknown'}
                         </span>
                         <span className="text-[8px] font-bold text-slate-400">
                           {new Date(c.created_at).toLocaleDateString()}
@@ -292,7 +296,7 @@ export default function ShelfInspectionDetail({ inspection, userRole, basePath }
           >
             <X size={24} />
           </button>
-          <img
+          <StoreImage
             src={selectedImage}
             alt="Full size"
             className="max-w-full max-h-[90vh] object-contain rounded-2xl"
@@ -304,7 +308,7 @@ export default function ShelfInspectionDetail({ inspection, userRole, basePath }
   )
 }
 
-function DetailItem({ icon: Icon, label, value }: { icon: any; label: string; value: string }) {
+function DetailItem({ icon: Icon, label, value }: { icon: import('lucide-react').LucideIcon; label: string; value: string }) {
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400 uppercase tracking-wider">
@@ -316,7 +320,7 @@ function DetailItem({ icon: Icon, label, value }: { icon: any; label: string; va
   )
 }
 
-function TimelineItem({ icon: Icon, label, value, date, active }: { icon: any; label: string; value: string; date: string; active?: boolean }) {
+function TimelineItem({ icon: Icon, label, value, date, active }: { icon: import('lucide-react').LucideIcon; label: string; value: string; date: string; active?: boolean }) {
   return (
     <div className="flex gap-3">
       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${active ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400'}`}>

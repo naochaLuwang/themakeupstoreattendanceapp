@@ -1,0 +1,2 @@
+Shortest path (2 hops):
+  prepareImage() <--imports [EXTRACTED]-- TaskDetail.tsx --contains [EXTRACTED]--> TaskDetail()

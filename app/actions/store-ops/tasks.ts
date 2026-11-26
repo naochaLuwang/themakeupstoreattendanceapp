@@ -2,8 +2,12 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { can } from '@/lib/store-ops/permissions';
+import { taskSchema, validationMessage } from '@/lib/store-ops/validation';
+import { uploadOperationsImage, removeOperationsImages } from '@/lib/store-ops/uploads';
+import type { TaskWithRelations } from '@/lib/store-ops/types';
 
 export async function createTask(data: {
+  store_id?: string
   title: string
   description?: string
   assigned_to?: string
@@ -13,6 +17,8 @@ export async function createTask(data: {
   is_recurring?: boolean
   recurrence_rule?: string
 }) {
+  const parsed = taskSchema.safeParse(data);
+  if (!parsed.success) return { error: validationMessage(parsed.error) };
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) return { error: 'Unauthorized' };
@@ -30,7 +36,8 @@ export async function createTask(data: {
   const { data: task, error } = await supabase
     .from('tasks')
     .insert({
-      title: data.title,
+      store_id: data.store_id,
+      title: parsed.data.title,
       description: data.description || null,
       assigned_to: data.assigned_to || null,
       assigned_by: user.id,
@@ -76,12 +83,12 @@ export async function updateTask(
     return { error: 'Forbidden' };
   }
 
-  const { error } = await supabase
+  const { data: changed, error } = await supabase
     .from('tasks')
-    .update({ ...data, updated_at: new Date().toISOString() })
-    .eq('id', id);
+    .update({ title: data.title, description: data.description, assigned_to: data.assigned_to, priority: data.priority, due_date: data.due_date, category: data.category, is_recurring: data.is_recurring, recurrence_rule: data.recurrence_rule, status: data.status, updated_at: new Date().toISOString() })
+    .eq('id', id).select('id').single();
 
-  if (error) return { error: error.message };
+  if (error || !changed) return { error: error?.message || 'Task was not changed. Refresh and retry.' };
   return { success: true };
 }
 
@@ -100,12 +107,15 @@ export async function deleteTask(id: string) {
     return { error: 'Forbidden' };
   }
 
-  const { error } = await supabase
+  const {data:attachments,error:attachmentError}=await supabase.from('task_attachments').select('url').eq('task_id',id);
+  if(attachmentError)return {error:'Task photos could not be checked.'};
+  const { data: changed, error } = await supabase
     .from('tasks')
     .delete()
-    .eq('id', id);
+    .eq('id', id).select('id').single();
 
-  if (error) return { error: error.message };
+  if (error || !changed) return { error: error?.message || 'Task was not changed. Refresh and retry.' };
+  await removeOperationsImages((attachments||[]).map(attachment=>attachment.url));
   return { success: true };
 }
 
@@ -134,12 +144,12 @@ export async function completeTask(id: string) {
 
   const newStatus = task.status === 'completed' ? 'pending' : 'completed';
 
-  const { error } = await supabase
+  const { data: changed, error } = await supabase
     .from('tasks')
     .update({ status: newStatus, updated_at: new Date().toISOString() })
-    .eq('id', id);
+    .eq('id', id).eq('status', task.status).select('id').single();
 
-  if (error) return { error: error.message };
+  if (error || !changed) return { error: error?.message || 'Task was not completed. Refresh and retry.' };
   return { success: true, data: { status: newStatus } };
 }
 
@@ -158,12 +168,12 @@ export async function cancelTask(id: string) {
     return { error: 'Forbidden' };
   }
 
-  const { error } = await supabase
+  const { data: changed, error } = await supabase
     .from('tasks')
     .update({ status: 'cancelled', updated_at: new Date().toISOString() })
-    .eq('id', id);
+    .eq('id', id).select('id').single();
 
-  if (error) return { error: error.message };
+  if (error || !changed) return { error: error?.message || 'Task was not changed. Refresh and retry.' };
   return { success: true };
 }
 
@@ -189,39 +199,14 @@ export async function addTaskComment(taskId: string, comment: string) {
       comment,
       created_by: user.id,
     })
-    .select('*, profiles:created_by(full_name)')
+    .select('*, profiles:profiles!created_by(full_name)')
     .single();
 
   if (error) return { error: error.message };
   return { success: true, data };
 }
 
-export async function uploadTaskAttachment(formData: FormData) {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) return { error: 'Unauthorized' };
-
-  const file = formData.get('file') as File;
-  if (!file) return { error: 'No file provided' };
-
-  const ext = file.name.split('.').pop();
-  const fileName = `${user.id}/${crypto.randomUUID()}.${ext}`;
-
-  const { error: uploadError } = await supabase.storage
-    .from('store-images')
-    .upload(`tasks/${fileName}`, file, {
-      cacheControl: '3600',
-      upsert: false,
-    });
-
-  if (uploadError) return { error: uploadError.message };
-
-  const { data: { publicUrl } } = supabase.storage
-    .from('store-images')
-    .getPublicUrl(`tasks/${fileName}`);
-
-  return { success: true, url: publicUrl };
-}
+export async function uploadTaskAttachment(formData: FormData) { return uploadOperationsImage(formData, 'tasks'); }
 
 export async function deleteTaskAttachment(attachmentId: string) {
   const supabase = await createClient();
@@ -236,17 +221,13 @@ export async function deleteTaskAttachment(attachmentId: string) {
 
   if (!attachment) return { error: 'Attachment not found' };
 
-  const path = attachment.url.split('/store-images/')[1];
-  if (path) {
-    await supabase.storage.from('store-images').remove([path]);
-  }
-
   const { error } = await supabase
     .from('task_attachments')
     .delete()
     .eq('id', attachmentId);
 
   if (error) return { error: error.message };
+  await removeOperationsImages([attachment.url]);
   return { success: true };
 }
 
@@ -268,9 +249,9 @@ export async function getTasks(filters?: {
     .from('tasks')
     .select(`
       *,
-      assigned_to_profile:assigned_to(full_name),
-      assigned_by_profile:assigned_by(full_name),
-      task_comments(*, profiles:created_by(full_name)),
+      assigned_to_profile:profiles!assigned_to(full_name),
+      assigned_by_profile:profiles!assigned_by(full_name),
+      task_comments(*, profiles:profiles!created_by(full_name)),
       task_attachments(*)
     `, { count: 'exact' });
 
@@ -288,7 +269,7 @@ export async function getTasks(filters?: {
 
   if (error) return { error: error.message, data: [], total: 0, totalPages: 0 };
   return {
-    data: (data || []) as any[],
+    data: (data || []) as TaskWithRelations[],
     total: count || 0,
     totalPages: Math.ceil((count || 0) / limit),
     page,
@@ -302,27 +283,28 @@ export async function getTaskById(id: string) {
     .from('tasks')
     .select(`
       *,
-      assigned_to_profile:assigned_to(full_name),
-      assigned_by_profile:assigned_by(full_name),
-      task_comments(*, profiles:created_by(full_name)),
+      assigned_to_profile:profiles!assigned_to(full_name),
+      assigned_by_profile:profiles!assigned_by(full_name),
+      task_comments(*, profiles:profiles!created_by(full_name)),
       task_attachments(*)
     `)
     .eq('id', id)
     .single();
 
   if (error) return { error: error.message, data: null };
-  return { data: data as any, error: null };
+  return { data: data as TaskWithRelations, error: null };
 }
 
-export async function getEmployees() {
+export async function getEmployees(storeId?: string) {
   const supabase = await createClient();
-
-  const { data } = await supabase
-    .from('profiles')
-    .select('id, full_name, email')
-    .eq('role', 'employee')
-    .order('full_name');
-
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+  const { data: profile } = await supabase.from('profiles').select('role,store_id').eq('id',user.id).single();
+  if (!profile || !can(profile.role,'tasks.assign')) return [];
+  let query = supabase.from('profiles').select('id,full_name,email').eq('role','employee');
+  if (profile.role !== 'admin' || storeId) query=query.eq('store_id',profile.role === 'admin' ? storeId! : profile.store_id || '');
+  const {data,error}=await query.order('full_name');
+  if (error) throw new Error('Employees could not be loaded.');
   return data || [];
 }
 

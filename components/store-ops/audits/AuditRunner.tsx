@@ -1,4 +1,8 @@
 'use client'
+import {runOperation} from '@/lib/store-ops/client-action';
+import {prepareImage} from '@/lib/store-ops/image-compression'
+
+import StoreImage from '@/components/store-ops/StoreImage'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -19,7 +23,7 @@ export default function AuditRunner({ audit }: AuditRunnerProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<Record<string, { score: number; comment: string; photoUrl: string | null }>>(
     () => {
-      const initial: Record<string, any> = {}
+      const initial: Record<string, {score:number;comment:string;photoUrl:string|null}> = {}
       for (const a of audit.audit_answers) {
         initial[a.question_id] = {
           score: a.score || 0,
@@ -70,10 +74,13 @@ export default function AuditRunner({ audit }: AuditRunnerProps) {
       if (!file) return
 
       setUploadingPhoto(questionId)
+      try {
       const formData = new FormData()
-      formData.append('file', file)
+      const prepared=await prepareImage(file)
+      formData.append('file', prepared.file)
+      formData.append('thumbnail', prepared.thumbnail)
 
-      const result = await uploadAuditImage(formData)
+      const result = await runOperation(() => uploadAuditImage(formData))
       if (result.success && result.url) {
         setAnswers(prev => ({
           ...prev,
@@ -83,48 +90,49 @@ export default function AuditRunner({ audit }: AuditRunnerProps) {
       } else {
         toast.error(result.error || 'Upload failed')
       }
-      setUploadingPhoto(null)
+      } catch(cause) { toast.error(cause instanceof Error?cause.message:'Photo upload failed.') } finally {setUploadingPhoto(null)}
     }
     input.click()
   }
 
   const saveCurrentAnswer = async () => {
     if (!currentQ || !currentAnswer) return
-    const result = await submitAuditAnswer(
+    const result = await runOperation(() => submitAuditAnswer(
       audit.id,
       currentQ.questionId,
       currentAnswer.score,
       currentAnswer.comment || undefined,
       currentAnswer.photoUrl || undefined
-    )
-    if (result.error) toast.error(result.error)
+    ))
+    if (result.error) { toast.error(result.error); return false }
+    return true
   }
 
   const goNext = async () => {
-    await saveCurrentAnswer()
+    if (!await saveCurrentAnswer()) return
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(i => i + 1)
     }
   }
 
   const goPrev = async () => {
-    await saveCurrentAnswer()
+    if (!await saveCurrentAnswer()) return
     if (currentIndex > 0) {
       setCurrentIndex(i => i - 1)
     }
   }
 
   const handleComplete = async () => {
-    for (const q of questions) {
-      const ans = answers[q.questionId]
-      if (ans) {
-        await submitAuditAnswer(audit.id, q.questionId, ans.score, ans.comment || undefined, ans.photoUrl || undefined)
-      }
-    }
-
+    if (submitting) return
     setSubmitting(true)
     try {
-      const result = await completeAudit(audit.id)
+      for (const q of questions) {
+        const ans=answers[q.questionId]
+        if (!ans) throw new Error('Answer every question first.')
+        const saved=await runOperation(() => submitAuditAnswer(audit.id,q.questionId,ans.score,ans.comment||undefined,ans.photoUrl||undefined))
+        if(saved.error)throw new Error(saved.error)
+      }
+      const result = await runOperation(() => completeAudit(audit.id))
       if (result.error) {
         toast.error(result.error)
       } else {
@@ -134,7 +142,7 @@ export default function AuditRunner({ audit }: AuditRunnerProps) {
         toast.success(`Audit completed! Score: ${pct}%`)
         router.refresh()
       }
-    } finally {
+    } catch (cause) { toast.error(cause instanceof Error ? cause.message : 'Audit could not be completed.') } finally {
       setSubmitting(false)
     }
   }
@@ -189,7 +197,7 @@ export default function AuditRunner({ audit }: AuditRunnerProps) {
                   </div>
                 </div>
                 {a.photo_url && (
-                  <img src={a.photo_url} alt="" className="mt-3 w-24 h-24 rounded-xl object-cover bg-slate-100" />
+                  <StoreImage src={a.photo_url} alt="" className="mt-3 w-24 h-24 rounded-xl object-cover bg-slate-100" />
                 )}
               </div>
             )
@@ -297,7 +305,7 @@ export default function AuditRunner({ audit }: AuditRunnerProps) {
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Photo</label>
               {currentAnswer.photoUrl ? (
                 <div className="relative w-28 aspect-square rounded-xl overflow-hidden bg-slate-100">
-                  <img src={currentAnswer.photoUrl} alt="" className="w-full h-full object-cover" />
+                  <StoreImage src={currentAnswer.photoUrl} alt="" className="w-full h-full object-cover" />
                   <button
                     type="button"
                     onClick={() => setAnswers(prev => ({

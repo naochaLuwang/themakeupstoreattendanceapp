@@ -1,0 +1,231 @@
+Store Operations repairs
+
+Deployment
+
+These migrations are prepared and tested locally. They have not been applied
+to the hosted Supabase project. Deploy code and database changes together in a
+maintenance window. The new storage policy makes store-images private; the
+application serves both legacy URLs and new references through its authenticated
+media route. Existing rows are preserved. Records without an identifiable store
+remain available to administrators for reconciliation rather than being assigned
+to an arbitrary store.
+
+Foundation: 20261125132304_store_operations_security.sql
+
+Adds store_id and indexes to operations records and backfills from their authors,
+assigned employees or parent section. Replaces permissive policies with staff
+role and store policies. Protects authorship, record IDs and store assignment.
+Allows assigned employees to change task status only. Restricts notification
+reads to recipients. Adds missing child timestamps, validates audit-answer score
+and parent ownership, publishes operations Realtime tables and provisions private
+storage. Anonymous users cannot read operations or upload files.
+
+Clean installation
+
+004_remaining_modules.sql now creates notification_log.created_by and timestamps
+before its policies refer to them. audit_answers gets its missing updated_at.
+The additive migrations provide the same changes for existing installations.
+
+SQL Editor recovery: missing checklist_templates (42P01)
+
+The security migration updates existing tables. It requires the base migrations
+002_damage_reports.sql, 003_daily_checklist.sql and 004_remaining_modules.sql.
+checklist_templates, daily_checklists and daily_checklist_items are created by 003.
+Running only the timestamped repair migrations skips these prerequisites.
+
+For an existing attendance installation with no successfully applied Store
+Operations repair migrations, open a new Supabase SQL Editor query and run the
+ENTIRE supabase/deployment/store_operations_install.sql file as postgres. This
+generated file runs the three base migrations and nine repair migrations in order,
+inside one transaction. Missing operations tables are created; existing records
+are retained. It does not install a scheduler or reapply attendance migrations.
+Its preflight checks the existing attendance notification device/key tables used
+by operations push. Those come from 20261124094512_attendance_reminders.sql and
+its existing attendance prerequisites. If absent, it stops before changing data.
+
+The bundle is a one-time recovery path. It stops before changing an already or
+partially repaired installation; use the remaining versioned migrations for that
+case. If a run fails, its transaction rolls back all changes. Correct the reported
+prerequisite and rerun the complete file. Do not run selected portions.
+
+Regenerate it from the source migrations with npm run store-ops:sql. The checklist
+base migration now removes every legacy policy it recreates, allowing recovery
+when the base tables already exist. The security migration checks all required
+base tables before modifying functions, policies or rows and gives the missing
+names and exact setup instructions. SQL Editor execution does not update the
+Supabase CLI migration history; reconcile recorded versions with the actual schema
+before subsequently deploying through the CLI.
+
+Recovery regression test:
+PYTHONDONTWRITEBYTECODE=1 python3 tests/store-ops-install.py
+
+Covers the reported missing-003 state, preservation of existing reports, complete
+base schemas, attendance installations without any operations tables, repeat
+checklist setup, already-installed protection and rollback
+of the whole bundle on a failure after earlier repairs ran. All use local,
+disposable PostgreSQL clusters with fictional data.
+
+Shelf Inspection: 20261125132739_shelf_inspection_workflow.sql
+
+Adds store_ops_shelf_save(uuid,jsonb), an authenticated, invoker-rights transaction
+for creating/editing inspections and their photos. Manager approval records the
+actual manager. Editing inspection details resets approval. Staff cannot approve
+their own reports. Search matches notes and section names within authorized
+sections. The settings screen adds/edits sections per store; administrators can
+delete unused sections while inspection history prevents unsafe deletion. The edit screen,
+account-scoped drafts, form validation, photo compression, thumbnails, private
+media, list errors and operations loading/error boundaries are implemented.
+
+Verified: disposable PostgreSQL clean migration, role/store/anonymous checks,
+inspection creation, approval, editing, invalid-photo rollback, assigned task
+completion, private media ownership, Realtime publication; TypeScript and scoped
+Shelf Inspection ESLint checks pass.
+
+Verification command
+
+PYTHONDONTWRITEBYTECODE=1 python3 tests/store-ops-database.py
+
+Uses a fresh temporary local PostgreSQL cluster and fictional users only. No
+environment credentials or hosted data are read; the cluster is removed afterward.
+
+
+Damage Reporting: 20261125133146_damage_reporting_workflow.sql
+
+Adds positive quantity/nonnegative MRP constraints and store_ops_damage_save,
+which atomically saves report fields and photo references. Edits return a report
+to pending approval. Approval/rejection/archive require the correct prior state
+and return an affected row. Photo deletion removes the database reference before
+Storage cleanup. An approved return-list CSV is available. Barcode lookup reuses
+store history rather than integrating or replacing BillBook. Employee submissions
+return to employee routes; admin edits have a dedicated page.
+
+Tester Management: 20261125133414_tester_management_workflow.sql
+
+Adds expiry-after-opening validation and atomic tester history triggers. Manager
+edits validate the merged record. Updates/deletes check affected rows. Employee
+tester detail navigation now works and does not expose management controls.
+Product forms include store selection and account-scoped draft recovery. Expiry
+and replacement alerts are planned by the operations worker after settings exist.
+
+Daily Checklist: 20261125133455_daily_checklist_workflow.sql
+
+Adds checklist_template_items, separate from daily snapshots, with mandatory and
+photo flags. Template revisions archive old item definitions so existing daily
+snapshots keep their content. The start RPC creates the checklist and all its
+items atomically and serializes concurrent starts. One active checklist per store,
+IST date and opening/closing type is enforced. Duplicate legacy submissions are
+retained with superseded_at. Completion enforces required items and photo proof
+in the database, records the actual completing employee and freezes submitted
+history. Template deletion archives it to preserve historical references. Store
+selection and photo proof are available in the checklist UI.
+
+Task Management: 20261125133757_task_management_workflow.sql
+
+Assigned employees can update status only. Assignees must belong to the task's
+store. Actions check actual affected rows, including expected status on completion.
+The employee list explicitly retains its assignment filter. Manager edits have a
+page and use a field whitelist. Daily/weekly/monthly tasks create exactly one next
+occurrence on completion, guarded by recurrence_parent_id uniqueness; reopening
+and completing again does not duplicate it. This is completion-based recurrence;
+an overdue unfinished task is retained until completed. Task attachment processing
+uses the common compressed-image path. Completion timestamps and completing user
+are added by the notifications/reporting migration for accurate period reports.
+
+Store Audits: 20261125133949_store_audits_workflow.sql
+
+Template and audit creation are transactional RPCs. Manager/admin roles and store
+scope are enforced. Scores must belong to the audit's template question and be
+within its maximum. A saved answer has answered_at, including a legitimate zero.
+Completion requires all answers and calculates the final score in the database.
+Completed audit answers/history cannot be edited. The UI stops on save errors.
+Audit navigation uses /admin/store-operations/audits, with redirects from the old
+accidentally duplicated /audits/audits routes. Deleting an audit now deletes that
+record, not its shared template; associated photo cleanup follows deletion.
+
+Incidents and Restocking: 20261125134046_incidents_and_restocking_workflow.sql
+
+Incident records and photos save in one transaction. Voice notes support validated
+WebM/Ogg/M4A/MP3/WAV attachments, with private audio playback. Phone recorder/file
+selection works without changing Android microphone permissions. Manager editing,
+assignment and status actions remain scoped to the incident store. Photo and audio
+references are removed before Storage objects are deleted.
+
+Restock requests and items save together. Quantities must be positive and approved
+quantities cannot exceed requested quantities. Requests start pending; managers
+approve/reject them, and completion requires approval. Pending requests can be
+edited, including supplier notes. Employee detail links now work. Camera barcode
+scanning uses the existing camera lifecycle and stops streams when closed; manual
+entry remains available. Product lookup searches authorized damage/restock history.
+
+Notifications, reports and dashboard:
+20261125134427_store_operations_notifications_reports.sql
+
+Adds immutable operation event history, per-store alert settings, per-user
+notification preferences, task completion attribution and an Android push outbox.
+Workflow triggers notify recipients about assignments, task completions, damage
+approvals, pending inspections/damage/incidents/restocks and low-stock shelf flags.
+Notifications are recipient-only. Shared settings define opening/closing deadlines,
+audit cadence and tester warning days. The planner deduplicates overdue checklist,
+missing inspection, late closing, audit due and tester expiry/replacement alerts.
+No scheduled alerts run until a store's alert settings and worker are configured.
+
+Push delivery is opt-in for operations and reuses registered Android devices and
+the existing FCM provider. Delivery rechecks user consent, device ownership,
+revocation and current store membership, with bounded leases/retries. Lock-screen
+messages contain no incident/product detail. The worker endpoint authenticates its
+secret before accessing the service client. SQL worker execution is service-only.
+The existing attendance notification workflow and device registration remain intact.
+
+Configure server STORE_OPERATIONS_WORKER_SECRET (32+ random characters) and the
+existing SUPABASE_SERVICE_ROLE_KEY/FCM setup. Schedule the POST endpoint using
+supabase/deployment/store_operations_cron.sql after operator review and Vault
+configuration. That script is separate from migrations and has not been run.
+
+store_ops_report aggregates authorized daily, weekly and monthly data in SQL,
+using IST boundaries. Reports include inspection coverage, approved damage value,
+employee activity, task completion, audit scores, checklist compliance, incident
+trends and tester percentage usage. Charts, detailed tables, CSV and PDF export
+are implemented. CSV escapes formula prefixes; PDF packages load only on export.
+Weekly date math is tested across month/year boundaries. Historical completion
+metrics do not invent timestamps for legacy data lacking them.
+
+Dashboard counts now use store dates and fail visibly on query errors. The dashboard
+includes audit score, notifications, activity history and recent inspection photos.
+All modules inherit operations-specific loading/error boundaries. List errors retain
+previous data with an explicit failure message rather than presenting a false zero.
+Detail actions recover from transport failures and release busy states without
+claiming an unconfirmed save or image deletion succeeded.
+
+Checks completed locally
+
+- Production Next.js build: passes.
+- TypeScript: passes.
+- ESLint for Store Operations, new API routes and modified shared helpers: passes.
+- Existing attendance/native tests: 95 pass.
+- Additional domain/HTTP/media/export tests: 7 pass.
+- Disposable PostgreSQL suite: clean migrations, role/store/media isolation,
+  transactional failures, approval workflows, recurrence, mandatory checklists,
+  audit scoring/history, report aggregates, notification privacy, push consent
+  rechecks and scheduled deduplication pass. Existing attendance clock-in and
+  GPS-free checkout also pass after every operations migration is applied.
+- Browser component fixtures: 27 layouts at 320/390/768px have no horizontal
+  overflow. Real image compression and thumbnail payloads, multi-photo retention,
+  upload limits, draft recovery, barcode lookup, employee redirect, light/dark
+  reports and actual CSV/PDF downloads pass with zero runtime errors.
+- Browser fixtures use fictional actions/auth; production Supabase and a physical
+  Android device have not been tested. No hosted data or migrations were changed.
+- Lint results cover the changed operations code and shared helpers; unrelated
+  pre-existing project-wide lint failures were outside this repair scope.
+
+Graphify
+
+Graphify 0.8.24 was already installed globally but had no integration in this
+repository. Its official project-scoped Codex skill and hook are now installed.
+.graphifyignore scopes a local AST graph to Store Operations and shared auth,
+notification, validation and media dependencies, excluding secrets/builds/media.
+The graph is in graphify-out/graph.json, with graph.html and GRAPH_REPORT.md.
+Run npm run graph:update after changing code; query with npm run graph:query --
+"uploadOperationsImage". Graph traces were used to identify direct audit/task
+attachment paths that bypassed shared compression, and to review auth/media impact.
+This AST pass used no model/API tokens. The installed skill is available to Codex
+on subsequent turns as well as the CLI used in this repair session.

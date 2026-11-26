@@ -1,3 +1,4 @@
+import type { DamageReportWithRelations } from '@/lib/store-ops/types';
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import DamageReportList from '@/components/store-ops/damage-reports/DamageReportList'
@@ -16,21 +17,22 @@ export default async function EmployeeDamageReportsPage() {
 
   const role = profile?.role || 'employee'
 
-  const { data, count } = await supabase
+  const { data, count, error: loadError } = await supabase
     .from('damage_reports')
     .select(`
       *,
-      profiles:reported_by(full_name, email),
+      profiles:profiles!reported_by(full_name, email),
       damage_images(*),
-      damage_comments(*, profiles:created_by(full_name))
+      damage_comments(*, profiles:profiles!created_by(full_name))
     `, { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(0, 19)
 
+  if(loadError)throw new Error('Store operations records could not be loaded.');
   return (
     <div className="space-y-6">
       <DamageReportList
-        initialData={(data || []) as any}
+        initialData={(data || []) as DamageReportWithRelations[]}
         total={count || 0}
         page={1}
         totalPages={Math.ceil((count || 0) / 20)}

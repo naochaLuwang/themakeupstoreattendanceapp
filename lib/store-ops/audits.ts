@@ -8,8 +8,8 @@ export async function getAuditTemplates() {
     .from('audit_templates')
     .select(`
       *,
-      audit_questions(*, profiles:created_by(full_name)),
-      profiles:created_by(full_name)
+      audit_questions(*, profiles:profiles!created_by(full_name)),
+      profiles:profiles!created_by(full_name)
     `)
     .order('created_at', { ascending: false });
 
@@ -24,8 +24,8 @@ export async function getAuditTemplateWithQuestions(id: string) {
     .from('audit_templates')
     .select(`
       *,
-      audit_questions(*, profiles:created_by(full_name)),
-      profiles:created_by(full_name)
+      audit_questions(*, profiles:profiles!created_by(full_name)),
+      profiles:profiles!created_by(full_name)
     `)
     .eq('id', id)
     .single();
@@ -45,7 +45,7 @@ export async function getAudits(filters: AuditFilters = {}) {
     .select(`
       *,
       audit_templates(name, category),
-      profiles:conducted_by(full_name)
+      profiles:profiles!conducted_by(full_name)
     `, { count: 'exact' });
 
   if (filters.status) {
@@ -89,7 +89,7 @@ export async function getAuditById(id: string) {
         *,
         audit_questions(question, max_score)
       ),
-      profiles:conducted_by(full_name)
+      profiles:profiles!conducted_by(full_name)
     `)
     .eq('id', id)
     .single();

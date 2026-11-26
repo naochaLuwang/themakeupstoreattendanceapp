@@ -9,6 +9,7 @@ import type { TaskWithRelations } from '@/lib/store-ops/types'
 import TaskCard from './TaskCard'
 
 interface TaskListProps {
+  assignedTo?: string
   initialData: TaskWithRelations[]
   total: number
   page: number
@@ -33,7 +34,7 @@ const priorityTableStyles: Record<string, { bg: string; text: string }> = {
 }
 
 export default function TaskList({
-  initialData, total, page: initialPage, totalPages: initialTotalPages, basePath, canCreate, employees
+  initialData, total, page: initialPage, totalPages: initialTotalPages, basePath, canCreate, employees, assignedTo
 }: TaskListProps) {
   const router = useRouter()
   const supabase = createClient()
@@ -43,6 +44,7 @@ export default function TaskList({
   const [currentPage, setCurrentPage] = useState(initialPage)
   const [totalPages, setTotalPages] = useState(initialTotalPages)
   const [loading, setLoading] = useState(false)
+  const [loadError,setLoadError]=useState<string|null>(null)
 
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
@@ -57,12 +59,13 @@ export default function TaskList({
       .from('tasks')
       .select(`
         *,
-        assigned_to_profile:assigned_to(full_name),
-        assigned_by_profile:assigned_by(full_name),
-        task_comments(*, profiles:created_by(full_name)),
+        assigned_to_profile:profiles!assigned_to(full_name),
+        assigned_by_profile:profiles!assigned_by(full_name),
+        task_comments(*, profiles:profiles!created_by(full_name)),
         task_attachments(*)
       `, { count: 'exact' })
 
+    if (assignedTo) query = query.eq('assigned_to', assignedTo)
     if (search) {
       query = query.ilike('title', `%${search}%`)
     }
@@ -75,14 +78,15 @@ export default function TaskList({
     const offset = (pageNum - 1) * limit
     query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1)
 
-    const { data: results, count } = await query
+    const { data: results, count, error: queryError } = await query
+    setLoadError(queryError?'Records could not be loaded. Refresh to retry.':null)
     if (results) setData(results as unknown as TaskWithRelations[])
     if (count !== null) {
       setTotalCount(count)
       setTotalPages(Math.ceil(count / limit))
     }
     setLoading(false)
-  }, [search, statusFilter, priorityFilter, categoryFilter, assigneeFilter, supabase])
+  }, [search, statusFilter, priorityFilter, categoryFilter, assigneeFilter, supabase, assignedTo])
 
   useEffect(() => {
     fetchData(currentPage)
@@ -126,6 +130,7 @@ export default function TaskList({
 
   return (
     <div className="space-y-6">
+      {loadError&&<p role="alert" className="rounded-lg border border-rose-300 p-3 text-sm text-rose-700">{loadError}</p>}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

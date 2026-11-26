@@ -150,6 +150,7 @@ CREATE TABLE IF NOT EXISTS audit_answers (
   comment TEXT,
   photo_url TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
   created_by UUID NOT NULL REFERENCES profiles(id)
 );
 
@@ -229,8 +230,15 @@ CREATE TABLE IF NOT EXISTS notification_log (
   type TEXT,
   link TEXT,
   is_read BOOLEAN DEFAULT false,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  created_by UUID REFERENCES profiles(id)
 );
+
+-- Existing installations may already have the earlier table definitions.
+ALTER TABLE notification_log ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES profiles(id);
+ALTER TABLE notification_log ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE audit_answers ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 
 -- ============================================================
 -- INDEXES

@@ -35,6 +35,7 @@ export default function RestockList({
   const [currentPage, setCurrentPage] = useState(initialPage)
   const [totalPages, setTotalPages] = useState(initialTotalPages)
   const [loading, setLoading] = useState(false)
+  const [loadError,setLoadError]=useState<string|null>(null)
 
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
@@ -46,7 +47,7 @@ export default function RestockList({
       .from('restock_requests')
       .select(`
         *,
-        profiles:created_by(full_name),
+        profiles:profiles!created_by(full_name),
         restock_items(*)
       `, { count: 'exact' })
 
@@ -59,7 +60,8 @@ export default function RestockList({
     const offset = (pageNum - 1) * limit
     query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1)
 
-    const { data: results, count } = await query
+    const { data: results, count, error: queryError } = await query
+    setLoadError(queryError?'Records could not be loaded. Refresh to retry.':null)
     if (results) setData(results as unknown as RestockRequestWithRelations[])
     if (count !== null) {
       setTotalCount(count)
@@ -103,6 +105,7 @@ export default function RestockList({
 
   return (
     <div className="space-y-6">
+      {loadError&&<p role="alert" className="rounded-lg border border-rose-300 p-3 text-sm text-rose-700">{loadError}</p>}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

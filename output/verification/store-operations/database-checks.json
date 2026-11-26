@@ -1,0 +1,77 @@
+{
+  "scope": "Disposable local PostgreSQL, repository migrations; hosted state not inspected. After reproducing the clean-install failure, a test-only notification_log.created_by column lets the remaining migrations and checks run.",
+  "findings": [
+    {
+      "finding": "Migration 004 fails on a clean install: notification_log has no created_by column required by its UPDATE policy",
+      "evidence": "ERROR:  column \"created_by\" does not exist\nHINT:  Perhaps you meant to reference the column \"notification_log.created_at\".\nCONTEXT:  SQL statement \"CREATE POLICY \"Owners can update notification_log\" ON notification_log FOR UPDATE USING (auth.uid() = created_by OR EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin', 'manager')))\"\nPL/pgSQL function inline_code_block line 21 at EXECUTE"
+    },
+    {
+      "finding": "Checklist template items reference daily checklist IDs, so template creation fails after saving its header",
+      "evidence": "ERROR:  insert or update on table \"daily_checklist_items\" violates foreign key constraint \"daily_checklist_items_daily_checklist_id_fkey\"\nDETAIL:  Key is not present in table \"daily_checklists\"."
+    },
+    {
+      "finding": "Employee cannot complete a task assigned by a manager; the update silently affects zero rows",
+      "evidence": {
+        "updated_rows": 0,
+        "saved_status": "pending"
+      }
+    },
+    {
+      "finding": "Direct employee requests bypass restock manager approval, including forged approval fields",
+      "evidence": {
+        "inserted_status": "approved",
+        "employee_updated_status": "completed"
+      }
+    },
+    {
+      "finding": "Operations SELECT policies allow cross-store reads and anonymous reads when Data API SELECT grants exist",
+      "evidence": {
+        "employee_other_store_rows": 1,
+        "anonymous_rows_with_select_grant": 1
+      }
+    },
+    {
+      "finding": "Saving audit answers fails because its updated_at trigger targets a missing column",
+      "evidence": "ERROR:  record \"new\" has no field \"updated_at\"\nCONTEXT:  PL/pgSQL assignment \"NEW.updated_at = NOW()\"\nPL/pgSQL function update_updated_at_column() line 3 at assignment"
+    },
+    {
+      "finding": "Employees can create and finalize audits through direct data requests without manager permission or score bounds",
+      "evidence": {
+        "employee_final_score": 999,
+        "max_score": 5
+      }
+    },
+    {
+      "finding": "Checklist completion is accepted with unchecked required work and no photo",
+      "evidence": {
+        "status": "completed",
+        "unchecked_items": 1,
+        "photo": null
+      }
+    },
+    {
+      "finding": "Concurrent starts can create duplicate daily checklists; no uniqueness constraint enforces one per day/type",
+      "evidence": {
+        "same_day_opening_checklists": 2
+      }
+    },
+    {
+      "finding": "Legacy operations notifications remain readable by other employees after all migrations",
+      "evidence": {
+        "other_recipient_rows": 1
+      }
+    },
+    {
+      "finding": "Operations migrations do not publish task, inspection, or checklist changes to Realtime",
+      "evidence": {
+        "published_operations_tables": 0
+      }
+    },
+    {
+      "finding": "UTC checklist date differs from the store business date before 05:30 IST",
+      "evidence": {
+        "utc_date/store_date": "2026-11-24/2026-11-25"
+      }
+    }
+  ]
+}

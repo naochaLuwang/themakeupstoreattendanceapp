@@ -1,0 +1,9 @@
+SQL Editor recovery verified on 2026-11-26.
+
+Reported failure: public.checklist_templates missing before the security migration.
+Cause: legacy migration 003_daily_checklist.sql was not applied.
+Recovery: run the entire generated supabase/deployment/store_operations_install.sql once.
+Sources: three legacy base migrations, then nine Store Operations repairs.
+Execution: one transaction; existing data retained; no attendance migrations or scheduler executed.
+Checks: six recovery assertions plus the full operations/attendance database suite pass.
+Hosted project: unchanged; SQL must still be executed there.

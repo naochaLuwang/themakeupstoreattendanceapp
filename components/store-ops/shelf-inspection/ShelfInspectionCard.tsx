@@ -1,8 +1,10 @@
 'use client'
 
+import StoreImage from '@/components/store-ops/StoreImage'
+
 import Link from 'next/link'
 import { ImageIcon } from 'lucide-react'
-import { INSPECTION_STATUSES } from '@/lib/store-ops/constants'
+
 
 interface ShelfInspectionCardProps {
   id: string
@@ -55,7 +57,7 @@ export default function ShelfInspectionCard({
           <div className="shrink-0">
             {images[0] ? (
               <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-100">
-                <img src={images[0].url} alt="" className="w-full h-full object-cover" />
+                <StoreImage src={images[0].url} alt="" className="w-full h-full object-cover" />
               </div>
             ) : (
               <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center">

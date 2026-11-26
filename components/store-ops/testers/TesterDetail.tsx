@@ -1,4 +1,5 @@
 'use client'
+import {runOperation} from '@/lib/store-ops/client-action';
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -58,7 +59,7 @@ export default function TesterDetail({ tester, userRole, basePath, canEdit }: Te
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'testers', filter: `id=eq.${tester.id}` },
         (payload) => {
-          if (payload.new) setCurrentTester(prev => ({ ...prev, ...payload.new as any }))
+          if (payload.new) setCurrentTester(prev => ({ ...prev, ...payload.new as Partial<TesterWithRelations> }))
         }
       )
       .on('postgres_changes',
@@ -66,11 +67,11 @@ export default function TesterDetail({ tester, userRole, basePath, canEdit }: Te
         async () => {
           const { data } = await supabase
             .from('tester_logs')
-            .select('*, profiles:created_by(full_name)')
+            .select('*, profiles:profiles!created_by(full_name)')
             .eq('tester_id', tester.id)
             .order('created_at', { ascending: false })
           if (data) {
-            setCurrentTester(prev => ({ ...prev, tester_logs: data as any }))
+            setCurrentTester(prev => ({ ...prev, tester_logs: data as TesterWithRelations['tester_logs'] }))
           }
         }
       )
@@ -81,7 +82,7 @@ export default function TesterDetail({ tester, userRole, basePath, canEdit }: Te
 
   const handleDelete = async () => {
     if (!confirm('Delete this tester permanently?')) return
-    const result = await deleteTester(currentTester.id)
+    const result = await runOperation(() => deleteTester(currentTester.id))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Tester deleted')
@@ -90,7 +91,7 @@ export default function TesterDetail({ tester, userRole, basePath, canEdit }: Te
   }
 
   const handleMarkReplace = async () => {
-    const result = await markNeedsReplacement(currentTester.id)
+    const result = await runOperation(() => markNeedsReplacement(currentTester.id))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Marked for replacement')
@@ -102,7 +103,7 @@ export default function TesterDetail({ tester, userRole, basePath, canEdit }: Te
     e.preventDefault()
     if (!comment.trim()) return
     setSubmitting(true)
-    const result = await logTesterAction(currentTester.id, 'comment', comment.trim())
+    const result = await runOperation(() => logTesterAction(currentTester.id, 'comment', comment.trim()))
     if (result.error) {
       toast.error(result.error)
     } else {
@@ -213,12 +214,12 @@ export default function TesterDetail({ tester, userRole, basePath, canEdit }: Te
                 currentTester.tester_logs.map((log) => (
                   <div key={log.id} className="flex gap-3 p-3 bg-slate-50 rounded-xl">
                     <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-[8px] font-black shrink-0 uppercase">
-                      {(log as any).profiles?.full_name?.charAt(0) || '?'}
+                      {log.profiles?.full_name?.charAt(0) || '?'}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] font-black text-slate-900 uppercase">
-                          {(log as any).profiles?.full_name || 'Unknown'}
+                          {log.profiles?.full_name || 'Unknown'}
                         </span>
                         <span className="text-[8px] font-bold text-slate-400">
                           {new Date(log.created_at).toLocaleDateString()}
@@ -292,7 +293,7 @@ export default function TesterDetail({ tester, userRole, basePath, canEdit }: Te
   )
 }
 
-function DetailItem({ icon: Icon, label, value }: { icon: any; label: string; value: string }) {
+function DetailItem({ icon: Icon, label, value }: { icon: import('lucide-react').LucideIcon; label: string; value: string }) {
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400 uppercase tracking-wider">
@@ -304,7 +305,7 @@ function DetailItem({ icon: Icon, label, value }: { icon: any; label: string; va
   )
 }
 
-function TimelineItem({ icon: Icon, label, date, active }: { icon: any; label: string; date: string; active?: boolean }) {
+function TimelineItem({ icon: Icon, label, date, active }: { icon: import('lucide-react').LucideIcon; label: string; date: string; active?: boolean }) {
   return (
     <div className="flex gap-3">
       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${active ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400'}`}>

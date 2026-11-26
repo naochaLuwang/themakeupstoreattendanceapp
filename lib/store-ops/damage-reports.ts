@@ -11,9 +11,9 @@ export async function getDamageReports(filters: DamageReportFilters = {}) {
     .from('damage_reports')
     .select(`
       *,
-      profiles:reported_by(full_name, email),
+      profiles:profiles!reported_by(full_name, email),
       damage_images(*),
-      damage_comments(*, profiles:created_by(full_name))
+      damage_comments(*, profiles:profiles!created_by(full_name))
     `, { count: 'exact' });
 
   if (filters.search) {
@@ -62,9 +62,9 @@ export async function getDamageReportById(id: string) {
     .from('damage_reports')
     .select(`
       *,
-      profiles:reported_by(full_name, email),
+      profiles:profiles!reported_by(full_name, email),
       damage_images(*),
-      damage_comments(*, profiles:created_by(full_name))
+      damage_comments(*, profiles:profiles!created_by(full_name))
     `)
     .eq('id', id)
     .single();

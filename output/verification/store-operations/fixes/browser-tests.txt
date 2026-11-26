@@ -1,0 +1,17 @@
+{
+  "layoutChecks": 27,
+  "overflow": [],
+  "checks": [
+    "multi-photo retention and pre-upload limit",
+    "compressed JPEG and thumbnail payloads",
+    "draft recovery across reload",
+    "successful shelf submission",
+    "barcode history lookup",
+    "employee submission returns to employee route",
+    "light and dark reports",
+    "CSV download",
+    "PDF download",
+    "zero browser runtime errors"
+  ],
+  "errors": []
+}

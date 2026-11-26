@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { Save, ArrowLeft, Plus, Trash2, GripVertical, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { CHECKLIST_TYPES, DEFAULT_OPENING_ITEMS, DEFAULT_CLOSING_ITEMS } from '@/lib/store-ops/constants'
+import StorePicker from '@/components/store-ops/StorePicker'
+import { useOperationsDraft } from '@/lib/store-ops/use-draft'
 import { createTemplate, updateTemplate } from '@/app/actions/store-ops/daily-checklist'
 
 interface ChecklistTemplateFormProps {
@@ -18,6 +20,8 @@ interface ChecklistTemplateFormProps {
 
 export default function ChecklistTemplateForm({ initialData }: ChecklistTemplateFormProps) {
   const router = useRouter()
+  const [storeId, setStoreId] = useState('')
+  const [requiresPhoto, setRequiresPhoto] = useState(true)
   const isEditing = !!initialData
   const [saving, setSaving] = useState(false)
 
@@ -27,6 +31,8 @@ export default function ChecklistTemplateForm({ initialData }: ChecklistTemplate
     initialData?.items?.map(i => i.label) || []
   )
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const clearDraft = useOperationsDraft(`checklist-template:${initialData?.id || 'new'}`, {name,type,items,storeId,requiresPhoto}, draft=>{setName(draft.name);setType(draft.type);setItems(draft.items);setStoreId(draft.storeId);setRequiresPhoto(draft.requiresPhoto)})
 
   const addItem = () => {
     setItems([...items, ''])
@@ -77,16 +83,19 @@ export default function ChecklistTemplateForm({ initialData }: ChecklistTemplate
     try {
       const cleanItems = items.filter(i => i.trim())
       const result = isEditing
-        ? await updateTemplate(initialData.id, { name: name.trim(), type, items: cleanItems })
-        : await createTemplate({ name: name.trim(), type, items: cleanItems })
+        ? await updateTemplate(initialData.id, { name: name.trim(), type, items: cleanItems, requires_photo: requiresPhoto })
+        : await createTemplate({ name: name.trim(), type, items: cleanItems, store_id: storeId || undefined, requires_photo: requiresPhoto })
 
       if (result.error) {
         toast.error(result.error)
       } else {
+        clearDraft()
         toast.success(isEditing ? 'Template updated' : 'Template created')
         router.push('/admin/store-operations/daily-checklist')
         router.refresh()
       }
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : 'The form could not be saved. Your draft is kept.')
     } finally {
       setSaving(false)
     }
@@ -94,6 +103,8 @@ export default function ChecklistTemplateForm({ initialData }: ChecklistTemplate
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      {!isEditing && <StorePicker value={storeId} onChange={setStoreId} />}
+      <label className="flex gap-2 text-sm"><input type="checkbox" checked={requiresPhoto} onChange={e=>setRequiresPhoto(e.target.checked)} />Require photo proof before completion</label>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button type="button" onClick={() => router.back()} className="p-2 rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors">

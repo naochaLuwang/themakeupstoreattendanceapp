@@ -57,3 +57,8 @@ keystore.properties
 *-service-account.json
 *firebase-adminsdk*.json
 service-account*.json
+
+# Graphify keeps these machine-specific paths and extraction caches local.
+/graphify-out/.graphify_python
+/graphify-out/.graphify_root
+/.graphify_cache/

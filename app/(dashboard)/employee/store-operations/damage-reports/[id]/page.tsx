@@ -1,3 +1,4 @@
+import type { DamageReportWithRelations } from '@/lib/store-ops/types';
 import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import DamageReportDetail from '@/components/store-ops/damage-reports/DamageReportDetail'
@@ -18,9 +19,9 @@ export default async function EmployeeDamageReportDetailPage({ params }: { param
     .from('damage_reports')
     .select(`
       *,
-      profiles:reported_by(full_name, email),
+      profiles:profiles!reported_by(full_name, email),
       damage_images(*),
-      damage_comments(*, profiles:created_by(full_name))
+      damage_comments(*, profiles:profiles!created_by(full_name))
     `)
     .eq('id', id)
     .single()
@@ -30,7 +31,7 @@ export default async function EmployeeDamageReportDetailPage({ params }: { param
   return (
     <div className="space-y-6">
       <DamageReportDetail
-        report={report as any}
+        report={report as DamageReportWithRelations}
         userRole={profile?.role || 'employee'}
         basePath="/employee/store-operations/damage-reports"
       />

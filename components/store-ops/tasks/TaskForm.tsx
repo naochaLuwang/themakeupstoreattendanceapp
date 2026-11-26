@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { Save, ArrowLeft, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { TASK_PRIORITIES, TASK_CATEGORIES } from '@/lib/store-ops/constants'
+import StorePicker from '@/components/store-ops/StorePicker'
+import { useOperationsDraft } from '@/lib/store-ops/use-draft'
 import { createTask, updateTask, getEmployees } from '@/app/actions/store-ops/tasks'
 
 interface TaskFormProps {
@@ -24,6 +26,7 @@ interface TaskFormProps {
 
 export default function TaskForm({ initialData, basePath }: TaskFormProps) {
   const router = useRouter()
+  const [storeId, setStoreId] = useState('')
   const isEditing = !!initialData
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -41,9 +44,10 @@ export default function TaskForm({ initialData, basePath }: TaskFormProps) {
   })
 
   useEffect(() => {
-    getEmployees().then(setEmployees)
-  }, [])
+    getEmployees(storeId || undefined).then(setEmployees).catch(() => toast.error('Employees could not be loaded.'))
+  }, [storeId])
 
+  const clearDraft = useOperationsDraft(`task:${initialData?.id || 'new'}`, {form,storeId}, draft=>{setForm(draft.form);setStoreId(draft.storeId)})
   const validate = () => {
     const errs: Record<string, string> = {}
     if (!form.title.trim()) errs.title = 'Title is required'
@@ -59,6 +63,7 @@ export default function TaskForm({ initialData, basePath }: TaskFormProps) {
     setSaving(true)
     try {
       const payload = {
+        store_id: storeId || undefined,
         title: form.title.trim(),
         description: form.description.trim() || undefined,
         assigned_to: form.assigned_to || undefined,
@@ -76,22 +81,26 @@ export default function TaskForm({ initialData, basePath }: TaskFormProps) {
       if (result.error) {
         toast.error(result.error)
       } else {
+        clearDraft()
         toast.success(isEditing ? 'Task updated' : 'Task created')
         router.push(basePath)
         router.refresh()
       }
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : 'The form could not be saved. Your draft is kept.')
     } finally {
       setSaving(false)
     }
   }
 
-  const updateField = (field: string, value: any) => {
+  const updateField = (field: string, value: string | boolean) => {
     setForm(prev => ({ ...prev, [field]: value }))
     if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }))
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      {!isEditing && <StorePicker value={storeId} onChange={setStoreId} />}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -215,12 +224,9 @@ export default function TaskForm({ initialData, basePath }: TaskFormProps) {
           {form.is_recurring && (
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Recurrence Rule</label>
-              <input
-                value={form.recurrence_rule}
-                onChange={(e) => updateField('recurrence_rule', e.target.value)}
-                placeholder="e.g. every day, every week on Monday"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-900 outline-none focus:ring-2 focus:ring-slate-900/20 transition-all"
-              />
+              <select value={form.recurrence_rule} onChange={e=>updateField('recurrence_rule',e.target.value)} required className="w-full rounded-lg border bg-white p-3 text-sm">
+                <option value="">Choose an interval</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option>
+              </select>
             </div>
           )}
         </div>

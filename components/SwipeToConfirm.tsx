@@ -78,7 +78,8 @@ export default function SwipeToConfirm({ label, busyLabel = 'Saving attendanceâ€
                 </span>
                 <button type="button" className={styles.handle} disabled={blocked}
                     aria-label={label} aria-describedby={helpId}
-                    style={{ transform: `translateX(${offset}px)` }}
+                    // Keep Android's injected button styles from handing this drag to browser panning.
+                    style={{ transform: `translateX(${offset}px)`, touchAction: 'none' }}
                     onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={finishDrag}
                     onPointerCancel={cancelDrag} onLostPointerCapture={cancelDrag}
                     onClick={event => { if (event.detail === 0) void confirm(); }}>

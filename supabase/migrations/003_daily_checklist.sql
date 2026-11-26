@@ -56,13 +56,17 @@ ALTER TABLE daily_checklist_items ENABLE ROW LEVEL SECURITY;
 -- Drop existing policies
 DROP POLICY IF EXISTS "Everyone can view checklist templates" ON checklist_templates;
 DROP POLICY IF EXISTS "Admin/Manager can manage templates" ON checklist_templates;
+DROP POLICY IF EXISTS "Admin/Manager can update templates" ON checklist_templates;
 DROP POLICY IF EXISTS "Admin can delete templates" ON checklist_templates;
 DROP POLICY IF EXISTS "Everyone can view daily checklists" ON daily_checklists;
 DROP POLICY IF EXISTS "Authenticated users can create daily checklists" ON daily_checklists;
 DROP POLICY IF EXISTS "Employees can update own checklists" ON daily_checklists;
+DROP POLICY IF EXISTS "Users can update own checklists" ON daily_checklists;
 DROP POLICY IF EXISTS "Admin can delete daily checklists" ON daily_checklists;
 DROP POLICY IF EXISTS "Everyone can view checklist items" ON daily_checklist_items;
 DROP POLICY IF EXISTS "Authenticated users can manage items" ON daily_checklist_items;
+DROP POLICY IF EXISTS "Users can update items" ON daily_checklist_items;
+DROP POLICY IF EXISTS "Admin can delete items" ON daily_checklist_items;
 
 -- Templates policies
 CREATE POLICY "Everyone can view checklist templates"

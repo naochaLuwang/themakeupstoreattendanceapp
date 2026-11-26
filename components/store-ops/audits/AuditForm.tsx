@@ -5,10 +5,13 @@ import { useRouter } from 'next/navigation'
 import { Save, ArrowLeft, Loader2, Plus, Trash2, GripVertical } from 'lucide-react'
 import { toast } from 'sonner'
 import { AUDIT_CATEGORIES } from '@/lib/store-ops/constants'
+import StorePicker from '@/components/store-ops/StorePicker'
+import { useOperationsDraft } from '@/lib/store-ops/use-draft'
 import { createAuditTemplate } from '@/app/actions/store-ops/audits'
 
 export default function AuditForm() {
   const router = useRouter()
+  const [storeId,setStoreId]=useState('')
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -16,6 +19,7 @@ export default function AuditForm() {
   const [category, setCategory] = useState('')
   const [questions, setQuestions] = useState([{ question: '', max_score: 5 }])
 
+  const clearDraft=useOperationsDraft('audit-template:new',{name,category,questions,storeId},draft=>{setName(draft.name);setCategory(draft.category);setQuestions(draft.questions);setStoreId(draft.storeId)})
   const validate = () => {
     const errs: Record<string, string> = {}
     if (!name.trim()) errs.name = 'Template name is required'
@@ -34,6 +38,7 @@ export default function AuditForm() {
     try {
       const filtered = questions.filter(q => q.question.trim())
       const result = await createAuditTemplate({
+        store_id:storeId || undefined,
         name: name.trim(),
         category,
         questions: filtered.map(q => ({
@@ -45,10 +50,13 @@ export default function AuditForm() {
       if (result.error) {
         toast.error(result.error)
       } else {
+        clearDraft()
         toast.success('Audit template created')
         router.push('/admin/store-operations/audits')
         router.refresh()
       }
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : 'The form could not be saved. Your draft is kept.')
     } finally {
       setSaving(false)
     }
@@ -71,6 +79,7 @@ export default function AuditForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      <StorePicker value={storeId} onChange={setStoreId} />
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button

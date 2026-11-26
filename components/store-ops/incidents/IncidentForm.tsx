@@ -1,7 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
+import StorePicker from '@/components/store-ops/StorePicker'
+import VoiceNote from '@/components/store-ops/VoiceNote'
+import { useOperationsDraft } from '@/lib/store-ops/use-draft'
 import { Save, ArrowLeft, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { INCIDENT_TYPES, INCIDENT_PRIORITIES } from '@/lib/store-ops/constants'
@@ -15,6 +18,7 @@ interface IncidentFormProps {
     description: string | null
     incident_type: string
     priority: string
+    voice_note_url?: string | null
     incident_images?: { url: string }[]
   }
 }
@@ -32,6 +36,9 @@ const typeLabels: Record<string, string> = {
 
 export default function IncidentForm({ initialData }: IncidentFormProps) {
   const router = useRouter()
+  const pathname=usePathname()
+  const [storeId,setStoreId]=useState('')
+  const [voice,setVoice]=useState(initialData?.voice_note_url || '')
   const isEditing = !!initialData
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -47,6 +54,7 @@ export default function IncidentForm({ initialData }: IncidentFormProps) {
     initialData?.incident_images?.map(i => i.url) || []
   )
 
+  const clearDraft=useOperationsDraft(`incident:${initialData?.id || 'new'}`,{form,images,storeId,voice},draft=>{setForm(draft.form);setImages(draft.images);setStoreId(draft.storeId);setVoice(draft.voice)})
   const validate = () => {
     const errs: Record<string, string> = {}
     if (!form.title.trim()) errs.title = 'Title is required'
@@ -62,6 +70,8 @@ export default function IncidentForm({ initialData }: IncidentFormProps) {
     setSaving(true)
     try {
       const payload = {
+        store_id:storeId||undefined,
+        voice_note_url:voice||undefined,
         title: form.title.trim(),
         description: form.description.trim() || undefined,
         incident_type: form.incident_type,
@@ -77,9 +87,12 @@ export default function IncidentForm({ initialData }: IncidentFormProps) {
         toast.error(result.error)
       } else {
         toast.success(isEditing ? 'Incident updated' : 'Incident created')
-        router.push('/admin/store-operations/incidents')
+        clearDraft()
+        router.push(pathname.startsWith('/employee')?'/employee/store-operations/incidents':'/admin/store-operations/incidents')
         router.refresh()
       }
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : 'The form could not be saved. Your draft is kept.')
     } finally {
       setSaving(false)
     }
@@ -92,6 +105,8 @@ export default function IncidentForm({ initialData }: IncidentFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      {!isEditing && <StorePicker value={storeId} onChange={setStoreId} />}
+      <VoiceNote value={voice} onChange={setVoice} />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">

@@ -13,6 +13,7 @@ const modules = [
     { path: 'tasks', label: 'Tasks', icon: ListTodo },
     { path: 'incidents', label: 'Incidents', icon: FileWarning },
     { path: 'restocking', label: 'Restocking', icon: PackageSearch },
+    { path: 'notifications', label: 'Notifications', icon: ClipboardList },
 ];
 
 export default function EmployeeStoreOpsNav({ variant = 'tabs' }: { variant?: 'tabs' | 'home' }) {

@@ -1,3 +1,4 @@
+import type { IncidentWithRelations } from '@/lib/store-ops/types';
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import IncidentList from '@/components/store-ops/incidents/IncidentList'
@@ -16,21 +17,22 @@ export default async function IncidentsPage() {
 
   const role = profile?.role || 'employee'
 
-  const { data, count } = await supabase
+  const { data, count, error: loadError } = await supabase
     .from('incidents')
     .select(`
       *,
-      profiles:created_by(full_name, email),
-      assigned_to_profile:assigned_to(full_name),
+      profiles:profiles!created_by(full_name, email),
+      assigned_to_profile:profiles!assigned_to(full_name),
       incident_images(*),
-      incident_comments(*, profiles:created_by(full_name))
+      incident_comments(*, profiles:profiles!created_by(full_name))
     `, { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(0, 19)
 
+  if(loadError)throw new Error('Store operations records could not be loaded.');
   return (
     <IncidentList
-      initialData={(data || []) as any}
+      initialData={(data || []) as IncidentWithRelations[]}
       total={count || 0}
       page={1}
       totalPages={Math.ceil((count || 0) / 20)}

@@ -1,7 +1,8 @@
 'use client'
+import {runOperation} from '@/lib/store-ops/client-action';
 
 import { useRouter } from 'next/navigation'
-import { Plus, Pencil, Trash2, Check, X } from 'lucide-react'
+import { Plus, Pencil, Trash2,  } from 'lucide-react'
 import { toast } from 'sonner'
 import { deleteTemplate } from '@/app/actions/store-ops/daily-checklist'
 
@@ -20,7 +21,7 @@ export default function ChecklistTemplateList({ templates }: TemplateListProps) 
 
   const handleDelete = async (id: string, name: string) => {
     if (!confirm(`Delete "${name}" template?`)) return
-    const result = await deleteTemplate(id)
+    const result = await runOperation(() => deleteTemplate(id))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Template deleted')
@@ -60,7 +61,7 @@ export default function ChecklistTemplateList({ templates }: TemplateListProps) 
 }
 
 function TemplateGroup({
-  type, label, templates, onDelete
+  label, templates, onDelete
 }: {
   type: string
   label: string

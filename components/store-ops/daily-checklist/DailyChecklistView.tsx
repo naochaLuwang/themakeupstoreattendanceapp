@@ -1,10 +1,13 @@
 'use client'
+import {runOperation} from '@/lib/store-ops/client-action';
+import ImageUpload from '@/components/store-ops/ImageUpload'
+import StorePicker from '@/components/store-ops/StorePicker'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { Check, X, Camera, Loader2, ClipboardCheck, Play } from 'lucide-react'
+import { Check,   Loader2, ClipboardCheck, Play } from 'lucide-react'
 import {
   startDailyChecklist, completeChecklistItem,
   completeDailyChecklist, uploadChecklistPhoto,
@@ -25,7 +28,7 @@ interface ChecklistItem {
   completed_at: string | null
   photo_url: string | null
   sort_order: number
-  profiles?: { full_name: string | null }
+  profiles?: { full_name: string | null } | null
 }
 
 interface Checklist {
@@ -42,7 +45,7 @@ interface Checklist {
 }
 
 export default function DailyCheckListView({ initialType }: { initialType: 'opening' | 'closing' }) {
-  const router = useRouter()
+
   const supabase = createClient()
   const [type, setType] = useState<'opening' | 'closing'>(initialType)
   const [checklist, setChecklist] = useState<Checklist | null>(null)
@@ -50,22 +53,26 @@ export default function DailyCheckListView({ initialType }: { initialType: 'open
   const [loading, setLoading] = useState(true)
   const [completing, setCompleting] = useState(false)
   const [notes, setNotes] = useState('')
+  const [photos, setPhotos] = useState<string[]>([])
+  const [storeId, setStoreId] = useState('')
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   const fetchChecklist = useCallback(async () => {
     setLoading(true)
-    const data = await getTodayChecklist(type)
+    let data: Awaited<ReturnType<typeof getTodayChecklist>> = null
+    try { data = await getTodayChecklist(type, storeId || undefined); setLoadError(null) } catch { setLoadError('Today’s checklist could not be loaded. Refresh to retry.') }
     if (data && !('error' in data)) {
       setChecklist(data as Checklist)
     } else {
       setChecklist(null)
     }
     setLoading(false)
-  }, [type])
+  }, [type, storeId])
 
   const fetchTemplates = useCallback(async () => {
-    const data = await getTemplates()
-    setTemplates(data.filter((t: Template) => t.type === type && !checklist))
-  }, [type, checklist])
+    const data = await getTemplates().catch(() => { setLoadError('Templates could not be loaded.'); return [] })
+    setTemplates(data.filter((t) => t.type === type && !checklist && (!storeId || t.store_id === storeId)))
+  }, [type, checklist, storeId])
 
   useEffect(() => {
     fetchChecklist()
@@ -84,10 +91,10 @@ export default function DailyCheckListView({ initialType }: { initialType: 'open
       )
       .subscribe()
     return () => { supabase.removeChannel(channel) }
-  }, [checklist?.id, fetchChecklist, supabase])
+  }, [checklist, fetchChecklist, supabase])
 
   const handleStartChecklist = async (templateId: string) => {
-    const result = await startDailyChecklist(templateId, type)
+    const result = await runOperation(() => startDailyChecklist(templateId, type))
     if (result.error) {
       toast.error(result.error)
     }
@@ -95,7 +102,7 @@ export default function DailyCheckListView({ initialType }: { initialType: 'open
   }
 
   const handleToggleItem = async (itemId: string) => {
-    const result = await completeChecklistItem(itemId)
+    const result = await runOperation(() => completeChecklistItem(itemId))
     if (result.error) toast.error(result.error)
     else {
       setChecklist(prev => {
@@ -115,7 +122,7 @@ export default function DailyCheckListView({ initialType }: { initialType: 'open
   const handleCompleteChecklist = async () => {
     if (!checklist) return
     setCompleting(true)
-    const result = await completeDailyChecklist(checklist.id, undefined, notes || undefined)
+    const result = await runOperation(() => completeDailyChecklist(checklist.id, photos[0], notes || undefined))
     if (result.error) toast.error(result.error)
     else {
       toast.success(`${type === 'opening' ? 'Opening' : 'Closing'} checklist completed!`)
@@ -138,6 +145,8 @@ export default function DailyCheckListView({ initialType }: { initialType: 'open
 
   return (
     <div className="space-y-6">
+      <StorePicker value={storeId} onChange={setStoreId} />
+      {loadError && <p role="alert" className="text-sm text-rose-600">{loadError}</p>}
       {/* Type Toggle */}
       <div className="flex gap-2 bg-white border border-slate-200 rounded-2xl p-1.5 w-fit">
         {(['opening', 'closing'] as const).map(t => (
@@ -207,10 +216,11 @@ export default function DailyCheckListView({ initialType }: { initialType: 'open
             </div>
           </div>
 
+          <ImageUpload images={photos} onChange={setPhotos} maxImages={1} uploadAction={uploadChecklistPhoto} />
           {/* Items */}
           <div className="space-y-2">
             {checklist.daily_checklist_items
-              ?.sort((a, b) => a.sort_order - b.sort_order)
+              ?.slice().sort((a, b) => a.sort_order - b.sort_order)
               .map(item => (
                 <button
                   key={item.id}

@@ -1,10 +1,12 @@
 'use client'
+import {runOperation} from '@/lib/store-ops/client-action';
+import StoreImage from '@/components/store-ops/StoreImage';
 
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ClipboardCheck, ImageIcon } from 'lucide-react'
+import { ArrowLeft, ClipboardCheck } from 'lucide-react'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { deleteAuditTemplate } from '@/app/actions/store-ops/audits'
+import { deleteAudit } from '@/app/actions/store-ops/audits'
 import type { AuditWithRelations } from '@/lib/store-ops/types'
 
 interface AuditDetailViewProps {
@@ -22,7 +24,7 @@ export default function AuditDetailView({ audit, isAdmin, basePath }: AuditDetai
 
   const handleDelete = async () => {
     if (!confirm('Delete this audit record?')) return
-    const result = await deleteAuditTemplate(audit.template_id)
+    const result = await runOperation(() => deleteAudit(audit.id))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Audit deleted')
@@ -86,7 +88,7 @@ export default function AuditDetailView({ audit, isAdmin, basePath }: AuditDetai
                       <p className="text-sm font-medium text-slate-500 mt-2">{a.comment}</p>
                     )}
                     {a.photo_url && (
-                      <img src={a.photo_url} alt="" className="mt-2 w-20 h-20 rounded-xl object-cover bg-slate-100" />
+                      <StoreImage src={a.photo_url} alt="" className="mt-2 w-20 h-20 rounded-xl object-cover bg-slate-100" />
                     )}
                   </div>
                 )
@@ -120,7 +122,7 @@ export default function AuditDetailView({ audit, isAdmin, basePath }: AuditDetai
               <div className="grid grid-cols-3 gap-2">
                 {audit.audit_answers.filter(a => a.photo_url).map(a => (
                   <div key={a.id} className="aspect-square rounded-xl overflow-hidden bg-slate-100">
-                    <img src={a.photo_url!} alt="" className="w-full h-full object-cover" />
+                    <StoreImage src={a.photo_url!} alt="" className="w-full h-full object-cover" />
                   </div>
                 ))}
               </div>

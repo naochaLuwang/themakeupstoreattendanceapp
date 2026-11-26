@@ -1,3 +1,4 @@
+import type { IncidentWithRelations } from '@/lib/store-ops/types';
 import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import IncidentDetail from '@/components/store-ops/incidents/IncidentDetail'
@@ -18,10 +19,10 @@ export default async function IncidentDetailPage({ params }: { params: Promise<{
     .from('incidents')
     .select(`
       *,
-      profiles:created_by(full_name, email),
-      assigned_to_profile:assigned_to(full_name),
+      profiles:profiles!created_by(full_name, email),
+      assigned_to_profile:profiles!assigned_to(full_name),
       incident_images(*),
-      incident_comments(*, profiles:created_by(full_name))
+      incident_comments(*, profiles:profiles!created_by(full_name))
     `)
     .eq('id', id)
     .single()
@@ -30,7 +31,7 @@ export default async function IncidentDetailPage({ params }: { params: Promise<{
 
   return (
     <IncidentDetail
-      incident={incident as any}
+      incident={incident as IncidentWithRelations}
       userRole={profile?.role || 'employee'}
       basePath="/admin/store-operations/incidents"
     />

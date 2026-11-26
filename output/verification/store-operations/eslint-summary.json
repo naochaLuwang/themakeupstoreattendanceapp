@@ -1,0 +1,169 @@
+{
+  "files": 97,
+  "errors": 87,
+  "warnings": 19,
+  "byRule": {
+    "@typescript-eslint/no-unused-vars": 19,
+    "@next/next/no-img-element": 18,
+    "@typescript-eslint/no-explicit-any": 68,
+    "react-hooks/exhaustive-deps": 1
+  },
+  "filesWithErrors": [
+    {
+      "path": "app/(dashboard)/admin/store-operations/audits/audits/[id]/AuditDetailView.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/admin/store-operations/daily-checklist/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/admin/store-operations/damage-reports/[id]/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/admin/store-operations/damage-reports/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/admin/store-operations/incidents/[id]/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/admin/store-operations/incidents/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/admin/store-operations/restocking/[id]/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/admin/store-operations/restocking/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/admin/store-operations/shelf-inspection/[id]/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/admin/store-operations/shelf-inspection/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/admin/store-operations/tasks/[id]/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/admin/store-operations/tasks/page.tsx",
+      "errors": 2
+    },
+    {
+      "path": "app/(dashboard)/admin/store-operations/testers/[id]/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/admin/store-operations/testers/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/employee/store-operations/damage-reports/[id]/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/employee/store-operations/damage-reports/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/employee/store-operations/incidents/[id]/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/employee/store-operations/incidents/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/employee/store-operations/restocking/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/employee/store-operations/shelf-inspection/[id]/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/employee/store-operations/shelf-inspection/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/employee/store-operations/tasks/[id]/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/(dashboard)/employee/store-operations/tasks/page.tsx",
+      "errors": 3
+    },
+    {
+      "path": "app/(dashboard)/employee/store-operations/testers/page.tsx",
+      "errors": 1
+    },
+    {
+      "path": "app/actions/store-ops/daily-checklist.ts",
+      "errors": 3
+    },
+    {
+      "path": "app/actions/store-ops/restocking.ts",
+      "errors": 2
+    },
+    {
+      "path": "app/actions/store-ops/tasks.ts",
+      "errors": 2
+    },
+    {
+      "path": "components/store-ops/audits/AuditRunner.tsx",
+      "errors": 1
+    },
+    {
+      "path": "components/store-ops/daily-checklist/ChecklistTemplateList.tsx",
+      "errors": 3
+    },
+    {
+      "path": "components/store-ops/daily-checklist/DailyChecklistView.tsx",
+      "errors": 4
+    },
+    {
+      "path": "components/store-ops/damage-reports/DamageReportDetail.tsx",
+      "errors": 6
+    },
+    {
+      "path": "components/store-ops/incidents/IncidentDetail.tsx",
+      "errors": 4
+    },
+    {
+      "path": "components/store-ops/restocking/RestockDetail.tsx",
+      "errors": 10
+    },
+    {
+      "path": "components/store-ops/shelf-inspection/ShelfInspectionCard.tsx",
+      "errors": 1
+    },
+    {
+      "path": "components/store-ops/shelf-inspection/ShelfInspectionDetail.tsx",
+      "errors": 7
+    },
+    {
+      "path": "components/store-ops/tasks/TaskDetail.tsx",
+      "errors": 9
+    },
+    {
+      "path": "components/store-ops/tasks/TaskForm.tsx",
+      "errors": 1
+    },
+    {
+      "path": "components/store-ops/testers/TesterDetail.tsx",
+      "errors": 6
+    },
+    {
+      "path": "components/store-ops/testers/TesterList.tsx",
+      "errors": 1
+    }
+  ]
+}

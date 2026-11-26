@@ -2,8 +2,10 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { can, canDelete } from '@/lib/store-ops/permissions';
+import { testerSchema, validationMessage } from '@/lib/store-ops/validation';
 
 export async function createTester(data: {
+  store_id?: string
   product_name: string
   brand?: string
   shade?: string
@@ -12,6 +14,8 @@ export async function createTester(data: {
   condition: string
   remaining_percentage: number
 }) {
+  const parsed = testerSchema.safeParse(data);
+  if (!parsed.success) return { error: validationMessage(parsed.error) };
   const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) return { error: 'Unauthorized' };
@@ -29,7 +33,8 @@ export async function createTester(data: {
   const { data: tester, error } = await supabase
     .from('testers')
     .insert({
-      product_name: data.product_name,
+      store_id: data.store_id,
+      product_name: parsed.data.product_name,
       brand: data.brand || null,
       shade: data.shade || null,
       opened_date: data.opened_date || null,
@@ -44,7 +49,7 @@ export async function createTester(data: {
 
   if (error) return { error: error.message };
 
-  await logTesterAction(tester.id, 'created', 'Tester created');
+
 
   return { success: true, data: tester };
 }
@@ -75,24 +80,28 @@ export async function updateTester(
     return { error: 'Forbidden' };
   }
 
+  const { data: existing } = await supabase.from('testers').select('*').eq('id', id).single();
+  if (!existing) return { error: 'Tester unavailable.' };
+  const checked = testerSchema.safeParse({ ...existing, ...data, store_id: existing.store_id || undefined, opened_date: data.opened_date || existing.opened_date || undefined, expiry_date: data.expiry_date || existing.expiry_date || undefined });
+  if (!checked.success) return { error: validationMessage(checked.error) };
   const needs_replacement = data.remaining_percentage !== undefined
     ? data.remaining_percentage <= 10
     : data.condition === 'finished'
     ? true
     : undefined;
 
-  const { error } = await supabase
+  const { data: changed, error } = await supabase
     .from('testers')
     .update({
       ...data,
       ...(needs_replacement !== undefined && { needs_replacement }),
       updated_at: new Date().toISOString(),
     })
-    .eq('id', id);
+    .eq('id', id).select('id').single();
 
-  if (error) return { error: error.message };
+  if (error || !changed) return { error: error?.message || 'Tester was not changed. Refresh and retry.' };
 
-  await logTesterAction(id, 'updated', 'Tester details updated');
+
 
   return { success: true };
 }
@@ -112,12 +121,12 @@ export async function deleteTester(id: string) {
     return { error: 'Forbidden' };
   }
 
-  const { error } = await supabase
+  const { data: changed, error } = await supabase
     .from('testers')
     .delete()
-    .eq('id', id);
+    .eq('id', id).select('id').single();
 
-  if (error) return { error: error.message };
+  if (error || !changed) return { error: error?.message || 'Tester was not changed. Refresh and retry.' };
   return { success: true };
 }
 
@@ -134,7 +143,7 @@ export async function logTesterAction(testerId: string, action: string, notes?: 
       notes: notes || null,
       created_by: user.id,
     })
-    .select('*, profiles:created_by(full_name)')
+    .select('*, profiles:profiles!created_by(full_name)')
     .single();
 
   if (error) return { error: error.message };
@@ -156,14 +165,14 @@ export async function markNeedsReplacement(id: string) {
     return { error: 'Forbidden' };
   }
 
-  const { error } = await supabase
+  const { data: changed, error } = await supabase
     .from('testers')
     .update({ needs_replacement: true, updated_at: new Date().toISOString() })
-    .eq('id', id);
+    .eq('id', id).select('id').single();
 
-  if (error) return { error: error.message };
+  if (error || !changed) return { error: error?.message || 'Tester was not changed. Refresh and retry.' };
 
-  await logTesterAction(id, 'marked_for_replacement', 'Marked as needs replacement');
+
 
   return { success: true };
 }
@@ -183,18 +192,18 @@ export async function updateTesterCondition(id: string, condition: string) {
     return { error: 'Forbidden' };
   }
 
-  const { error } = await supabase
+  const { data: changed, error } = await supabase
     .from('testers')
     .update({
       condition,
       ...(condition === 'finished' && { needs_replacement: true, remaining_percentage: 0 }),
       updated_at: new Date().toISOString(),
     })
-    .eq('id', id);
+    .eq('id', id).select('id').single();
 
-  if (error) return { error: error.message };
+  if (error || !changed) return { error: error?.message || 'Tester was not changed. Refresh and retry.' };
 
-  await logTesterAction(id, 'condition_updated', `Condition changed to ${condition}`);
+
 
   return { success: true };
 }

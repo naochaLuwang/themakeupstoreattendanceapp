@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-26",
+  "status": "Local repairs verified; hosted rollout pending",
+  "checks": {
+    "production_build": "passed",
+    "typescript": "passed",
+    "scoped_eslint": "0 findings",
+    "unit_tests": {
+      "passed": 102,
+      "failed": 0
+    },
+    "database": "Disposable PostgreSQL suite passed, including existing attendance clock-in and GPS-free checkout",
+    "mobile_browser_layouts": 27,
+    "mobile_browser_runtime_errors": 0
+  },
+  "graphify": {
+    "version": "0.8.24",
+    "previous_state": "CLI already installed; repository integration absent",
+    "installation": "Official project-scoped Codex skill and hook installed",
+    "files": 157,
+    "nodes": 603,
+    "edges": 1555,
+    "communities": 35,
+    "usage": "Traced shared upload/auth dependencies and repaired audit/task paths bypassing compression",
+    "api_tokens": 0
+  },
+  "limitations": [
+    "Hosted Supabase migrations not applied",
+    "Worker secret, store alert settings and schedule must be configured during rollout",
+    "Browser tests use fictional auth/actions; physical Android device not tested",
+    "Unrelated pre-existing project-wide lint failures outside this scope"
+  ],
+  "documentation": "docs/store-operations.txt"
+}

@@ -1,4 +1,5 @@
 'use client'
+import {runOperation} from '@/lib/store-ops/client-action';
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -6,7 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import {
   ArrowLeft, Check, X, Trash2, Package,
-  Loader2, User, Calendar, Hash, FileText
+   User
 } from 'lucide-react'
 import {
   approveRestockRequest, rejectRestockRequest,
@@ -36,15 +37,15 @@ export default function RestockDetail({ request, userRole, basePath }: RestockDe
   const [submitting, setSubmitting] = useState(false)
 
   const style = statusStyles[currentRequest.status] || statusStyles.pending
-  const isManager = canManageApprovals(userRole as any)
-  const isAdmin = canDelete(userRole as any)
+  const isManager = canManageApprovals(userRole as 'admin' | 'manager' | 'employee' | null)
+  const isAdmin = canDelete(userRole as 'admin' | 'manager' | 'employee' | null)
 
   useEffect(() => {
     const channel = supabase.channel(`restock_request_${request.id}`)
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'restock_requests', filter: `id=eq.${request.id}` },
         (payload) => {
-          if (payload.new) setCurrentRequest(prev => ({ ...prev, ...payload.new as any }))
+          if (payload.new) setCurrentRequest(prev => ({ ...prev, ...payload.new as Partial<RestockRequestWithRelations> }))
         }
       )
       .subscribe()
@@ -54,7 +55,7 @@ export default function RestockDetail({ request, userRole, basePath }: RestockDe
 
   const handleApprove = async () => {
     setSubmitting(true)
-    const result = await approveRestockRequest(currentRequest.id)
+    const result = await runOperation(() => approveRestockRequest(currentRequest.id))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Restock request approved')
@@ -65,7 +66,7 @@ export default function RestockDetail({ request, userRole, basePath }: RestockDe
 
   const handleReject = async () => {
     setSubmitting(true)
-    const result = await rejectRestockRequest(currentRequest.id)
+    const result = await runOperation(() => rejectRestockRequest(currentRequest.id))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Restock request rejected')
@@ -76,7 +77,7 @@ export default function RestockDetail({ request, userRole, basePath }: RestockDe
 
   const handleComplete = async () => {
     setSubmitting(true)
-    const result = await completeRestockRequest(currentRequest.id)
+    const result = await runOperation(() => completeRestockRequest(currentRequest.id))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Restock completed')
@@ -87,7 +88,7 @@ export default function RestockDetail({ request, userRole, basePath }: RestockDe
 
   const handleDelete = async () => {
     if (!confirm('Delete this restock request permanently?')) return
-    const result = await deleteRestockRequest(currentRequest.id)
+    const result = await runOperation(() => deleteRestockRequest(currentRequest.id))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Restock request deleted')
@@ -124,6 +125,7 @@ export default function RestockDetail({ request, userRole, basePath }: RestockDe
         </div>
 
         <div className="flex items-center gap-2">
+          {isManager && currentRequest.status==='pending' && <button type="button" onClick={()=>router.push(`${basePath}/${request.id}/edit`)} className="rounded-lg border px-4 py-2 text-sm">Edit</button>}
           {currentRequest.status === 'pending' && isManager && (
             <>
               <button onClick={handleApprove} disabled={submitting} className="flex items-center gap-1.5 px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-all disabled:opacity-50">
@@ -247,19 +249,7 @@ export default function RestockDetail({ request, userRole, basePath }: RestockDe
   )
 }
 
-function DetailItem({ icon: Icon, label, value }: { icon: any; label: string; value: string }) {
-  return (
-    <div className="space-y-1">
-      <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-        <Icon size={11} />
-        {label}
-      </div>
-      <p className="text-sm font-black text-slate-900">{value}</p>
-    </div>
-  )
-}
-
-function TimelineItem({ icon: Icon, label, value, date, active }: { icon: any; label: string; value: string; date: string; active?: boolean }) {
+function TimelineItem({ icon: Icon, label, value, date, active }: { icon: import('lucide-react').LucideIcon; label: string; value: string; date: string; active?: boolean }) {
   return (
     <div className="flex gap-3">
       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${active ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400'}`}>

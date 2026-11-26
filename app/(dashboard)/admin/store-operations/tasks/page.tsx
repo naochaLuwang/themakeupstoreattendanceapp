@@ -1,3 +1,4 @@
+import type { TaskWithRelations } from '@/lib/store-ops/types';
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import TaskList from '@/components/store-ops/tasks/TaskList'
@@ -16,13 +17,13 @@ export default async function TasksPage() {
 
   const role = profile?.role || 'employee'
 
-  const { data, count } = await supabase
+  const { data, count, error: loadError } = await supabase
     .from('tasks')
     .select(`
       *,
-      assigned_to_profile:assigned_to(full_name),
-      assigned_by_profile:assigned_by(full_name),
-      task_comments(*, profiles:created_by(full_name)),
+      assigned_to_profile:profiles!assigned_to(full_name),
+      assigned_by_profile:profiles!assigned_by(full_name),
+      task_comments(*, profiles:profiles!created_by(full_name)),
       task_attachments(*)
     `, { count: 'exact' })
     .order('created_at', { ascending: false })
@@ -34,15 +35,16 @@ export default async function TasksPage() {
     .eq('role', 'employee')
     .order('full_name')
 
+  if(loadError)throw new Error('Store operations records could not be loaded.');
   return (
     <TaskList
-      initialData={(data || []) as any}
+      initialData={(data || []) as TaskWithRelations[]}
       total={count || 0}
       page={1}
       totalPages={Math.ceil((count || 0) / 20)}
       basePath="/admin/store-operations/tasks"
       canCreate={can(role, 'tasks.create')}
-      employees={(employees.data || []) as any}
+      employees={employees.data || []}
     />
   )
 }

@@ -1,3 +1,4 @@
+import type { ShelfInspectionWithRelations } from '@/lib/store-ops/types';
 import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import ShelfInspectionDetail from '@/components/store-ops/shelf-inspection/ShelfInspectionDetail'
@@ -19,9 +20,9 @@ export default async function ShelfInspectionDetailPage({ params }: { params: Pr
     .select(`
       *,
       store_sections(name, description),
-      profiles:employee_id(full_name, email),
+      profiles:profiles!employee_id(full_name, email),
       inspection_images(*),
-      inspection_comments(*, profiles:created_by(full_name))
+      inspection_comments(*, profiles:profiles!created_by(full_name))
     `)
     .eq('id', id)
     .single()
@@ -30,7 +31,7 @@ export default async function ShelfInspectionDetailPage({ params }: { params: Pr
 
   return (
     <ShelfInspectionDetail
-      inspection={inspection as any}
+      inspection={inspection as ShelfInspectionWithRelations}
       userRole={profile?.role || 'employee'}
       basePath="/admin/store-operations/shelf-inspection"
     />

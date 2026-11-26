@@ -39,9 +39,9 @@ export async function sendFcm(delivery: Delivery, options: { fetcher?: Fetcher; 
         const response = await (options.fetcher || fetch)(`https://fcm.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/messages:send`, {
             method: 'POST', signal: AbortSignal.timeout(8000), headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: { token: credential.token,
-                notification: { title: 'Attendance reminder', body: 'Open HRM to review your current attendance.' },
+                notification: delivery.category === 'operations' ? { title: 'Store operations update', body: 'Open HRM to review your store updates.' } : { title: 'Attendance reminder', body: 'Open HRM to review your current attendance.' },
                 data: { url: notificationPath(delivery.url), notificationId: delivery.notificationId },
-                android: { priority: 'normal', ttl: `${Math.min(seconds, 7200)}s`, collapse_key: 'hrm_attendance', notification: { channel_id: 'hrm-attendance', icon: 'ic_stat_hrm', color: '#704858', tag: 'hrm-attendance' } },
+                android: { priority: 'normal', ttl: `${Math.min(seconds, 7200)}s`, collapse_key: delivery.category === 'operations' ? 'hrm_operations' : 'hrm_attendance', notification: { channel_id: 'hrm-attendance', icon: 'ic_stat_hrm', color: '#704858', tag: delivery.category === 'operations' ? 'hrm-operations' : 'hrm-attendance' } },
             } }),
         });
         if (response.ok) return { outcome: 'sent' };

@@ -1,10 +1,11 @@
+import type { OperationsTables } from '@/lib/store-ops/schema.types';
 import type { NotificationTables } from '@/lib/notifications/types';
 import type { StationTables } from '@/lib/attendance/stations/types';
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
   public: {
-    Tables: StationTables & NotificationTables & {
+    Tables: OperationsTables & StationTables & NotificationTables & {
       attendance_policies: {
         Row: {
           id: string
@@ -556,28 +557,15 @@ export type Database = {
           created_by?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "damage_reports_reported_by_fkey"
-            columns: ["reported_by"]
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "damage_reports_reviewed_by_fkey"
-            columns: ["reviewed_by"]
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "damage_reports_created_by_fkey"
-            columns: ["created_by"]
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          }
+          { foreignKeyName: "damage_reports_reported_by_fkey"; columns: ["reported_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "damage_reports_store_id_fkey"; columns: ["store_id"]; referencedRelation: "stores"; referencedColumns: ["id"] },
+          { foreignKeyName: "damage_reports_reviewed_by_fkey"; columns: ["reviewed_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "damage_reports_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
         ]
       }
       damage_images: {
         Row: {
+          updated_at: string
           id: string
           damage_report_id: string
           url: string
@@ -585,6 +573,7 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          updated_at?: string
           id?: string
           damage_report_id: string
           url: string
@@ -592,6 +581,7 @@ export type Database = {
           created_by: string
         }
         Update: {
+          updated_at?: string
           id?: string
           damage_report_id?: string
           url?: string
@@ -599,16 +589,13 @@ export type Database = {
           created_by?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "damage_images_damage_report_id_fkey"
-            columns: ["damage_report_id"]
-            referencedRelation: "damage_reports"
-            referencedColumns: ["id"]
-          }
+          { foreignKeyName: "damage_images_damage_report_id_fkey"; columns: ["damage_report_id"]; referencedRelation: "damage_reports"; referencedColumns: ["id"] },
+          { foreignKeyName: "damage_images_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
         ]
       }
       damage_comments: {
         Row: {
+          updated_at: string
           id: string
           damage_report_id: string
           comment: string
@@ -616,6 +603,7 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          updated_at?: string
           id?: string
           damage_report_id: string
           comment: string
@@ -623,6 +611,7 @@ export type Database = {
           created_by: string
         }
         Update: {
+          updated_at?: string
           id?: string
           damage_report_id?: string
           comment?: string
@@ -630,49 +619,55 @@ export type Database = {
           created_by?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "damage_comments_damage_report_id_fkey"
-            columns: ["damage_report_id"]
-            referencedRelation: "damage_reports"
-            referencedColumns: ["id"]
-          }
+          { foreignKeyName: "damage_comments_damage_report_id_fkey"; columns: ["damage_report_id"]; referencedRelation: "damage_reports"; referencedColumns: ["id"] },
+          { foreignKeyName: "damage_comments_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
         ]
       }
       checklist_templates: {
         Row: {
+          requires_photo: boolean
+          store_id: string | null
           id: string
           name: string
-          type: string
+          type: 'opening' | 'closing'
           is_active: boolean
           created_at: string
           updated_at: string
           created_by: string
         }
         Insert: {
+          requires_photo?: boolean
+          store_id?: string | null
           id?: string
           name: string
-          type: string
+          type: 'opening' | 'closing'
           is_active?: boolean
           created_at?: string
           updated_at?: string
           created_by: string
         }
         Update: {
+          requires_photo?: boolean
+          store_id?: string | null
           id?: string
           name?: string
-          type?: string
+          type?: 'opening' | 'closing'
           is_active?: boolean
           created_at?: string
           updated_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "checklist_templates_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       daily_checklists: {
         Row: {
+          superseded_at: string | null
+          store_id: string | null
           id: string
           template_id: string
-          type: string
+          type: 'opening' | 'closing'
           date: string
           status: string
           completed_by: string | null
@@ -684,9 +679,11 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          superseded_at?: string | null
+          store_id?: string | null
           id?: string
           template_id: string
-          type: string
+          type: 'opening' | 'closing'
           date?: string
           status?: string
           completed_by?: string | null
@@ -698,9 +695,11 @@ export type Database = {
           created_by: string
         }
         Update: {
+          superseded_at?: string | null
+          store_id?: string | null
           id?: string
           template_id?: string
-          type?: string
+          type?: 'opening' | 'closing'
           date?: string
           status?: string
           completed_by?: string | null
@@ -712,16 +711,16 @@ export type Database = {
           created_by?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "daily_checklists_template_id_fkey"
-            columns: ["template_id"]
-            referencedRelation: "checklist_templates"
-            referencedColumns: ["id"]
-          }
+          { foreignKeyName: "daily_checklists_template_id_fkey"; columns: ["template_id"]; referencedRelation: "checklist_templates"; referencedColumns: ["id"] },
+          { foreignKeyName: "daily_checklists_completed_by_fkey"; columns: ["completed_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "daily_checklists_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
         ]
       }
       daily_checklist_items: {
         Row: {
+          requires_photo: boolean
+          is_required: boolean
+          template_item_id: string | null
           id: string
           daily_checklist_id: string
           label: string
@@ -735,6 +734,9 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          requires_photo?: boolean
+          is_required?: boolean
+          template_item_id?: string | null
           id?: string
           daily_checklist_id: string
           label: string
@@ -748,6 +750,9 @@ export type Database = {
           created_by: string
         }
         Update: {
+          requires_photo?: boolean
+          is_required?: boolean
+          template_item_id?: string | null
           id?: string
           daily_checklist_id?: string
           label?: string
@@ -761,6 +766,8 @@ export type Database = {
           created_by?: string
         }
         Relationships: [
+          { foreignKeyName: "daily_checklist_items_completed_by_fkey"; columns: ["completed_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "daily_checklist_items_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] },
           {
             foreignKeyName: "daily_checklist_items_daily_checklist_id_fkey"
             columns: ["daily_checklist_id"]
@@ -771,6 +778,7 @@ export type Database = {
       }
       store_sections: {
         Row: {
+          store_id: string | null
           id: string
           name: string
           description: string | null
@@ -779,6 +787,7 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          store_id?: string | null
           id?: string
           name: string
           description?: string | null
@@ -787,6 +796,7 @@ export type Database = {
           created_by: string
         }
         Update: {
+          store_id?: string | null
           id?: string
           name?: string
           description?: string | null
@@ -794,10 +804,13 @@ export type Database = {
           updated_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "store_sections_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       shelf_inspections: {
         Row: {
+          store_id: string | null
           id: string
           section_id: string
           employee_id: string
@@ -810,6 +823,7 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          store_id?: string | null
           id?: string
           section_id: string
           employee_id: string
@@ -822,6 +836,7 @@ export type Database = {
           created_by: string
         }
         Update: {
+          store_id?: string | null
           id?: string
           section_id?: string
           employee_id?: string
@@ -833,10 +848,16 @@ export type Database = {
           updated_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "shelf_inspections_section_id_fkey"; columns: ["section_id"]; referencedRelation: "store_sections"; referencedColumns: ["id"] },
+          { foreignKeyName: "shelf_inspections_employee_id_fkey"; columns: ["employee_id"]; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "shelf_inspections_reviewed_by_fkey"; columns: ["reviewed_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "shelf_inspections_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       inspection_images: {
         Row: {
+          updated_at: string
           id: string
           inspection_id: string
           url: string
@@ -844,6 +865,7 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          updated_at?: string
           id?: string
           inspection_id: string
           url: string
@@ -851,16 +873,21 @@ export type Database = {
           created_by: string
         }
         Update: {
+          updated_at?: string
           id?: string
           inspection_id?: string
           url?: string
           created_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "inspection_images_inspection_id_fkey"; columns: ["inspection_id"]; referencedRelation: "shelf_inspections"; referencedColumns: ["id"] },
+          { foreignKeyName: "inspection_images_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       inspection_comments: {
         Row: {
+          updated_at: string
           id: string
           inspection_id: string
           comment: string
@@ -868,6 +895,7 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          updated_at?: string
           id?: string
           inspection_id: string
           comment: string
@@ -875,16 +903,21 @@ export type Database = {
           created_by: string
         }
         Update: {
+          updated_at?: string
           id?: string
           inspection_id?: string
           comment?: string
           created_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "inspection_comments_inspection_id_fkey"; columns: ["inspection_id"]; referencedRelation: "shelf_inspections"; referencedColumns: ["id"] },
+          { foreignKeyName: "inspection_comments_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       testers: {
         Row: {
+          store_id: string | null
           id: string
           product_name: string
           brand: string | null
@@ -899,6 +932,7 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          store_id?: string | null
           id?: string
           product_name: string
           brand?: string | null
@@ -913,6 +947,7 @@ export type Database = {
           created_by: string
         }
         Update: {
+          store_id?: string | null
           id?: string
           product_name?: string
           brand?: string | null
@@ -926,10 +961,13 @@ export type Database = {
           updated_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "testers_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       tester_logs: {
         Row: {
+          updated_at: string
           id: string
           tester_id: string
           action: string
@@ -938,6 +976,7 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          updated_at?: string
           id?: string
           tester_id: string
           action: string
@@ -946,6 +985,7 @@ export type Database = {
           created_by: string
         }
         Update: {
+          updated_at?: string
           id?: string
           tester_id?: string
           action?: string
@@ -953,10 +993,17 @@ export type Database = {
           created_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "tester_logs_tester_id_fkey"; columns: ["tester_id"]; referencedRelation: "testers"; referencedColumns: ["id"] },
+          { foreignKeyName: "tester_logs_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       tasks: {
         Row: {
+          recurrence_parent_id: string | null
+          completed_by: string | null
+          completed_at: string | null
+          store_id: string | null
           id: string
           title: string
           description: string | null
@@ -973,6 +1020,10 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          recurrence_parent_id?: string | null
+          completed_by?: string | null
+          completed_at?: string | null
+          store_id?: string | null
           id?: string
           title: string
           description?: string | null
@@ -989,6 +1040,10 @@ export type Database = {
           created_by: string
         }
         Update: {
+          recurrence_parent_id?: string | null
+          completed_by?: string | null
+          completed_at?: string | null
+          store_id?: string | null
           id?: string
           title?: string
           description?: string | null
@@ -1004,10 +1059,15 @@ export type Database = {
           updated_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "tasks_assigned_to_fkey"; columns: ["assigned_to"]; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "tasks_assigned_by_fkey"; columns: ["assigned_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "tasks_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       task_comments: {
         Row: {
+          updated_at: string
           id: string
           task_id: string
           comment: string
@@ -1015,6 +1075,7 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          updated_at?: string
           id?: string
           task_id: string
           comment: string
@@ -1022,16 +1083,21 @@ export type Database = {
           created_by: string
         }
         Update: {
+          updated_at?: string
           id?: string
           task_id?: string
           comment?: string
           created_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "task_comments_task_id_fkey"; columns: ["task_id"]; referencedRelation: "tasks"; referencedColumns: ["id"] },
+          { foreignKeyName: "task_comments_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       task_attachments: {
         Row: {
+          updated_at: string
           id: string
           task_id: string
           url: string
@@ -1039,6 +1105,7 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          updated_at?: string
           id?: string
           task_id: string
           url: string
@@ -1046,16 +1113,21 @@ export type Database = {
           created_by: string
         }
         Update: {
+          updated_at?: string
           id?: string
           task_id?: string
           url?: string
           created_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "task_attachments_task_id_fkey"; columns: ["task_id"]; referencedRelation: "tasks"; referencedColumns: ["id"] },
+          { foreignKeyName: "task_attachments_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       audit_templates: {
         Row: {
+          store_id: string | null
           id: string
           name: string
           category: string | null
@@ -1064,6 +1136,7 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          store_id?: string | null
           id?: string
           name: string
           category?: string | null
@@ -1072,6 +1145,7 @@ export type Database = {
           created_by: string
         }
         Update: {
+          store_id?: string | null
           id?: string
           name?: string
           category?: string | null
@@ -1079,10 +1153,13 @@ export type Database = {
           updated_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "audit_templates_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       audit_questions: {
         Row: {
+          updated_at: string
           id: string
           template_id: string
           question: string
@@ -1092,6 +1169,7 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          updated_at?: string
           id?: string
           template_id: string
           question: string
@@ -1101,6 +1179,7 @@ export type Database = {
           created_by: string
         }
         Update: {
+          updated_at?: string
           id?: string
           template_id?: string
           question?: string
@@ -1109,7 +1188,10 @@ export type Database = {
           created_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "audit_questions_template_id_fkey"; columns: ["template_id"]; referencedRelation: "audit_templates"; referencedColumns: ["id"] },
+          { foreignKeyName: "audit_questions_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       audits: {
         Row: {
@@ -1151,10 +1233,17 @@ export type Database = {
           updated_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "audits_template_id_fkey"; columns: ["template_id"]; referencedRelation: "audit_templates"; referencedColumns: ["id"] },
+          { foreignKeyName: "audits_store_id_fkey"; columns: ["store_id"]; referencedRelation: "stores"; referencedColumns: ["id"] },
+          { foreignKeyName: "audits_conducted_by_fkey"; columns: ["conducted_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "audits_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       audit_answers: {
         Row: {
+          answered_at: string | null
+          updated_at: string
           id: string
           audit_id: string
           question_id: string
@@ -1165,6 +1254,8 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          answered_at?: string | null
+          updated_at?: string
           id?: string
           audit_id: string
           question_id: string
@@ -1175,6 +1266,8 @@ export type Database = {
           created_by: string
         }
         Update: {
+          answered_at?: string | null
+          updated_at?: string
           id?: string
           audit_id?: string
           question_id?: string
@@ -1184,7 +1277,11 @@ export type Database = {
           created_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "audit_answers_audit_id_fkey"; columns: ["audit_id"]; referencedRelation: "audits"; referencedColumns: ["id"] },
+          { foreignKeyName: "audit_answers_question_id_fkey"; columns: ["question_id"]; referencedRelation: "audit_questions"; referencedColumns: ["id"] },
+          { foreignKeyName: "audit_answers_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       incidents: {
         Row: {
@@ -1229,10 +1326,15 @@ export type Database = {
           updated_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "incidents_assigned_to_fkey"; columns: ["assigned_to"]; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "incidents_store_id_fkey"; columns: ["store_id"]; referencedRelation: "stores"; referencedColumns: ["id"] },
+          { foreignKeyName: "incidents_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       incident_images: {
         Row: {
+          updated_at: string
           id: string
           incident_id: string
           url: string
@@ -1240,6 +1342,7 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          updated_at?: string
           id?: string
           incident_id: string
           url: string
@@ -1247,16 +1350,21 @@ export type Database = {
           created_by: string
         }
         Update: {
+          updated_at?: string
           id?: string
           incident_id?: string
           url?: string
           created_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "incident_images_incident_id_fkey"; columns: ["incident_id"]; referencedRelation: "incidents"; referencedColumns: ["id"] },
+          { foreignKeyName: "incident_images_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       incident_comments: {
         Row: {
+          updated_at: string
           id: string
           incident_id: string
           comment: string
@@ -1264,6 +1372,7 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          updated_at?: string
           id?: string
           incident_id: string
           comment: string
@@ -1271,16 +1380,21 @@ export type Database = {
           created_by: string
         }
         Update: {
+          updated_at?: string
           id?: string
           incident_id?: string
           comment?: string
           created_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "incident_comments_incident_id_fkey"; columns: ["incident_id"]; referencedRelation: "incidents"; referencedColumns: ["id"] },
+          { foreignKeyName: "incident_comments_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       restock_requests: {
         Row: {
+          store_id: string | null
           id: string
           status: string
           notes: string | null
@@ -1292,6 +1406,7 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          store_id?: string | null
           id?: string
           status?: string
           notes?: string | null
@@ -1303,6 +1418,7 @@ export type Database = {
           created_by: string
         }
         Update: {
+          store_id?: string | null
           id?: string
           status?: string
           notes?: string | null
@@ -1313,10 +1429,14 @@ export type Database = {
           updated_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "restock_requests_approved_by_fkey"; columns: ["approved_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "restock_requests_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       restock_items: {
         Row: {
+          updated_at: string
           id: string
           restock_request_id: string
           barcode: string
@@ -1329,6 +1449,7 @@ export type Database = {
           created_by: string
         }
         Insert: {
+          updated_at?: string
           id?: string
           restock_request_id: string
           barcode: string
@@ -1341,6 +1462,7 @@ export type Database = {
           created_by: string
         }
         Update: {
+          updated_at?: string
           id?: string
           restock_request_id?: string
           barcode?: string
@@ -1352,10 +1474,14 @@ export type Database = {
           created_at?: string
           created_by?: string
         }
-        Relationships: []
+        Relationships: [
+          { foreignKeyName: "restock_items_restock_request_id_fkey"; columns: ["restock_request_id"]; referencedRelation: "restock_requests"; referencedColumns: ["id"] },
+          { foreignKeyName: "restock_items_created_by_fkey"; columns: ["created_by"]; referencedRelation: "profiles"; referencedColumns: ["id"] }
+        ]
       }
       notification_log: {
         Row: {
+          operations_store_id: string | null
           updated_at: string
           created_by: string | null
           attendance_reminder_id: string | null
@@ -1371,6 +1497,7 @@ export type Database = {
           created_at: string
         }
         Insert: {
+          operations_store_id?: string | null
           updated_at?: string
           created_by?: string | null
           attendance_reminder_id?: string | null
@@ -1386,6 +1513,7 @@ export type Database = {
           created_at?: string
         }
         Update: {
+          operations_store_id?: string | null
           updated_at?: string
           created_by?: string | null
           attendance_reminder_id?: string | null
@@ -1405,6 +1533,16 @@ export type Database = {
     }
     Views: Record<string, never>
     Functions: {
+      store_ops_report: { Args: { p_from: string; p_to: string; p_store?: string | null }; Returns: Json }
+      store_ops_worker: { Args: { p_command: Json }; Returns: Json }
+      store_ops_incident_save: { Args: { p_id: string | null; p_data: Json }; Returns: Json }
+      store_ops_restock_save: { Args: { p_id: string | null; p_data: Json }; Returns: Json }
+      store_ops_audit_template: { Args: { p_data: Json }; Returns: Json }
+      store_ops_audit_start: { Args: { p_template: string }; Returns: Json }
+      store_ops_checklist_template: { Args: { p_id: string | null; p_data: Json }; Returns: Json }
+      store_ops_checklist_start: { Args: { p_template: string }; Returns: Json }
+      store_ops_damage_save: { Args: { p_id: string | null; p_data: Json }; Returns: Json }
+      store_ops_shelf_save: { Args: { p_id: string | null; p_data: Json }; Returns: Json }
       attendance_notification_user: { Args: { p_command: Json }; Returns: Json }
       attendance_reminder_admin: { Args: { p_command: Json }; Returns: Json }
       attendance_reminder_worker: { Args: { p_command: Json }; Returns: Json }

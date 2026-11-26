@@ -1,3 +1,4 @@
+import type { TesterWithRelations } from '@/lib/store-ops/types';
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import TesterList from '@/components/store-ops/testers/TesterList'
@@ -16,20 +17,21 @@ export default async function EmployeeTestersPage() {
 
   const role = profile?.role || 'employee'
 
-  const { data, count } = await supabase
+  const { data, count, error: loadError } = await supabase
     .from('testers')
     .select(`
       *,
-      profiles:created_by(full_name),
-      tester_logs(*, profiles:created_by(full_name))
+      profiles:profiles!created_by(full_name),
+      tester_logs(*, profiles:profiles!created_by(full_name))
     `, { count: 'exact' })
     .order('expiry_date', { ascending: true })
     .range(0, 19)
 
+  if(loadError)throw new Error('Store operations records could not be loaded.');
   return (
     <div className="space-y-6">
       <TesterList
-        initialData={(data || []) as any}
+        initialData={(data || []) as TesterWithRelations[]}
         total={count || 0}
         page={1}
         totalPages={Math.ceil((count || 0) / 20)}

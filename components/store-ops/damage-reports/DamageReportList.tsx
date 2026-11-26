@@ -1,5 +1,7 @@
 'use client'
 
+import StoreImage from '@/components/store-ops/StoreImage'
+
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -35,6 +37,7 @@ export default function DamageReportList({
   const [currentPage, setCurrentPage] = useState(initialPage)
   const [totalPages, setTotalPages] = useState(initialTotalPages)
   const [loading, setLoading] = useState(false)
+  const [loadError,setLoadError]=useState<string|null>(null)
 
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
@@ -47,9 +50,9 @@ export default function DamageReportList({
       .from('damage_reports')
       .select(`
         *,
-        profiles:reported_by(full_name, email),
+        profiles:profiles!reported_by(full_name, email),
         damage_images(*),
-        damage_comments(*, profiles:created_by(full_name))
+        damage_comments(*, profiles:profiles!created_by(full_name))
       `, { count: 'exact' })
 
     if (search) {
@@ -62,7 +65,8 @@ export default function DamageReportList({
     const offset = (pageNum - 1) * limit
     query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1)
 
-    const { data: results, count } = await query
+    const { data: results, count, error: queryError } = await query
+    setLoadError(queryError?'Records could not be loaded. Refresh to retry.':null)
     if (results) setData(results as unknown as DamageReportWithRelations[])
     if (count !== null) {
       setTotalCount(count)
@@ -111,6 +115,7 @@ export default function DamageReportList({
 
   return (
     <div className="space-y-6">
+      {loadError&&<p role="alert" className="rounded-lg border border-rose-300 p-3 text-sm text-rose-700">{loadError}</p>}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -233,7 +238,7 @@ export default function DamageReportList({
                       <div className="flex items-center gap-3">
                         {item.damage_images?.[0] ? (
                           <div className="w-10 h-10 rounded-lg overflow-hidden bg-slate-100 shrink-0">
-                            <img src={item.damage_images[0].url} alt="" className="w-full h-full object-cover" />
+                            <StoreImage src={item.damage_images[0].url} alt="" className="w-full h-full object-cover" />
                           </div>
                         ) : (
                           <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">

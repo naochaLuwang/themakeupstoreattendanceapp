@@ -1,0 +1,15 @@
+✔ native bootstrap is idempotent and reports readiness once (2.343541ms)
+✔ offline/reconnect never reloads or replays a form (0.429125ms)
+✔ native reconnect reports connection without blocking other online listeners (0.42ms)
+✔ Android back closes the open dialog and respects a prevented cancellation (0.414833ms)
+✔ keyboard and resume emit app state without triggering navigation (0.406084ms)
+✔ only actual enabled user interactions receive generic tap feedback (0.391291ms)
+✔ legacy attendance swipes buzz at the threshold and release without submitting (1.3675ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 53.278

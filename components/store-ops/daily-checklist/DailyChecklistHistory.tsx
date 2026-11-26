@@ -13,7 +13,7 @@ interface HistoryItem {
   completed_by: string | null
   photo_url: string | null
   notes: string | null
-  profiles: { full_name: string } | null
+  profiles: { full_name: string | null } | null
   checklist_templates: { name: string }
   daily_checklist_items: { id: string; label: string; is_completed: boolean }[]
 }
@@ -21,6 +21,7 @@ interface HistoryItem {
 export default function DailyChecklistHistory() {
   const [data, setData] = useState<HistoryItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError,setLoadError]=useState<string|null>(null)
   const [typeFilter, setTypeFilter] = useState<'opening' | 'closing' | ''>('')
   const [expanded, setExpanded] = useState<string | null>(null)
 
@@ -28,12 +29,14 @@ export default function DailyChecklistHistory() {
     setLoading(true)
     getChecklistHistory(typeFilter || undefined).then(result => {
       setData(result)
+      setLoadError(null)
       setLoading(false)
-    })
+    }).catch(()=>{setLoadError('Checklist history could not be loaded. Refresh to retry.');setLoading(false)})
   }, [typeFilter])
 
   return (
     <div className="space-y-4">
+      {loadError&&<p role="alert" className="text-sm text-rose-600">{loadError}</p>}
       <div className="flex items-center gap-2">
         <button
           onClick={() => setTypeFilter('')}

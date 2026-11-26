@@ -1,3 +1,4 @@
+import type { RestockRequestWithRelations } from '@/lib/store-ops/types';
 import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import RestockDetail from '@/components/store-ops/restocking/RestockDetail'
@@ -18,7 +19,7 @@ export default async function RestockDetailPage({ params }: { params: Promise<{ 
     .from('restock_requests')
     .select(`
       *,
-      profiles:created_by(full_name),
+      profiles:profiles!created_by(full_name),
       restock_items(*)
     `)
     .eq('id', id)
@@ -28,7 +29,7 @@ export default async function RestockDetailPage({ params }: { params: Promise<{ 
 
   return (
     <RestockDetail
-      request={request as any}
+      request={request as RestockRequestWithRelations}
       userRole={profile?.role || 'employee'}
       basePath="/admin/store-operations/restocking"
     />

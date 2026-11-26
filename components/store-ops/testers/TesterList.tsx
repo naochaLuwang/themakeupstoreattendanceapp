@@ -28,6 +28,7 @@ export default function TesterList({
   const [currentPage, setCurrentPage] = useState(initialPage)
   const [totalPages, setTotalPages] = useState(initialTotalPages)
   const [loading, setLoading] = useState(false)
+  const [loadError,setLoadError]=useState<string|null>(null)
 
   const [search, setSearch] = useState('')
   const [conditionFilter, setConditionFilter] = useState('')
@@ -41,8 +42,8 @@ export default function TesterList({
       .from('testers')
       .select(`
         *,
-        profiles:created_by(full_name),
-        tester_logs(*, profiles:created_by(full_name))
+        profiles:profiles!created_by(full_name),
+        tester_logs(*, profiles:profiles!created_by(full_name))
       `, { count: 'exact' })
 
     if (search) {
@@ -58,7 +59,8 @@ export default function TesterList({
     const offset = (pageNum - 1) * limit
     query = query.range(offset, offset + limit - 1)
 
-    const { data: results, count } = await query
+    const { data: results, count, error: queryError } = await query
+    setLoadError(queryError?'Records could not be loaded. Refresh to retry.':null)
     if (results) setData(results as unknown as TesterWithRelations[])
     if (count !== null) {
       setTotalCount(count)
@@ -103,6 +105,7 @@ export default function TesterList({
 
   return (
     <div className="space-y-6">
+      {loadError&&<p role="alert" className="rounded-lg border border-rose-300 p-3 text-sm text-rose-700">{loadError}</p>}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Testers</h1>
@@ -179,7 +182,7 @@ export default function TesterList({
               <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest ml-1">Sort By</label>
               <select
                 value={sortBy}
-                onChange={(e) => { setSortBy(e.target.value as any); setCurrentPage(1) }}
+                onChange={(e) => { setSortBy(e.target.value as typeof sortBy); setCurrentPage(1) }}
                 className="w-full bg-slate-800 border-none rounded-xl px-3 py-2.5 text-[11px] font-bold text-white outline-none"
               >
                 <option value="expiry_date">Expiry Date</option>

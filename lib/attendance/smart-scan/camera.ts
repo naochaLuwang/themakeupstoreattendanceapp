@@ -25,7 +25,7 @@ function requestCamera(signal: AbortSignal): Promise<MediaStream> {
     });
 }
 /** Frames are decoded locally. Stop also disposes a late permission response. */
-export async function startAttendanceCamera(video: HTMLVideoElement, onCode: (value: string) => void, signal: AbortSignal): Promise<CameraSession> {
+export async function startAttendanceCamera(video: HTMLVideoElement, onCode: (value: string) => void, signal: AbortSignal, mode: 'qr' | 'barcode' = 'qr'): Promise<CameraSession> {
     if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) throw new Error('Camera unavailable');
     // Load before requesting a stream so a failed chunk cannot orphan a camera.
     const decoder = await import('@zxing/browser');
@@ -40,7 +40,8 @@ export async function startAttendanceCamera(video: HTMLVideoElement, onCode: (va
     signal.addEventListener('abort', stop, { once: true });
     if (signal.aborted) { stop(); throw new DOMException('Camera cancelled.', 'AbortError'); }
     try {
-        const reader = new decoder.BrowserQRCodeReader(undefined, { delayBetweenScanAttempts: 200, delayBetweenScanSuccess: 500 });
+        const Reader = mode === 'barcode' ? decoder.BrowserMultiFormatReader : decoder.BrowserQRCodeReader;
+        const reader = new Reader(undefined, { delayBetweenScanAttempts: 200, delayBetweenScanSuccess: 500 });
         controls = await reader.decodeFromStream(stream, video, result => { if (result && !stopped && !signal.aborted) onCode(result.getText()); });
         if (signal.aborted) { controls.stop(); stop(); throw new DOMException('Camera cancelled.', 'AbortError'); }
         const track = stream.getVideoTracks()[0];

@@ -1,3 +1,4 @@
+import type { TaskWithRelations } from '@/lib/store-ops/types';
 import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import TaskDetail from '@/components/store-ops/tasks/TaskDetail'
@@ -18,9 +19,9 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
     .from('tasks')
     .select(`
       *,
-      assigned_to_profile:assigned_to(full_name),
-      assigned_by_profile:assigned_by(full_name),
-      task_comments(*, profiles:created_by(full_name)),
+      assigned_to_profile:profiles!assigned_to(full_name),
+      assigned_by_profile:profiles!assigned_by(full_name),
+      task_comments(*, profiles:profiles!created_by(full_name)),
       task_attachments(*)
     `)
     .eq('id', id)
@@ -30,7 +31,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
 
   return (
     <TaskDetail
-      task={task as any}
+      task={task as TaskWithRelations}
       userRole={profile?.role || 'employee'}
       basePath="/admin/store-operations/tasks"
     />

@@ -1,4 +1,8 @@
 'use client'
+import {runOperation} from '@/lib/store-ops/client-action';
+
+import { mediaUrl } from '@/lib/store-ops/media'
+import StoreImage from '@/components/store-ops/StoreImage'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -67,7 +71,7 @@ export default function IncidentDetail({ incident, userRole, basePath }: Inciden
         async () => {
           const { data } = await supabase
             .from('incident_comments')
-            .select('*, profiles:created_by(full_name)')
+            .select('*, profiles:profiles!created_by(full_name)')
             .eq('incident_id', incident.id)
             .order('created_at', { ascending: true })
           if (data) {
@@ -81,7 +85,7 @@ export default function IncidentDetail({ incident, userRole, basePath }: Inciden
   }, [incident.id, supabase])
 
   const handleStatusChange = async (status: string) => {
-    const result = await updateIncidentStatus(currentIncident.id, status)
+    const result = await runOperation(() => updateIncidentStatus(currentIncident.id, status))
     if (result.error) toast.error(result.error)
     else {
       toast.success(`Incident marked as ${status.replace('_', ' ')}`)
@@ -91,7 +95,7 @@ export default function IncidentDetail({ incident, userRole, basePath }: Inciden
 
   const handleDelete = async () => {
     if (!confirm('Delete this incident permanently?')) return
-    const result = await deleteIncident(currentIncident.id)
+    const result = await runOperation(() => deleteIncident(currentIncident.id))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Incident deleted')
@@ -103,7 +107,7 @@ export default function IncidentDetail({ incident, userRole, basePath }: Inciden
     e.preventDefault()
     if (!comment.trim()) return
     setSubmitting(true)
-    const result = await addIncidentComment(currentIncident.id, comment.trim())
+    const result = await runOperation(() => addIncidentComment(currentIncident.id, comment.trim()))
     if (result.error) {
       toast.error(result.error)
     } else {
@@ -125,7 +129,7 @@ export default function IncidentDetail({ incident, userRole, basePath }: Inciden
       return
     }
 
-    const result = await assignIncident(currentIncident.id, assignee.id)
+    const result = await runOperation(() => assignIncident(currentIncident.id, assignee.id))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Incident assigned')
@@ -142,6 +146,7 @@ export default function IncidentDetail({ incident, userRole, basePath }: Inciden
 
   return (
     <div className="space-y-6">
+      {currentIncident.voice_note_url && <audio controls src={mediaUrl(currentIncident.voice_note_url)} aria-label="Incident voice note" className="w-full" />}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -167,6 +172,7 @@ export default function IncidentDetail({ incident, userRole, basePath }: Inciden
         </div>
 
         <div className="flex items-center gap-2">
+          {isManager && <button type="button" onClick={()=>router.push(`${basePath}/${incident.id}/edit`)} className="rounded-lg border px-4 py-2 text-sm">Edit</button>}
           {isManager && statusActions.length > 0 && (
             <div className="flex items-center gap-1">
               {statusActions.map(s => (
@@ -255,13 +261,14 @@ export default function IncidentDetail({ incident, userRole, basePath }: Inciden
                       onClick={() => setSelectedImage(img.url)}
                       className="aspect-square rounded-xl overflow-hidden bg-slate-100 w-full"
                     >
-                      <img src={img.url} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform" />
+                      <StoreImage src={img.url} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform" />
                     </button>
                     {isAdmin && (
                       <button
                         onClick={async () => {
-                          await deleteIncidentImage(img.id)
-                          toast.success('Image removed')
+                          const result = await runOperation(() => deleteIncidentImage(img.id))
+                          if (result.error) toast.error(result.error)
+                          else toast.success('Image removed')
                         }}
                         className="absolute top-1 right-1 p-1 bg-black/50 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
                       >
@@ -290,12 +297,12 @@ export default function IncidentDetail({ incident, userRole, basePath }: Inciden
                 currentIncident.incident_comments.map((c) => (
                   <div key={c.id} className="flex gap-3 p-3 bg-slate-50 rounded-xl">
                     <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-[8px] font-black shrink-0 uppercase">
-                      {(c as any).profiles?.full_name?.charAt(0) || '?'}
+                      {c.profiles?.full_name?.charAt(0) || '?'}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] font-black text-slate-900 uppercase">
-                          {(c as any).profiles?.full_name || 'Unknown'}
+                          {c.profiles?.full_name || 'Unknown'}
                         </span>
                         <span className="text-[8px] font-bold text-slate-400">
                           {new Date(c.created_at).toLocaleDateString()}
@@ -379,7 +386,7 @@ export default function IncidentDetail({ incident, userRole, basePath }: Inciden
           >
             <X size={24} />
           </button>
-          <img
+          <StoreImage
             src={selectedImage}
             alt="Full size"
             className="max-w-full max-h-[90vh] object-contain rounded-2xl"
@@ -391,7 +398,7 @@ export default function IncidentDetail({ incident, userRole, basePath }: Inciden
   )
 }
 
-function DetailItem({ icon: Icon, label, value }: { icon: any; label: string; value: string }) {
+function DetailItem({ icon: Icon, label, value }: { icon: import('lucide-react').LucideIcon; label: string; value: string }) {
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400 uppercase tracking-wider">
@@ -403,7 +410,7 @@ function DetailItem({ icon: Icon, label, value }: { icon: any; label: string; va
   )
 }
 
-function TimelineItem({ icon: Icon, label, value, date, active }: { icon: any; label: string; value: string; date: string; active?: boolean }) {
+function TimelineItem({ icon: Icon, label, value, date, active }: { icon: import('lucide-react').LucideIcon; label: string; value: string; date: string; active?: boolean }) {
   return (
     <div className="flex gap-3">
       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${active ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400'}`}>

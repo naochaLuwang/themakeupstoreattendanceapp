@@ -2,6 +2,9 @@
 
 import { useState, useRef } from 'react'
 import { Upload, X, Loader2, ImageIcon } from 'lucide-react'
+import { prepareImage } from '@/lib/store-ops/image-compression'
+import { removeDraftImage } from '@/app/actions/store-ops/media'
+import StoreImage from './StoreImage'
 
 interface ImageUploadProps {
   images: string[]
@@ -14,41 +17,49 @@ export default function ImageUpload({ images, onChange, maxImages = 5, uploadAct
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const locked = useRef(false)
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
-    if (!files || files.length === 0) return
+    if (!files || files.length === 0 || locked.current) return
+    locked.current = true
 
     setError(null)
     setUploading(true)
 
+    const next = [...images]
     try {
-      for (const file of Array.from(files)) {
-        if (images.length >= maxImages) break
-        if (file.size > 5 * 1024 * 1024) {
-          setError('Image too large (max 5MB)')
-          continue
-        }
-
+      if (files.length > maxImages - next.length) setError(`You can attach up to ${maxImages} photos. Extra files were not uploaded.`)
+      for (const source of Array.from(files).slice(0, Math.max(0, maxImages - next.length))) {
+        const prepared = await prepareImage(source)
         const formData = new FormData()
-        formData.append('file', file)
-
+        formData.append('file', prepared.file)
+        formData.append('thumbnail', prepared.thumbnail)
         const result = await uploadAction(formData)
-        if (result.success && result.url) {
-          onChange([...images, result.url])
-        } else {
-          setError(result.error || 'Upload failed')
-        }
+        if (!result.success || !result.url) throw new Error(result.error || 'Upload failed')
+        next.push(result.url)
+        onChange([...next])
       }
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Could not upload this photo.')
     } finally {
+      locked.current = false
       setUploading(false)
       if (inputRef.current) inputRef.current.value = ''
     }
   }
 
-  const removeImage = (index: number) => {
-    const newImages = images.filter((_, i) => i !== index)
-    onChange(newImages)
+  const removeImage = async (index: number) => {
+    if (locked.current) return
+    locked.current = true
+    setUploading(true)
+    setError(null)
+    try {
+      const result = await removeDraftImage(images[index])
+      if (result.error) setError('Stored photo will be removed when you save this report.')
+      onChange(images.filter((_, position) => position !== index))
+    } catch { setError('Photo could not be removed. Please retry.') }
+    finally { locked.current = false; setUploading(false) }
   }
 
   return (
@@ -73,37 +84,40 @@ export default function ImageUpload({ images, onChange, maxImages = 5, uploadAct
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept="image/jpeg,image/png,image/webp"
         multiple
         onChange={handleUpload}
         className="hidden"
       />
 
       {error && (
-        <p className="text-[10px] font-bold text-rose-500">{error}</p>
+        <p role="alert" className="text-sm text-rose-600">{error}</p>
       )}
 
       {images.length === 0 ? (
-        <div
+        <button
+          type="button" disabled={uploading}
           onClick={() => inputRef.current?.click()}
           className="border-2 border-dashed border-slate-200 rounded-2xl p-8 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-slate-300 transition-colors"
         >
           <ImageIcon size={24} className="text-slate-300" />
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tap to add photos</p>
-        </div>
+        </button>
       ) : (
         <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
           {images.map((url, index) => (
             <div key={index} className="relative group aspect-square rounded-xl overflow-hidden bg-slate-100">
-              <img
+              <StoreImage
                 src={url}
                 alt={`Photo ${index + 1}`}
                 className="w-full h-full object-cover"
               />
               <button
                 type="button"
-                onClick={() => removeImage(index)}
-                className="absolute top-1 right-1 p-1 bg-black/60 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label={`Remove photo ${index + 1}`}
+                disabled={uploading}
+                onClick={() => void removeImage(index)}
+                className="absolute top-1 right-1 p-1 bg-black/60 rounded-full text-white opacity-100 transition-opacity"
               >
                 <X size={12} />
               </button>

@@ -45,7 +45,7 @@ The sign-in screen, admin and employee workspaces, and browser titles display **
 
 ## Android app (Capacitor)
 
-The Android package uses the approved HRM logo for its launcher and splash screen, and opens `https://attendance.themakeupstorewangkhei.com`. Its Android application ID is `in.themakeupstore.hrm`. The repository name is retained. PWA installation, manifests, caching, offline fallback and browser push have been removed; the browser workspace remains available online.
+The Android package uses the approved HRM logo for its launcher and splash screen, and opens `https://hrm.themakeupstorewangkhei.com`. Its Android application ID is `in.themakeupstore.hrm`. The repository name is retained. PWA installation, manifests, caching, offline fallback and browser push have been removed; the browser workspace remains available online.
 
 This first Android build is an online wrapper: login, API routes, Server Actions, and Supabase access continue through the hosted Next.js app. Web changes must be deployed to that host separately. A bundled connection-error page provides a retry action; it does not save attendance offline. Location permissions are requested when the existing clock-in flow needs them. PDF/CSV downloads use Android's document picker, without broad storage access.
 

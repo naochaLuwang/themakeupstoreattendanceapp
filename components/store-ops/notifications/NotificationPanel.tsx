@@ -8,14 +8,16 @@ import { Bell, CheckCheck, Loader2, ExternalLink } from 'lucide-react'
 import type { NotificationLog } from '@/lib/store-ops/database.types'
 import { markAsRead as markAsReadAction, markAllAsRead as markAllAsReadAction } from '@/app/actions/store-ops/notifications'
 import { toast } from 'sonner'
+import { runOperation } from '@/lib/store-ops/client-action'
 
 interface NotificationPanelProps {
   userId: string
   embedded?: boolean
   attendanceOnly?: boolean
+  operationsOnly?: boolean
 }
 
-export default function NotificationPanel({ userId, embedded = false, attendanceOnly = false }: NotificationPanelProps) {
+export default function NotificationPanel({ userId, embedded = false, attendanceOnly = false, operationsOnly = false }: NotificationPanelProps) {
   const router = useRouter()
   const supabase = createClient()
   const [open, setOpen] = useState(false)
@@ -33,6 +35,7 @@ export default function NotificationPanel({ userId, embedded = false, attendance
       .order('created_at', { ascending: false })
       .limit(20)
     if (attendanceOnly) query = query.not('attendance_reminder_id', 'is', null)
+    if (operationsOnly) query = query.like('type','ops_%')
     const { data, error } = await query
 
     if (!error && data) {
@@ -41,7 +44,7 @@ export default function NotificationPanel({ userId, embedded = false, attendance
       setUnreadCount(data.filter(n => !n.is_read).length)
     } else setLoadError('Notifications could not be loaded. Refresh to try again.')
     setLoading(false)
-  }, [userId, supabase, attendanceOnly])
+  }, [userId, supabase, attendanceOnly, operationsOnly])
 
   useEffect(() => {
     fetchNotifications()
@@ -71,12 +74,13 @@ export default function NotificationPanel({ userId, embedded = false, attendance
   }, [])
 
   async function handleMarkAsRead(id: string, link?: string | null) {
-    const result = await markAsReadAction(id)
+    const wasUnread = notifications.some(n => n.id === id && !n.is_read)
+    const result = await runOperation(() => markAsReadAction(id))
     if (!result.success) { toast.error(result.error || 'Could not mark the notification as read'); return }
     setNotifications(prev =>
       prev.map(n => n.id === id ? { ...n, is_read: true } : n)
     )
-    setUnreadCount(prev => Math.max(0, prev - 1))
+    if (wasUnread) setUnreadCount(prev => Math.max(0, prev - 1))
     if (link) {
       router.push(notificationPath(link, '/'))
       setOpen(false)
@@ -84,7 +88,7 @@ export default function NotificationPanel({ userId, embedded = false, attendance
   }
 
   async function handleMarkAllRead() {
-    const result = await markAllAsReadAction(userId)
+    const result = await runOperation(() => markAllAsReadAction(userId))
     if (result.success) {
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
       setUnreadCount(0)

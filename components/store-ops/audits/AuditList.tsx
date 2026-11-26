@@ -33,6 +33,7 @@ export default function AuditList({
   const [currentPage, setCurrentPage] = useState(initialPage)
   const [totalPages, setTotalPages] = useState(initialTotalPages)
   const [loading, setLoading] = useState(false)
+  const [loadError,setLoadError]=useState<string|null>(null)
 
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
@@ -46,7 +47,7 @@ export default function AuditList({
       .select(`
         *,
         audit_templates(name, category),
-        profiles:conducted_by(full_name)
+        profiles:profiles!conducted_by(full_name)
       `, { count: 'exact' })
 
     if (search) {
@@ -59,7 +60,8 @@ export default function AuditList({
     const offset = (pageNum - 1) * limit
     query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1)
 
-    const { data: results, count } = await query
+    const { data: results, count, error: queryError } = await query
+    setLoadError(queryError?'Records could not be loaded. Refresh to retry.':null)
     if (results) setData(results as unknown as AuditWithRelations[])
     if (count !== null) {
       setTotalCount(count)
@@ -100,6 +102,7 @@ export default function AuditList({
 
   return (
     <div className="space-y-6">
+      {loadError&&<p role="alert" className="rounded-lg border border-rose-300 p-3 text-sm text-rose-700">{loadError}</p>}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Store Audits</h1>

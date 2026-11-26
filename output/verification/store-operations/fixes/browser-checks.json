@@ -1,0 +1,221 @@
+{
+  "layouts": [
+    {
+      "screen": "shelf",
+      "width": 320,
+      "content": 320,
+      "overflow": []
+    },
+    {
+      "screen": "shelf",
+      "width": 390,
+      "content": 390,
+      "overflow": []
+    },
+    {
+      "screen": "shelf",
+      "width": 768,
+      "content": 768,
+      "overflow": []
+    },
+    {
+      "screen": "damage",
+      "width": 320,
+      "content": 320,
+      "overflow": []
+    },
+    {
+      "screen": "damage",
+      "width": 390,
+      "content": 390,
+      "overflow": []
+    },
+    {
+      "screen": "damage",
+      "width": 768,
+      "content": 768,
+      "overflow": []
+    },
+    {
+      "screen": "tester",
+      "width": 320,
+      "content": 320,
+      "overflow": []
+    },
+    {
+      "screen": "tester",
+      "width": 390,
+      "content": 390,
+      "overflow": []
+    },
+    {
+      "screen": "tester",
+      "width": 768,
+      "content": 768,
+      "overflow": []
+    },
+    {
+      "screen": "task",
+      "width": 320,
+      "content": 320,
+      "overflow": []
+    },
+    {
+      "screen": "task",
+      "width": 390,
+      "content": 390,
+      "overflow": []
+    },
+    {
+      "screen": "task",
+      "width": 768,
+      "content": 768,
+      "overflow": []
+    },
+    {
+      "screen": "checklist",
+      "width": 320,
+      "content": 320,
+      "overflow": []
+    },
+    {
+      "screen": "checklist",
+      "width": 390,
+      "content": 390,
+      "overflow": []
+    },
+    {
+      "screen": "checklist",
+      "width": 768,
+      "content": 768,
+      "overflow": []
+    },
+    {
+      "screen": "audit",
+      "width": 320,
+      "content": 320,
+      "overflow": []
+    },
+    {
+      "screen": "audit",
+      "width": 390,
+      "content": 390,
+      "overflow": []
+    },
+    {
+      "screen": "audit",
+      "width": 768,
+      "content": 768,
+      "overflow": []
+    },
+    {
+      "screen": "incident",
+      "width": 320,
+      "content": 320,
+      "overflow": []
+    },
+    {
+      "screen": "incident",
+      "width": 390,
+      "content": 390,
+      "overflow": []
+    },
+    {
+      "screen": "incident",
+      "width": 768,
+      "content": 768,
+      "overflow": []
+    },
+    {
+      "screen": "restock",
+      "width": 320,
+      "content": 320,
+      "overflow": []
+    },
+    {
+      "screen": "restock",
+      "width": 390,
+      "content": 390,
+      "overflow": []
+    },
+    {
+      "screen": "restock",
+      "width": 768,
+      "content": 768,
+      "overflow": []
+    },
+    {
+      "screen": "report",
+      "width": 320,
+      "content": 320,
+      "overflow": [
+        {
+          "tag": "TABLE",
+          "text": "DateInspectionsTasks completedIncidentsApproved da",
+          "right": 590.515625
+        },
+        {
+          "tag": "THEAD",
+          "text": "DateInspectionsTasks completedIncidentsApproved da",
+          "right": 590.515625
+        },
+        {
+          "tag": "TR",
+          "text": "DateInspectionsTasks completedIncidentsApproved da",
+          "right": 590.515625
+        },
+        {
+          "tag": "TH",
+          "text": "Tasks completed",
+          "right": 334.6875
+        }
+      ]
+    },
+    {
+      "screen": "report",
+      "width": 390,
+      "content": 390,
+      "overflow": [
+        {
+          "tag": "TABLE",
+          "text": "DateInspectionsTasks completedIncidentsApproved da",
+          "right": 590.515625
+        },
+        {
+          "tag": "THEAD",
+          "text": "DateInspectionsTasks completedIncidentsApproved da",
+          "right": 590.515625
+        },
+        {
+          "tag": "TR",
+          "text": "DateInspectionsTasks completedIncidentsApproved da",
+          "right": 590.515625
+        },
+        {
+          "tag": "TH",
+          "text": "Incidents",
+          "right": 414.734375
+        }
+      ]
+    },
+    {
+      "screen": "report",
+      "width": 768,
+      "content": 768,
+      "overflow": []
+    }
+  ],
+  "checks": [
+    "multi-photo retention and pre-upload limit",
+    "compressed JPEG and thumbnail payloads",
+    "draft recovery across reload",
+    "successful shelf submission",
+    "barcode history lookup",
+    "employee submission returns to employee route",
+    "light and dark reports",
+    "CSV download",
+    "PDF download",
+    "zero browser runtime errors"
+  ],
+  "errors": []
+}

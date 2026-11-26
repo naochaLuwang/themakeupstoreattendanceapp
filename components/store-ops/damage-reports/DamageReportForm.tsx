@@ -1,7 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
+import BarcodeInput from '@/components/store-ops/BarcodeInput'
+import StorePicker from '@/components/store-ops/StorePicker'
+import { useOperationsDraft } from '@/lib/store-ops/use-draft'
 import { Save, ArrowLeft, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { DAMAGE_TYPES } from '@/lib/store-ops/constants'
@@ -26,6 +29,8 @@ interface DamageReportFormProps {
 
 export default function DamageReportForm({ initialData }: DamageReportFormProps) {
   const router = useRouter()
+  const pathname = usePathname()
+  const [storeId, setStoreId] = useState('')
   const isEditing = !!initialData
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -46,6 +51,8 @@ export default function DamageReportForm({ initialData }: DamageReportFormProps)
     initialData?.damage_images?.map(i => i.url) || []
   )
 
+  const clearDraft = useOperationsDraft(`damage:${initialData?.id || 'new'}`, { form, images, storeId }, draft => { setForm(draft.form); setImages(draft.images); setStoreId(draft.storeId) })
+
   const validate = () => {
     const errs: Record<string, string> = {}
     if (!form.barcode.trim()) errs.barcode = 'Barcode is required'
@@ -64,6 +71,7 @@ export default function DamageReportForm({ initialData }: DamageReportFormProps)
     setSaving(true)
     try {
       const payload = {
+        store_id: storeId || undefined,
         barcode: form.barcode.trim(),
         product_name: form.product_name.trim(),
         brand: form.brand.trim() || undefined,
@@ -84,9 +92,12 @@ export default function DamageReportForm({ initialData }: DamageReportFormProps)
         toast.error(result.error)
       } else {
         toast.success(isEditing ? 'Damage report updated' : 'Damage report created')
-        router.push('/admin/store-operations/damage-reports')
+        clearDraft()
+        router.push(pathname.startsWith('/employee') ? '/employee/store-operations/damage-reports' : '/admin/store-operations/damage-reports')
         router.refresh()
       }
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : 'The form could not be saved. Your draft is kept.')
     } finally {
       setSaving(false)
     }
@@ -99,6 +110,7 @@ export default function DamageReportForm({ initialData }: DamageReportFormProps)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      {!isEditing && <StorePicker value={storeId} onChange={setStoreId} />}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -134,12 +146,7 @@ export default function DamageReportForm({ initialData }: DamageReportFormProps)
           <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">
             Barcode <span className="text-rose-500">*</span>
           </label>
-          <input
-            value={form.barcode}
-            onChange={(e) => updateField('barcode', e.target.value)}
-            placeholder="Scan or type barcode"
-            className={`w-full px-4 py-3 rounded-xl border ${errors.barcode ? 'border-rose-300 bg-rose-50' : 'border-slate-200 bg-white'} text-sm font-bold text-slate-900 outline-none focus:ring-2 focus:ring-slate-900/20 transition-all`}
-          />
+          <BarcodeInput value={form.barcode} onChange={value=>updateField('barcode',value)} onProduct={product=>{updateField('product_name',product.product_name);updateField('brand',product.brand||'')}} />
           {errors.barcode && <p className="text-[9px] font-bold text-rose-500">{errors.barcode}</p>}
         </div>
 

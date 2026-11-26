@@ -34,7 +34,6 @@
     background: var(--store-accent);
     color: var(--store-on-solid);
     cursor: grab;
-    touch-action: pan-y;
 }
 .track[data-variant='end'] .handle { background: var(--store-negative); }
 .handle:active { cursor: grabbing; }

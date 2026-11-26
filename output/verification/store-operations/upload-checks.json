@@ -1,0 +1,9 @@
+{
+  "finding": "Selecting multiple images retains only the final image and exceeds the upload limit",
+  "selected": 3,
+  "maxImages": 2,
+  "uploadsAttempted": 3,
+  "retained": 1,
+  "retainedFile": "third.png",
+  "scope": "Real React component with fictional upload action; no Supabase uploads"
+}

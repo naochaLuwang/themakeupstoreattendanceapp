@@ -1,3 +1,4 @@
+import type { ShelfInspectionWithRelations } from '@/lib/store-ops/types';
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import ShelfInspectionList from '@/components/store-ops/shelf-inspection/ShelfInspectionList'
@@ -16,14 +17,14 @@ export default async function EmployeeShelfInspectionsPage() {
 
   const role = profile?.role || 'employee'
 
-  const { data, count } = await supabase
+  const { data, count, error: queryError } = await supabase
     .from('shelf_inspections')
     .select(`
       *,
       store_sections(name, description),
-      profiles:employee_id(full_name, email),
+      profiles:profiles!employee_id(full_name, email),
       inspection_images(*),
-      inspection_comments(*, profiles:created_by(full_name))
+      inspection_comments(*, profiles:profiles!created_by(full_name))
     `, { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(0, 19)
@@ -33,10 +34,11 @@ export default async function EmployeeShelfInspectionsPage() {
     .select('id, name')
     .order('name', { ascending: true })
 
+  if (typeof queryError !== 'undefined' && queryError) throw new Error('Inspections could not be loaded.');
   return (
     <div className="space-y-6">
       <ShelfInspectionList
-        initialData={(data || []) as any}
+        initialData={(data || []) as ShelfInspectionWithRelations[]}
         total={count || 0}
         page={1}
         totalPages={Math.ceil((count || 0) / 20)}

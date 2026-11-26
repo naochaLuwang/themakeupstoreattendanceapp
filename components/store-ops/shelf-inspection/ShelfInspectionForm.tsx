@@ -1,188 +1,55 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { Save, ArrowLeft, Loader2 } from 'lucide-react'
-import { toast } from 'sonner'
-import { INSPECTION_STATUSES } from '@/lib/store-ops/constants'
-import { createShelfInspection, updateShelfInspection, uploadInspectionImage } from '@/app/actions/store-ops/shelf-inspection'
-import { createClient } from '@/lib/supabase/client'
-import ImageUpload from '@/components/store-ops/ImageUpload'
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { z } from 'zod';
+import { toast } from 'sonner';
+import Link from 'next/link';
+import { shelfSchema } from '@/lib/store-ops/validation';
+import { INSPECTION_STATUSES } from '@/lib/store-ops/constants';
+import { useFormDraft } from '@/lib/store-ops/use-form-draft';
+import { createShelfInspection, updateShelfInspection, uploadInspectionImage, getStoreSections } from '@/app/actions/store-ops/shelf-inspection';
+import ImageUpload from '@/components/store-ops/ImageUpload';
 
-interface ShelfInspectionFormProps {
-  initialData?: {
-    id: string
-    section_id: string
-    status: string
-    notes: string | null
-    inspection_images?: { url: string }[]
-  }
-}
+interface Props { initialData?: { id: string; section_id: string; status: string; notes: string | null; inspection_images?: { url: string }[] } }
+type Values = z.infer<typeof shelfSchema>;
 
-const statusLabels: Record<string, string> = {
-  good: 'Good',
-  needs_restock: 'Needs Restock',
-  dirty: 'Dirty',
-  wrong_display: 'Wrong Display',
-  missing_tester: 'Missing Tester',
-  missing_price_tag: 'Missing Price Tag',
-  damaged_display: 'Damaged Display',
-}
-
-export default function ShelfInspectionForm({ initialData }: ShelfInspectionFormProps) {
-  const router = useRouter()
-  const supabase = createClient()
-  const isEditing = !!initialData
-  const [saving, setSaving] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [sections, setSections] = useState<{ id: string; name: string }[]>([])
-
-  const [form, setForm] = useState({
-    section_id: initialData?.section_id || '',
-    status: initialData?.status || 'good',
-    notes: initialData?.notes || '',
-  })
-
-  const [images, setImages] = useState<string[]>(
-    initialData?.inspection_images?.map(i => i.url) || []
-  )
-
-  useEffect(() => {
-    const fetchSections = async () => {
-      const { data } = await supabase
-        .from('store_sections')
-        .select('id, name')
-        .order('name', { ascending: true })
-      if (data) setSections(data)
-    }
-    fetchSections()
-  }, [supabase])
-
-  const validate = () => {
-    const errs: Record<string, string> = {}
-    if (!form.section_id) errs.section_id = 'Section is required'
-    if (!form.status) errs.status = 'Status is required'
-    setErrors(errs)
-    return Object.keys(errs).length === 0
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!validate()) return
-
-    setSaving(true)
-    try {
-      const payload = {
-        section_id: form.section_id,
-        status: form.status,
-        notes: form.notes.trim() || undefined,
-        image_urls: images,
-      }
-
-      const result = isEditing
-        ? await updateShelfInspection(initialData.id, payload)
-        : await createShelfInspection(payload)
-
-      if (result.error) {
-        toast.error(result.error)
-      } else {
-        toast.success(isEditing ? 'Shelf inspection updated' : 'Shelf inspection created')
-        router.back()
-        router.refresh()
-      }
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const updateField = (field: string, value: string) => {
-    setForm(prev => ({ ...prev, [field]: value }))
-    if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }))
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="p-2 rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors"
-          >
-            <ArrowLeft size={18} />
-          </button>
-          <div>
-            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">
-              {isEditing ? 'Edit Shelf Inspection' : 'New Shelf Inspection'}
-            </h1>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-              Inspect and record shelf conditions
-            </p>
-          </div>
-        </div>
-        <button
-          type="submit"
-          disabled={saving}
-          className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all disabled:opacity-50"
-        >
-          {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-          {saving ? 'Saving...' : 'Save Inspection'}
-        </button>
-      </div>
-
-      {/* Form */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-            Section <span className="text-rose-500">*</span>
-          </label>
-          <select
-            value={form.section_id}
-            onChange={(e) => updateField('section_id', e.target.value)}
-            className={`w-full px-4 py-3 rounded-xl border ${errors.section_id ? 'border-rose-300 bg-rose-50' : 'border-slate-200 bg-white'} text-sm font-bold text-slate-900 outline-none focus:ring-2 focus:ring-slate-900/20 transition-all`}
-          >
-            <option value="">Select section...</option>
-            {sections.map(s => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
-          {errors.section_id && <p className="text-[9px] font-bold text-rose-500">{errors.section_id}</p>}
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-            Status <span className="text-rose-500">*</span>
-          </label>
-          <select
-            value={form.status}
-            onChange={(e) => updateField('status', e.target.value)}
-            className={`w-full px-4 py-3 rounded-xl border ${errors.status ? 'border-rose-300 bg-rose-50' : 'border-slate-200 bg-white'} text-sm font-bold text-slate-900 outline-none focus:ring-2 focus:ring-slate-900/20 transition-all`}
-          >
-            {INSPECTION_STATUSES.map(s => (
-              <option key={s} value={s}>{statusLabels[s] || s}</option>
-            ))}
-          </select>
-          {errors.status && <p className="text-[9px] font-bold text-rose-500">{errors.status}</p>}
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Notes</label>
-        <textarea
-          value={form.notes}
-          onChange={(e) => updateField('notes', e.target.value)}
-          placeholder="Describe the shelf condition..."
-          rows={4}
-          className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-900 outline-none focus:ring-2 focus:ring-slate-900/20 transition-all resize-none"
-        />
-      </div>
-
-      <ImageUpload
-        images={images}
-        onChange={setImages}
-        uploadAction={uploadInspectionImage}
-      />
-    </form>
-  )
+export default function ShelfInspectionForm({ initialData }: Props) {
+    const router = useRouter();
+    const [sections, setSections] = useState<{ id: string; name: string }[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const form = useForm<Values>({ resolver: zodResolver(shelfSchema), defaultValues: {
+        section_id: initialData?.section_id || '', status: INSPECTION_STATUSES.find(status => status === initialData?.status) || 'good',
+        notes: initialData?.notes || '', image_urls: initialData?.inspection_images?.map(image => image.url) || [],
+    } });
+    const clearDraft = useFormDraft(form, `shelf:${initialData?.id || 'new'}`);
+    useEffect(() => {
+        let active = true;
+        void getStoreSections().then(result => { if (!active) return; if (result.error) setError(result.error); setSections(result.data || []); setLoading(false); }).catch(() => { if (active) { setError('Sections could not be loaded. Refresh to retry.'); setLoading(false); } });
+        return () => { active = false; };
+    }, []);
+    const save = form.handleSubmit(async values => {
+        setError(null);
+        try {
+            const result = initialData ? await updateShelfInspection(initialData.id, values) : await createShelfInspection(values);
+            if (result.error) { setError(result.error); return; }
+            clearDraft(); toast.success(initialData ? 'Inspection updated' : 'Inspection submitted'); router.back(); router.refresh();
+        } catch { setError('Could not save the inspection. Your draft is kept.'); }
+    });
+    const fieldClass = 'mt-1 w-full rounded-lg border bg-white p-3 text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100';
+    return <form onSubmit={save} className="space-y-6" aria-busy={form.formState.isSubmitting}>
+        <div><h1 className="text-2xl font-medium">{initialData ? 'Edit shelf inspection' : 'New shelf inspection'}</h1><p className="mt-1 text-sm text-slate-500">Record the shelf condition. Your draft saves on this device.</p></div>
+        {error && <p role="alert" className="rounded-lg border border-rose-300 p-3 text-sm text-rose-700">{error}</p>}
+        <div><label htmlFor="shelf-section" className="text-sm font-medium">Section</label><select id="shelf-section" {...form.register('section_id')} disabled={loading} className={fieldClass} aria-invalid={!!form.formState.errors.section_id}>
+            <option value="">{loading ? 'Loading sections…' : 'Choose a section'}</option>{sections.map(section => <option key={section.id} value={section.id}>{section.name}</option>)}
+        </select>{form.formState.errors.section_id && <p role="alert" className="text-sm text-rose-600">Choose a section.</p>}
+        {!loading && !sections.length && <p className="mt-2 text-sm">No sections are configured for your store. Ask your manager to add them in <Link href="/admin/store-operations/settings" className="underline">Store Operations settings</Link>.</p>}</div>
+        <div><label htmlFor="shelf-status" className="text-sm font-medium">Condition</label><select id="shelf-status" {...form.register('status')} className={fieldClass}>{INSPECTION_STATUSES.map(status => <option key={status} value={status}>{status.replaceAll('_', ' ')}</option>)}</select></div>
+        <div><label htmlFor="shelf-notes" className="text-sm font-medium">Notes</label><textarea id="shelf-notes" {...form.register('notes')} rows={4} maxLength={5000} className={fieldClass} />{form.formState.errors.notes && <p role="alert">{form.formState.errors.notes.message}</p>}</div>
+        <ImageUpload images={form.watch('image_urls') || []} onChange={urls => form.setValue('image_urls', urls, { shouldDirty: true, shouldValidate: true })} uploadAction={uploadInspectionImage} />
+        <div className="flex gap-3"><button type="submit" disabled={loading || !sections.length || form.formState.isSubmitting} className="rounded-lg bg-slate-900 px-5 py-3 text-white disabled:opacity-50 dark:bg-slate-100 dark:text-slate-900">{form.formState.isSubmitting ? 'Saving…' : 'Save inspection'}</button><button type="button" onClick={() => router.back()} className="rounded-lg border px-5 py-3">Cancel</button></div>
+    </form>;
 }

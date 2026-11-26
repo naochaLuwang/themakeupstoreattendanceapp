@@ -5,22 +5,24 @@ import { useRouter } from 'next/navigation'
 import { Plus, Trash2, Loader2, ClipboardCheck } from 'lucide-react'
 import { toast } from 'sonner'
 import { deleteAuditTemplate, startAudit } from '@/app/actions/store-ops/audits'
+import { runOperation } from '@/lib/store-ops/client-action'
 import type { AuditTemplateWithQuestions } from '@/lib/store-ops/types'
 
 interface TemplatesSectionProps {
   templates: AuditTemplateWithQuestions[]
   basePath: string
   canCreate: boolean
+  canDelete: boolean
 }
 
-export default function TemplatesSection({ templates, basePath, canCreate }: TemplatesSectionProps) {
+export default function TemplatesSection({ templates, basePath, canCreate, canDelete }: TemplatesSectionProps) {
   const router = useRouter()
   const [starting, setStarting] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<string | null>(null)
 
   const handleStart = async (templateId: string) => {
     setStarting(templateId)
-    const result = await startAudit(templateId)
+    const result = await runOperation(() => startAudit(templateId))
     if (result.error) {
       toast.error(result.error)
     } else if (result.data) {
@@ -34,7 +36,7 @@ export default function TemplatesSection({ templates, basePath, canCreate }: Tem
   const handleDelete = async (templateId: string) => {
     if (!confirm('Delete this template permanently?')) return
     setDeleting(templateId)
-    const result = await deleteAuditTemplate(templateId)
+    const result = await runOperation(() => deleteAuditTemplate(templateId))
     if (result.error) {
       toast.error(result.error)
     } else {
@@ -93,7 +95,7 @@ export default function TemplatesSection({ templates, basePath, canCreate }: Tem
                   </span>
                 )}
               </div>
-              {canCreate && (
+              {canDelete && (
                 <button
                   onClick={() => handleDelete(template.id)}
                   disabled={deleting === template.id}

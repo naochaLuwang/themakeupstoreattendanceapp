@@ -4,7 +4,10 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Save, ArrowLeft, Loader2, Plus, X } from 'lucide-react'
 import { toast } from 'sonner'
-import { createRestockRequest } from '@/app/actions/store-ops/restocking'
+import StorePicker from '@/components/store-ops/StorePicker'
+import BarcodeInput from '@/components/store-ops/BarcodeInput'
+import { useOperationsDraft } from '@/lib/store-ops/use-draft'
+import { createRestockRequest, updateRestockRequest } from '@/app/actions/store-ops/restocking'
 
 interface RestockItemForm {
   id: string
@@ -14,16 +17,19 @@ interface RestockItemForm {
   quantity_needed: string
 }
 
-export default function RestockForm() {
+export default function RestockForm({initialData}:{initialData?:{id:string;notes:string|null;supplier_notes:string|null;restock_items:{id:string;barcode:string;product_name:string;brand:string|null;quantity_needed:number}[]}}) {
   const router = useRouter()
+  const [storeId,setStoreId]=useState('')
+  const [supplierNotes,setSupplierNotes]=useState(initialData?.supplier_notes || '')
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [notes, setNotes] = useState('')
+  const [notes, setNotes] = useState(initialData?.notes || '')
 
-  const [items, setItems] = useState<RestockItemForm[]>([
+  const [items, setItems] = useState<RestockItemForm[]>(initialData?.restock_items.map(item=>({...item,brand:item.brand||'',quantity_needed:String(item.quantity_needed)})) || [
     { id: crypto.randomUUID(), barcode: '', product_name: '', brand: '', quantity_needed: '1' },
   ])
 
+  const clearDraft=useOperationsDraft(`restock:${initialData?.id || 'new'}`,{items,notes,storeId,supplierNotes},draft=>{setItems(draft.items);setNotes(draft.notes);setStoreId(draft.storeId);setSupplierNotes(draft.supplierNotes)})
   const addItem = () => {
     setItems(prev => [...prev, { id: crypto.randomUUID(), barcode: '', product_name: '', brand: '', quantity_needed: '1' }])
   }
@@ -64,15 +70,18 @@ export default function RestockForm() {
         quantity_needed: parseInt(item.quantity_needed),
       }))
 
-      const result = await createRestockRequest(payload, notes.trim() || undefined)
+      const result = initialData ? await updateRestockRequest(initialData.id,payload,notes.trim()||undefined,supplierNotes||undefined) : await createRestockRequest(payload, notes.trim() || undefined, storeId || undefined)
 
       if (result.error) {
         toast.error(result.error)
       } else {
-        toast.success('Restock request created')
+        clearDraft()
+        toast.success(initialData?'Restock request updated':'Restock request created')
         router.back()
         router.refresh()
       }
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : 'The form could not be saved. Your draft is kept.')
     } finally {
       setSaving(false)
     }
@@ -82,6 +91,8 @@ export default function RestockForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      {!initialData && <StorePicker value={storeId} onChange={setStoreId} />}
+      {initialData && <label className="block text-sm">Supplier notes<textarea value={supplierNotes} onChange={e=>setSupplierNotes(e.target.value)} className="mt-1 w-full rounded border bg-transparent p-3" maxLength={5000}/></label>}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -140,12 +151,7 @@ export default function RestockForm() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div className="space-y-1.5">
                   <label className="text-[8px] font-black uppercase tracking-widest text-slate-500">Barcode *</label>
-                  <input
-                    value={item.barcode}
-                    onChange={(e) => updateItem(item.id, 'barcode', e.target.value)}
-                    placeholder="Scan or type"
-                    className={`w-full px-3 py-2.5 rounded-xl border text-sm font-bold text-slate-900 outline-none focus:ring-2 focus:ring-slate-900/20 transition-all ${errorBorder(`${item.id}-barcode`)}`}
-                  />
+                  <BarcodeInput value={item.barcode} onChange={value=>updateItem(item.id,'barcode',value)} onProduct={product=>{updateItem(item.id,'product_name',product.product_name);updateItem(item.id,'brand',product.brand||'')}} />
                   {errors[`${item.id}-barcode`] && <p className="text-[8px] font-bold text-rose-500">{errors[`${item.id}-barcode`]}</p>}
                 </div>
                 <div className="space-y-1.5">

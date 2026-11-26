@@ -22,6 +22,7 @@ const modules = [
   { href: '/admin/store-operations/audits', label: 'Store audits', icon: Store },
   { href: '/admin/store-operations/incidents', label: 'Incidents', icon: FileWarning },
   { href: '/admin/store-operations/restocking', label: 'Restocking', icon: PackageSearch },
+  { href: '/admin/store-operations/notifications', label: 'Notifications', icon: ClipboardList },
   { href: '/admin/store-operations/reports', label: 'Reports', icon: FileText },
   { href: '/admin/store-operations/settings', label: 'Settings', icon: Settings },
 ]

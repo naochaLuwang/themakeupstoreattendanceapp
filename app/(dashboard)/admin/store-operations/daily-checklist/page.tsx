@@ -23,7 +23,7 @@ export default async function DailyChecklistPage() {
         </p>
       </div>
 
-      <ChecklistTemplateList templates={(templates || []) as any} />
+      <ChecklistTemplateList templates={templates || []} />
 
       <div className="pt-8 border-t border-slate-200">
         <h2 className="text-lg font-medium text-slate-900 mb-6">History</h2>

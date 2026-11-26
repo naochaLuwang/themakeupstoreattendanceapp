@@ -1,0 +1,175 @@
+THE MAKEUP STORE — Store Operations review
+Reviewed 25 November 2026
+
+Result: the main module screens exist, but several core workflows and access
+controls need repair before this implementation is production-ready.
+
+Scope and verification
+
+- Reviewed all nine Store Operations action files, database migrations, shared
+  permissions, list/detail/form components, admin/employee routes, and reports.
+- TypeScript: npm run typecheck passes.
+- Module ESLint: 87 errors and 19 warnings across 97 files. The errors comprise
+  68 explicit-any and 19 unused-variable findings; warnings comprise 18 image
+  optimization warnings and one hook dependency warning.
+- Existing Node tests: 95 pass. They cover attendance and native behavior, not
+  the broken operations workflows described below.
+- Reproduced 12 database findings in a fresh, disposable PostgreSQL 17 cluster
+  using fictional profiles and repository migrations. No credentials or hosted
+  data were used. The cluster was stopped and removed afterward.
+- Migration 004 cannot complete on a clean install. After reproducing this,
+  the test alone adds notification_log.created_by so the remaining migrations
+  and deeper workflow checks can run. This workaround changes no project SQL.
+- Reproduced the shared photo uploader bug in Chromium with the actual React
+  component and a fictional upload action, without uploading to Supabase.
+- Route checks compare actual App Router page paths with navigation/card paths.
+  No applicable rewrite fixes the missing routes.
+- The deployed Supabase schema, grants, policies, buckets, and production UI
+  were not inspected. Findings about schema behavior refer to repository SQL.
+
+High-priority findings
+
+1. Database policies do not enforce role and store boundaries.
+   Source: supabase/migrations/004_remaining_modules.sql:329-336
+   Every profile may insert into manager-only tables. Creators can update all
+   columns of their own rows, including approval fields. Reproduction: an
+   employee inserted an already-approved restock request, attributed its
+   approval to an admin, and subsequently marked it completed. An employee
+   also created and finalized an audit with score 999 against max score 5.
+   startAudit, submitAuditAnswer and completeAudit authenticate but do not
+   require manager/admin roles (app/actions/store-ops/audits.ts:77,130,155).
+   SELECT USING(true) exposes other-store operations to employees. Anonymous
+   reads are also allowed if the hosted Data API grants SELECT to anon; the
+   test explicitly grants this privilege to demonstrate that conditional risk.
+   Legacy operations notifications remain readable by other employees even
+   after the attendance-reminder migration. That later migration restricts
+   reminder notifications but allows legacy rows with attendance_reminder_id
+   NULL. getNotifications also trusts its userId argument instead of binding
+   it to the authenticated user (app/actions/store-ops/notifications.ts:5-15).
+   Fix: enforce per-operation roles, verified identity, store/record scope,
+   immutable attribution and controlled state transitions in the database.
+
+2. Migration 004 fails on a clean install.
+   Source: supabase/migrations/004_remaining_modules.sql:224-233,336
+   notification_log is created without created_by; the generic UPDATE policy
+   then references created_by. PostgreSQL rejects this with column not found.
+   The policy DO block rolls back, and the later timestamp-trigger block does
+   not execute under ON_ERROR_STOP. The later reminder migration adding this
+   column cannot repair a migration runner that already stopped at 004.
+
+3. Checklist templates cannot save their items.
+   Source: app/actions/store-ops/daily-checklist.ts:36-48
+   Source: supabase/migrations/003_daily_checklist.sql:29-31
+   Template creation inserts template.id into daily_checklist_items, whose
+   foreign key points to daily_checklists, not checklist_templates. Reproduced
+   the foreign-key violation and the saved template header left behind.
+   Template editing and checklist startup use the same incorrect relationship.
+   Fix: introduce actual template items, then atomically copy a snapshot into
+   the daily checklist, preserving existing data through a new migration.
+
+4. Audit answers cannot be saved, and the UI can complete an audit anyway.
+   Source: supabase/migrations/004_remaining_modules.sql:145-154,354-360
+   audit_answers has no updated_at column but receives the trigger that writes
+   NEW.updated_at. Reproduced: UPDATE audit_answers fails with record "new"
+   has no field "updated_at".
+   Source: components/store-ops/audits/AuditRunner.tsx:117-127
+   handleComplete ignores answer-saving errors and still calls completeAudit;
+   this can finalize an audit using the original zero scores.
+
+5. Employees cannot persist completion of manager-assigned tasks.
+   Source: app/actions/store-ops/tasks.ts:112-143
+   Source: supabase/migrations/004_remaining_modules.sql:336
+   The action allows employees, but the UPDATE policy only allows creators or
+   managers/admins. assigned_to is not considered. Reproduced zero updated rows
+   with the saved task still pending. The action treats error:null as success
+   without checking affected rows, so the UI may show a completion never saved.
+   Source: components/store-ops/tasks/TaskList.tsx:54-89
+   The initial employee page scopes tasks to user.id, but the mounted list
+   immediately fetches without that constraint and replaces the scoped list.
+
+6. Several navigation and detail destinations have no page.
+   Source: app/(dashboard)/admin/store-operations/StoreOpsNav.tsx:22,26
+   Missing: /admin/store-operations/audits and /settings, audit /new and /[id],
+   /employee/store-operations/testers/[id], and
+   /employee/store-operations/restocking/[id]. Audit pages are accidentally
+   nested under /admin/store-operations/audits/audits, while their own links
+   still use /admin/store-operations/audits.
+   Employee tester and restock cards therefore link to missing detail pages.
+
+7. Selecting multiple photos loses earlier selections and exceeds the limit.
+   Source: components/store-ops/ImageUpload.tsx:25-38
+   The upload loop repeatedly uses its original images array. Reproduced with
+   maxImages=2: three selected files all upload, but only the third remains in
+   state. Earlier files can become orphaned in Storage and disappear from the
+   submitted report. The removal handler only removes local state and does not
+   clean up already-uploaded files (lines 49-51).
+
+Other functional and delivery gaps
+
+8. Checklist completion is not validated on the server.
+   app/actions/store-ops/daily-checklist.ts:236-253 directly marks a checklist
+   completed without verifying item completion or required photo evidence.
+   Reproduced completion with one unchecked item and no photo. The schema has
+   no uniqueness constraint for daily starts; reproduced two opening
+   checklists for the same date. The current query also lacks store scope.
+
+9. Checklist dates use UTC rather than the store business date.
+   app/actions/store-ops/daily-checklist.ts:137,258 use ISO UTC date strings.
+   At 00:30 IST on 25 November, they select 24 November. The dashboard also
+   combines server-local midnight with UTC dates for its daily statistics.
+
+10. Operations Realtime setup is incomplete in migrations.
+    Client components subscribe, but tasks, shelf_inspections and checklist
+    item tables are absent from the fresh supabase_realtime publication after
+    applying the migrations. Only notification_log is explicitly added later.
+    Hosted publication configuration must be checked before concluding whether
+    the deployed installation currently receives these events.
+
+11. Reports implement record counts only.
+    app/(dashboard)/admin/store-operations/reports/page.tsx displays eight
+    all-time totals. Daily/weekly/monthly analysis, inspection completion,
+    damage value, employee performance, checklist compliance, incident trends,
+    tester usage, charts, and CSV/PDF export are not implemented there.
+
+12. Notifications and recurring tasks lack the operations event processing.
+    createNotification has no workflow callers. Assigning/completing a task
+    and approving damage do not emit operations notifications. Recurrence
+    fields are saved, but no code creates subsequent occurrences. Attendance
+    reminders are a separate implemented feature and do not cover these events.
+
+13. Upload setup and safeguards are incomplete.
+    No repository migration provisions the store-images bucket or its access
+    policies. Existing hosted setup may differ. Upload actions largely accept
+    a cast File without server-side content/size validation. Forms do not
+    compress images, generate thumbnails, or autosave drafts. Report deletion
+    does not consistently remove associated Storage objects. Voice-note capture
+    and barcode scanning/product lookup are absent from the respective forms.
+
+14. Additional workflow and error-handling gaps.
+    Employee damage and incident forms redirect successful submissions to admin
+    paths, which the admin guard rejects for employees. Many list/dashboard
+    queries ignore errors and present empty results or zero counts. Most
+    requested edit screens are absent; existing damage/inspection edit form
+    branches also pass image_urls to update actions that spread the payload
+    into tables without that column. Store sections have no management UI;
+    the only createStoreSection action has no UI caller. Multiple child tables
+    omit the required updated_at field. No operations-specific loading.tsx or
+    error.tsx exists; only the parent dashboard/employee boundaries apply.
+
+Recommended repair order
+
+First repair and test database roles, scope, attribution, clean migrations and
+the shared uploader. Then complete Shelf Inspection as the first module, run
+TypeScript/ESLint and role-specific workflow checks, document schema changes,
+and pause before implementing the next module as required by AGENTS.md.
+
+Evidence files
+
+- review-database.py: repeatable disposable database reproduction
+- database-checks.json: 12 confirmed database findings and exact errors
+- upload-checks.json: browser reproduction of multi-photo loss
+- route-checks.json: missing page destinations
+- eslint-summary.json: module-specific ESLint counts and affected files
+
+This review adds verification artifacts only. It does not change operations
+implementation, apply hosted migrations, or modify production data.

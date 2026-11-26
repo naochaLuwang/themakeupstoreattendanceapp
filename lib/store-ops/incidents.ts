@@ -11,10 +11,10 @@ export async function getIncidents(filters: IncidentFilters = {}) {
     .from('incidents')
     .select(`
       *,
-      profiles:created_by(full_name, email),
-      assigned_to_profile:assigned_to(full_name),
+      profiles:profiles!created_by(full_name, email),
+      assigned_to_profile:profiles!assigned_to(full_name),
       incident_images(*),
-      incident_comments(*, profiles:created_by(full_name))
+      incident_comments(*, profiles:profiles!created_by(full_name))
     `, { count: 'exact' });
 
   if (filters.search) {
@@ -59,10 +59,10 @@ export async function getIncidentById(id: string) {
     .from('incidents')
     .select(`
       *,
-      profiles:created_by(full_name, email),
-      assigned_to_profile:assigned_to(full_name),
+      profiles:profiles!created_by(full_name, email),
+      assigned_to_profile:profiles!assigned_to(full_name),
       incident_images(*),
-      incident_comments(*, profiles:created_by(full_name))
+      incident_comments(*, profiles:profiles!created_by(full_name))
     `)
     .eq('id', id)
     .single();

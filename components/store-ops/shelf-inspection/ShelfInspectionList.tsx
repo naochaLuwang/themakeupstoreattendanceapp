@@ -1,8 +1,11 @@
 'use client'
 
+import StoreImage from '@/components/store-ops/StoreImage'
+
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { getShelfInspectionPage } from '@/app/actions/store-ops/shelf-inspection'
 import { Search, Filter, Plus, X, Loader2, ImageIcon } from 'lucide-react'
 import { INSPECTION_STATUSES } from '@/lib/store-ops/constants'
 import type { ShelfInspectionWithRelations } from '@/lib/store-ops/types'
@@ -49,6 +52,7 @@ export default function ShelfInspectionList({
   const [currentPage, setCurrentPage] = useState(initialPage)
   const [totalPages, setTotalPages] = useState(initialTotalPages)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
@@ -57,34 +61,14 @@ export default function ShelfInspectionList({
 
   const fetchData = useCallback(async (pageNum: number) => {
     setLoading(true)
-    let query = supabase
-      .from('shelf_inspections')
-      .select(`
-        *,
-        store_sections(name, description),
-        profiles:employee_id(full_name, email),
-        inspection_images(*),
-        inspection_comments(*, profiles:created_by(full_name))
-      `, { count: 'exact' })
-
-    if (search) {
-      query = query.or(`notes.ilike.%${search}%,store_sections.name.ilike.%${search}%`)
-    }
-    if (statusFilter) query = query.eq('status', statusFilter)
-    if (sectionFilter) query = query.eq('section_id', sectionFilter)
-
-    const limit = 20
-    const offset = (pageNum - 1) * limit
-    query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1)
-
-    const { data: results, count } = await query
-    if (results) setData(results as unknown as ShelfInspectionWithRelations[])
-    if (count !== null) {
-      setTotalCount(count)
-      setTotalPages(Math.ceil(count / limit))
-    }
+    setError(null)
+    try {
+      const result = await getShelfInspectionPage({ page: pageNum, search, status: statusFilter, section_id: sectionFilter })
+      if (result.error) setError(result.error)
+      else { setData(result.data); setTotalCount(result.total); setTotalPages(result.totalPages) }
+    } catch { setError('Inspections could not be loaded. Try again.') }
     setLoading(false)
-  }, [search, statusFilter, sectionFilter, supabase])
+  }, [search, statusFilter, sectionFilter])
 
   useEffect(() => {
     fetchData(currentPage)
@@ -126,6 +110,7 @@ export default function ShelfInspectionList({
 
   return (
     <div className="space-y-6">
+      {error && <p role="alert" className="rounded-lg border border-rose-300 p-3 text-sm text-rose-700">{error}</p>}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -248,7 +233,7 @@ export default function ShelfInspectionList({
                       <div className="flex items-center gap-3">
                         {item.inspection_images?.[0] ? (
                           <div className="w-10 h-10 rounded-lg overflow-hidden bg-slate-100 shrink-0">
-                            <img src={item.inspection_images[0].url} alt="" className="w-full h-full object-cover" />
+                            <StoreImage src={item.inspection_images[0].url} alt="" className="w-full h-full object-cover" />
                           </div>
                         ) : (
                           <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">

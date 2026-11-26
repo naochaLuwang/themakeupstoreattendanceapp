@@ -1,4 +1,8 @@
 'use client'
+import {runOperation} from '@/lib/store-ops/client-action';
+import {prepareImage} from '@/lib/store-ops/image-compression'
+
+import StoreImage from '@/components/store-ops/StoreImage'
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
@@ -6,7 +10,7 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import {
   ArrowLeft, Check, X, Trash2, Send, Upload,
-  ImageIcon, Loader2, User, Calendar, Tag, Clock,
+  Loader2, User, Calendar, Tag, Clock,
   RefreshCw, Paperclip, FileText
 } from 'lucide-react'
 import {
@@ -56,7 +60,7 @@ export default function TaskDetail({ task, userRole, basePath }: TaskDetailProps
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'tasks', filter: `id=eq.${task.id}` },
         (payload) => {
-          if (payload.new) setCurrentTask(prev => ({ ...prev, ...payload.new as any }))
+          if (payload.new) setCurrentTask(prev => ({ ...prev, ...payload.new as Partial<TaskWithRelations> }))
         }
       )
       .on('postgres_changes',
@@ -64,11 +68,11 @@ export default function TaskDetail({ task, userRole, basePath }: TaskDetailProps
         async () => {
           const { data } = await supabase
             .from('task_comments')
-            .select('*, profiles:created_by(full_name)')
+            .select('*, profiles:profiles!created_by(full_name)')
             .eq('task_id', task.id)
             .order('created_at', { ascending: true })
           if (data) {
-            setCurrentTask(prev => ({ ...prev, task_comments: data as any }))
+            setCurrentTask(prev => ({ ...prev, task_comments: data as TaskWithRelations['task_comments'] }))
           }
         }
       )
@@ -81,7 +85,7 @@ export default function TaskDetail({ task, userRole, basePath }: TaskDetailProps
             .eq('task_id', task.id)
             .order('created_at', { ascending: true })
           if (data) {
-            setCurrentTask(prev => ({ ...prev, task_attachments: data as any }))
+            setCurrentTask(prev => ({ ...prev, task_attachments: data as TaskWithRelations['task_attachments'] }))
           }
         }
       )
@@ -91,7 +95,7 @@ export default function TaskDetail({ task, userRole, basePath }: TaskDetailProps
   }, [task.id, supabase])
 
   const handleToggleComplete = async () => {
-    const result = await completeTask(currentTask.id)
+    const result = await runOperation(() => completeTask(currentTask.id))
     if (result.error) toast.error(result.error)
     else {
       toast.success(result.data?.status === 'completed' ? 'Task completed' : 'Task reopened')
@@ -99,14 +103,14 @@ export default function TaskDetail({ task, userRole, basePath }: TaskDetailProps
   }
 
   const handleCancel = async () => {
-    const result = await cancelTask(currentTask.id)
+    const result = await runOperation(() => cancelTask(currentTask.id))
     if (result.error) toast.error(result.error)
     else toast.success('Task cancelled')
   }
 
   const handleDelete = async () => {
     if (!confirm('Delete this task permanently?')) return
-    const result = await deleteTask(currentTask.id)
+    const result = await runOperation(() => deleteTask(currentTask.id))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Task deleted')
@@ -118,7 +122,7 @@ export default function TaskDetail({ task, userRole, basePath }: TaskDetailProps
     e.preventDefault()
     if (!comment.trim()) return
     setSubmitting(true)
-    const result = await addTaskComment(currentTask.id, comment.trim())
+    const result = await runOperation(() => addTaskComment(currentTask.id, comment.trim()))
     if (result.error) {
       toast.error(result.error)
     } else {
@@ -135,11 +139,13 @@ export default function TaskDetail({ task, userRole, basePath }: TaskDetailProps
     try {
       for (const file of Array.from(files)) {
         const formData = new FormData()
-        formData.append('file', file)
+        const prepared=await prepareImage(file)
+      formData.append('file', prepared.file)
+      formData.append('thumbnail', prepared.thumbnail)
 
-        const uploadResult = await uploadTaskAttachment(formData)
+        const uploadResult = await runOperation(() => uploadTaskAttachment(formData))
         if (uploadResult.success && uploadResult.url) {
-          const saveResult = await saveTaskAttachment(currentTask.id, uploadResult.url)
+          const saveResult = await runOperation(() => saveTaskAttachment(currentTask.id, uploadResult.url))
           if (saveResult.error) {
             toast.error(saveResult.error)
           } else {
@@ -149,21 +155,21 @@ export default function TaskDetail({ task, userRole, basePath }: TaskDetailProps
               .eq('task_id', currentTask.id)
               .order('created_at', { ascending: true })
             if (data) {
-              setCurrentTask(prev => ({ ...prev, task_attachments: data as any }))
+              setCurrentTask(prev => ({ ...prev, task_attachments: data as TaskWithRelations['task_attachments'] }))
             }
           }
         } else {
           toast.error(uploadResult.error || 'Upload failed')
         }
       }
-    } finally {
+    } catch(cause) { toast.error(cause instanceof Error?cause.message:'Photo upload failed.') } finally {
       setUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
     }
   }
 
   const handleDeleteAttachment = async (attachmentId: string) => {
-    const result = await deleteTaskAttachment(attachmentId)
+    const result = await runOperation(() => deleteTaskAttachment(attachmentId))
     if (result.error) toast.error(result.error)
     else {
       toast.success('Attachment removed')
@@ -204,6 +210,7 @@ export default function TaskDetail({ task, userRole, basePath }: TaskDetailProps
         </div>
 
         <div className="flex items-center gap-2">
+          {isManager && <button type="button" onClick={()=>router.push(`${basePath}/${task.id}/edit`)} className="rounded-lg border px-4 py-2 text-sm">Edit</button>}
           {currentTask.status !== 'completed' && currentTask.status !== 'cancelled' && (
             <button onClick={handleToggleComplete} className="flex items-center gap-1.5 px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-all">
               <Check size={13} /> Complete
@@ -291,7 +298,7 @@ export default function TaskDetail({ task, userRole, basePath }: TaskDetailProps
                           rel="noopener noreferrer"
                           className="aspect-square rounded-xl overflow-hidden bg-slate-100 block"
                         >
-                          <img src={att.url} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform" />
+                          <StoreImage src={att.url} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform" />
                         </a>
                       ) : (
                         <a
@@ -334,12 +341,12 @@ export default function TaskDetail({ task, userRole, basePath }: TaskDetailProps
                 currentTask.task_comments.map((c) => (
                   <div key={c.id} className="flex gap-3 p-3 bg-slate-50 rounded-xl">
                     <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-[8px] font-black shrink-0 uppercase">
-                      {(c as any).profiles?.full_name?.charAt(0) || '?'}
+                      {c.profiles?.full_name?.charAt(0) || '?'}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] font-black text-slate-900 uppercase">
-                          {(c as any).profiles?.full_name || 'Unknown'}
+                          {c.profiles?.full_name || 'Unknown'}
                         </span>
                         <span className="text-[8px] font-bold text-slate-400">
                           {new Date(c.created_at).toLocaleDateString()}
@@ -424,7 +431,7 @@ export default function TaskDetail({ task, userRole, basePath }: TaskDetailProps
   )
 }
 
-function DetailItem({ icon: Icon, label, value }: { icon: any; label: string; value: string }) {
+function DetailItem({ icon: Icon, label, value }: { icon: import('lucide-react').LucideIcon; label: string; value: string }) {
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400 uppercase tracking-wider">
@@ -436,7 +443,7 @@ function DetailItem({ icon: Icon, label, value }: { icon: any; label: string; va
   )
 }
 
-function TimelineItem({ icon: Icon, label, value, date, active }: { icon: any; label: string; value: string; date: string; active?: boolean }) {
+function TimelineItem({ icon: Icon, label, value, date, active }: { icon: import('lucide-react').LucideIcon; label: string; value: string; date: string; active?: boolean }) {
   return (
     <div className="flex gap-3">
       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${active ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400'}`}>

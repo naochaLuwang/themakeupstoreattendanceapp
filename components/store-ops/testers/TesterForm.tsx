@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import StorePicker from '@/components/store-ops/StorePicker'
+import { useOperationsDraft } from '@/lib/store-ops/use-draft'
 import { Save, ArrowLeft, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { TESTER_CONDITIONS } from '@/lib/store-ops/constants'
@@ -22,6 +24,7 @@ interface TesterFormProps {
 
 export default function TesterForm({ initialData }: TesterFormProps) {
   const router = useRouter()
+  const [storeId, setStoreId] = useState('')
   const isEditing = !!initialData
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -36,6 +39,7 @@ export default function TesterForm({ initialData }: TesterFormProps) {
     remaining_percentage: initialData?.remaining_percentage?.toString() || '100',
   })
 
+  const clearDraft = useOperationsDraft(`tester:${initialData?.id || 'new'}`, {form, storeId}, draft => { setForm(draft.form); setStoreId(draft.storeId) })
   const validate = () => {
     const errs: Record<string, string> = {}
     if (!form.product_name.trim()) errs.product_name = 'Product name is required'
@@ -53,6 +57,7 @@ export default function TesterForm({ initialData }: TesterFormProps) {
     setSaving(true)
     try {
       const payload = {
+        store_id: storeId || undefined,
         product_name: form.product_name.trim(),
         brand: form.brand.trim() || undefined,
         shade: form.shade.trim() || undefined,
@@ -69,10 +74,13 @@ export default function TesterForm({ initialData }: TesterFormProps) {
       if (result.error) {
         toast.error(result.error)
       } else {
+        clearDraft()
         toast.success(isEditing ? 'Tester updated' : 'Tester created')
         router.push('/admin/store-operations/testers')
         router.refresh()
       }
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : 'The form could not be saved. Your draft is kept.')
     } finally {
       setSaving(false)
     }
@@ -85,6 +93,7 @@ export default function TesterForm({ initialData }: TesterFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      {!isEditing && <StorePicker value={storeId} onChange={setStoreId} />}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button

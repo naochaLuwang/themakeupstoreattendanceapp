@@ -1,75 +1,19 @@
-'use server'
-
-import { createClient } from '@/lib/supabase/server';
-
-export async function getNotifications(userId: string) {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) return { error: 'Unauthorized' };
-
-  const { data, error } = await supabase
-    .from('notification_log')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(50);
-
-  if (error) return { error: error.message, data: [] };
-  return { data: data || [], error: null };
+'use server';
+import {operationsContext,operationError} from '@/lib/store-ops/context';
+export async function getNotifications(userId:string) {
+    try {const{supabase,user}=await operationsContext();if(userId!==user.id)throw new Error('Notifications belong to another account.');
+        const{data,error}=await supabase.from('notification_log').select('*').eq('user_id',user.id).order('created_at',{ascending:false}).limit(50);if(error)throw new Error('Notifications could not be loaded.');return {data:data||[],error:undefined};
+    }catch(error){return {...operationError(error),data:[]};}
 }
-
-export async function markAsRead(notificationId: string) {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) return { error: 'Unauthorized' };
-
-  const { error } = await supabase
-    .from('notification_log')
-    .update({ is_read: true })
-    .eq('id', notificationId)
-    .eq('user_id', user.id);
-
-  if (error) return { error: error.message };
-  return { success: true };
+export async function markAsRead(id:string) {
+    try {const{supabase,user}=await operationsContext();const{data,error}=await supabase.from('notification_log').update({is_read:true}).eq('id',id).eq('user_id',user.id).select('id').single();if(error||!data)throw new Error('Notification could not be marked read.');return {success:true,error:undefined};}
+    catch(error){return operationError(error);}
 }
-
-export async function markAllAsRead(userId: string) {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) return { error: 'Unauthorized' };
-
-  const { error } = await supabase
-    .from('notification_log')
-    .update({ is_read: true })
-    .eq('user_id', userId)
-    .eq('is_read', false);
-
-  if (error) return { error: error.message };
-  return { success: true };
+export async function markAllAsRead(userId:string) {
+    try {const{supabase,user}=await operationsContext();if(userId!==user.id)throw new Error('Notifications belong to another account.');const{error}=await supabase.from('notification_log').update({is_read:true}).eq('user_id',user.id).eq('is_read',false);if(error)throw new Error('Notifications could not be marked read.');return {success:true,error:undefined};}
+    catch(error){return operationError(error);}
 }
-
-export async function createNotification(
-  userId: string,
-  title: string,
-  body?: string,
-  type?: string,
-  link?: string
-) {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) return { error: 'Unauthorized' };
-
-  const { error } = await supabase
-    .from('notification_log')
-    .insert({
-      user_id: userId,
-      title,
-      body: body || null,
-      type: type || null,
-      link: link || null,
-    });
-
-  if (error) return { error: error.message };
-
-  return { success: true };
+export async function saveOperationsNotificationPreference(enabled:boolean,pushEnabled:boolean) {
+    try {const{supabase,user}=await operationsContext();if(typeof enabled!=='boolean'||typeof pushEnabled!=='boolean')throw new Error('Invalid notification preferences.');const{error}=await supabase.from('store_operation_preferences').upsert({user_id:user.id,created_by:user.id,enabled,push_enabled:pushEnabled},{onConflict:'user_id'});if(error)throw new Error('Notification preferences could not be saved.');return {success:true,error:undefined};}
+    catch(error){return operationError(error);}
 }

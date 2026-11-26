@@ -1,0 +1,65 @@
+{
+  "method": "Page file existence, verified no matching rewrites in next.config.ts",
+  "checks": [
+    {
+      "route": "/admin/store-operations",
+      "exists": true
+    },
+    {
+      "route": "/admin/store-operations/shelf-inspection",
+      "exists": true
+    },
+    {
+      "route": "/admin/store-operations/damage-reports",
+      "exists": true
+    },
+    {
+      "route": "/admin/store-operations/testers",
+      "exists": true
+    },
+    {
+      "route": "/admin/store-operations/daily-checklist",
+      "exists": true
+    },
+    {
+      "route": "/admin/store-operations/tasks",
+      "exists": true
+    },
+    {
+      "route": "/admin/store-operations/audits",
+      "exists": false
+    },
+    {
+      "route": "/admin/store-operations/incidents",
+      "exists": true
+    },
+    {
+      "route": "/admin/store-operations/restocking",
+      "exists": true
+    },
+    {
+      "route": "/admin/store-operations/reports",
+      "exists": true
+    },
+    {
+      "route": "/admin/store-operations/settings",
+      "exists": false
+    },
+    {
+      "route": "/admin/store-operations/audits/new",
+      "exists": false
+    },
+    {
+      "route": "/admin/store-operations/audits/[id]",
+      "exists": false
+    },
+    {
+      "route": "/employee/store-operations/testers/[id]",
+      "exists": false
+    },
+    {
+      "route": "/employee/store-operations/restocking/[id]",
+      "exists": false
+    }
+  ]
+}

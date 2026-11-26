@@ -1,5 +1,7 @@
 'use client'
 
+import StoreImage from '@/components/store-ops/StoreImage'
+
 import Link from 'next/link'
 import { ImageIcon } from 'lucide-react'
 
@@ -73,7 +75,7 @@ export default function IncidentCard({
           <div className="shrink-0">
             {images[0] ? (
               <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-100">
-                <img src={images[0].url} alt="" className="w-full h-full object-cover" />
+                <StoreImage src={images[0].url} alt="" className="w-full h-full object-cover" />
               </div>
             ) : (
               <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center">

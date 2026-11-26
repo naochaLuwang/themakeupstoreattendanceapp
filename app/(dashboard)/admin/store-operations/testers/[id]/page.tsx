@@ -1,3 +1,4 @@
+import type { TesterWithRelations } from '@/lib/store-ops/types';
 import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import TesterDetail from '@/components/store-ops/testers/TesterDetail'
@@ -19,8 +20,8 @@ export default async function TesterDetailPage({ params }: { params: Promise<{ i
     .from('testers')
     .select(`
       *,
-      profiles:created_by(full_name),
-      tester_logs(*, profiles:created_by(full_name))
+      profiles:profiles!created_by(full_name),
+      tester_logs(*, profiles:profiles!created_by(full_name))
     `)
     .eq('id', id)
     .single()
@@ -29,7 +30,7 @@ export default async function TesterDetailPage({ params }: { params: Promise<{ i
 
   return (
     <TesterDetail
-      tester={tester as any}
+      tester={tester as TesterWithRelations}
       userRole={profile?.role || 'employee'}
       basePath="/admin/store-operations/testers"
       canEdit={can(profile?.role || 'employee', 'testers.edit')}

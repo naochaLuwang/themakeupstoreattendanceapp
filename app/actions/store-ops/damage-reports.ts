@@ -1,296 +1,76 @@
-'use server'
+'use server';
+import { operationsContext, operationError } from '@/lib/store-ops/context';
+import { damageSchema, uuid, validationMessage } from '@/lib/store-ops/validation';
+import { uploadOperationsImage, removeOperationsImages } from '@/lib/store-ops/uploads';
+import type { Database, Json } from '@/lib/supabase/database.types';
+type Report = Database['public']['Tables']['damage_reports']['Row'];
 
-import { createClient } from '@/lib/supabase/server';
-import { can, canManageApprovals, canDelete } from '@/lib/store-ops/permissions';
-
-export async function createDamageReport(data: {
-  barcode: string
-  product_name: string
-  brand?: string
-  shade?: string
-  batch?: string
-  mrp?: number
-  quantity: number
-  damage_type: string
-  description?: string
-  image_urls?: string[]
-}) {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) return { error: 'Unauthorized' };
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  if (!profile || !can(profile.role, 'damage_reports.create')) {
-    return { error: 'Forbidden' };
-  }
-
-  const { data: report, error } = await supabase
-    .from('damage_reports')
-    .insert({
-      barcode: data.barcode,
-      product_name: data.product_name,
-      brand: data.brand || null,
-      shade: data.shade || null,
-      batch: data.batch || null,
-      mrp: data.mrp || null,
-      quantity: data.quantity,
-      damage_type: data.damage_type,
-      description: data.description || null,
-      reported_by: user.id,
-      created_by: user.id,
-    })
-    .select()
-    .single();
-
-  if (error) return { error: error.message };
-
-  if (data.image_urls && data.image_urls.length > 0) {
-    const imageRows = data.image_urls.map(url => ({
-      damage_report_id: report.id,
-      url,
-      created_by: user.id,
-    }));
-
-    const { error: imgError } = await supabase
-      .from('damage_images')
-      .insert(imageRows);
-
-    if (imgError) return { error: imgError.message };
-  }
-
-  return { success: true, data: report };
+async function saveReport(id: string | null, input: unknown) {
+    const parsed = damageSchema.safeParse(input);
+    if (!parsed.success) return operationError(new Error(validationMessage(parsed.error)));
+    try {
+        if (id) uuid.parse(id);
+        const { supabase } = await operationsContext(id ? 'damage_reports.edit' : 'damage_reports.create');
+        const prior = id ? await supabase.from('damage_images').select('url').eq('damage_report_id', id) : null;
+        const payload = { ...parsed.data, image_urls: parsed.data.image_urls || [] };
+        const { data, error } = await supabase.rpc('store_ops_damage_save', { p_id: id, p_data: payload as Json });
+        if (error || !data || typeof data !== 'object' || Array.isArray(data) || typeof data.id !== 'string') throw new Error(error?.message || 'Report was not saved.');
+        await removeOperationsImages((prior?.data || []).filter(image => !payload.image_urls.includes(image.url)).map(image => image.url));
+        return { success: true, error: undefined, data: data as unknown as Report };
+    } catch (error) { return operationError(error); }
 }
+export async function createDamageReport(input: unknown) { return saveReport(null, input); }
+export async function updateDamageReport(id: string, input: unknown) { return saveReport(id, input); }
 
-export async function updateDamageReport(
-  id: string,
-  data: Partial<{
-    barcode: string
-    product_name: string
-    brand: string
-    shade: string
-    batch: string
-    mrp: number
-    quantity: number
-    damage_type: string
-    description: string
-  }>
-) {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) return { error: 'Unauthorized' };
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  if (!profile || !can(profile.role, 'damage_reports.edit')) {
-    return { error: 'Forbidden' };
-  }
-
-  const { error } = await supabase
-    .from('damage_reports')
-    .update({ ...data, updated_at: new Date().toISOString() })
-    .eq('id', id);
-
-  if (error) return { error: error.message };
-  return { success: true };
+async function review(id: string, status: 'approved' | 'rejected' | 'archived') {
+    try {
+        uuid.parse(id);
+        const { supabase, user } = await operationsContext(status === 'archived' ? 'damage_reports.archive' : status === 'approved' ? 'damage_reports.approve' : 'damage_reports.reject');
+        let query = supabase.from('damage_reports').update({ status, reviewed_by: user.id, reviewed_at: new Date().toISOString() }).eq('id', id);
+        query = status === 'archived' ? query.in('status', ['approved', 'rejected']) : query.eq('status', 'pending');
+        const { data, error } = await query.select().single();
+        if (error || !data) throw new Error('Report was not changed. It may have already been reviewed. Refresh and retry.');
+        return { success: true, error: undefined, data };
+    } catch (error) { return operationError(error); }
 }
+export async function approveDamageReport(id: string) { return review(id, 'approved'); }
+export async function rejectDamageReport(id: string) { return review(id, 'rejected'); }
+export async function archiveDamageReport(id: string) { return review(id, 'archived'); }
+export async function uploadDamageImage(form: FormData) { return uploadOperationsImage(form, 'damage-reports'); }
 
 export async function deleteDamageReport(id: string) {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) return { error: 'Unauthorized' };
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  if (!profile || !canDelete(profile.role)) {
-    return { error: 'Forbidden' };
-  }
-
-  const { error } = await supabase
-    .from('damage_reports')
-    .delete()
-    .eq('id', id);
-
-  if (error) return { error: error.message };
-  return { success: true };
+    try {
+        uuid.parse(id); const { supabase } = await operationsContext('damage_reports.delete');
+        const { data: images, error: readError } = await supabase.from('damage_images').select('url').eq('damage_report_id', id);
+        if (readError) throw new Error(readError.message);
+        const { data, error } = await supabase.from('damage_reports').delete().eq('id', id).select('id').single();
+        if (error || !data) throw new Error('The report could not be deleted.');
+        await removeOperationsImages((images || []).map(image => image.url));
+        return { success: true, error: undefined };
+    } catch (error) { return operationError(error); }
+}
+export async function addDamageComment(id: string, comment: string) {
+    try {
+        uuid.parse(id); if (!comment.trim() || comment.length > 2000) throw new Error('Enter a comment, up to 2,000 characters.');
+        const { supabase, user } = await operationsContext('damage_reports.add_comment');
+        const { data, error } = await supabase.from('damage_comments').insert({ damage_report_id: id, comment: comment.trim(), created_by: user.id }).select('*, profiles:profiles!created_by(full_name)').single();
+        if (error) throw new Error(error.message);
+        return { success: true, error: undefined, data };
+    } catch (error) { return operationError(error); }
+}
+export async function deleteDamageImage(id: string) {
+    try {
+        uuid.parse(id); const { supabase } = await operationsContext('damage_reports.upload_image');
+        const { data, error } = await supabase.from('damage_images').delete().eq('id', id).select('url').single();
+        if (error || !data) throw new Error('The photo could not be removed.');
+        await removeOperationsImages([data.url]);
+        return { success: true, error: undefined };
+    } catch (error) { return operationError(error); }
 }
 
-export async function approveDamageReport(id: string) {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) return { error: 'Unauthorized' };
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  if (!profile || !canManageApprovals(profile.role)) {
-    return { error: 'Forbidden' };
-  }
-
-  const { error } = await supabase
-    .from('damage_reports')
-    .update({
-      status: 'approved',
-      reviewed_by: user.id,
-      reviewed_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', id);
-
-  if (error) return { error: error.message };
-  return { success: true };
-}
-
-export async function rejectDamageReport(id: string) {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) return { error: 'Unauthorized' };
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  if (!profile || !canManageApprovals(profile.role)) {
-    return { error: 'Forbidden' };
-  }
-
-  const { error } = await supabase
-    .from('damage_reports')
-    .update({
-      status: 'rejected',
-      reviewed_by: user.id,
-      reviewed_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', id);
-
-  if (error) return { error: error.message };
-  return { success: true };
-}
-
-export async function archiveDamageReport(id: string) {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) return { error: 'Unauthorized' };
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  if (!profile || !canManageApprovals(profile.role)) {
-    return { error: 'Forbidden' };
-  }
-
-  const { error } = await supabase
-    .from('damage_reports')
-    .update({
-      status: 'archived',
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', id);
-
-  if (error) return { error: error.message };
-  return { success: true };
-}
-
-export async function addDamageComment(reportId: string, comment: string) {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) return { error: 'Unauthorized' };
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  if (!profile || !can(profile.role, 'damage_reports.add_comment')) {
-    return { error: 'Forbidden' };
-  }
-
-  const { data, error } = await supabase
-    .from('damage_comments')
-    .insert({
-      damage_report_id: reportId,
-      comment,
-      created_by: user.id,
-    })
-    .select('*, profiles:created_by(full_name)')
-    .single();
-
-  if (error) return { error: error.message };
-  return { success: true, data };
-}
-
-export async function uploadDamageImage(formData: FormData) {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) return { error: 'Unauthorized' };
-
-  const file = formData.get('file') as File;
-  if (!file) return { error: 'No file provided' };
-
-  const ext = file.name.split('.').pop();
-  const fileName = `${user.id}/${crypto.randomUUID()}.${ext}`;
-
-  const { error: uploadError } = await supabase.storage
-    .from('store-images')
-    .upload(`damage-reports/${fileName}`, file, {
-      cacheControl: '3600',
-      upsert: false,
-    });
-
-  if (uploadError) return { error: uploadError.message };
-
-  const { data: { publicUrl } } = supabase.storage
-    .from('store-images')
-    .getPublicUrl(`damage-reports/${fileName}`);
-
-  return { success: true, url: publicUrl };
-}
-
-export async function deleteDamageImage(imageId: string) {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) return { error: 'Unauthorized' };
-
-  const { data: image } = await supabase
-    .from('damage_images')
-    .select('url')
-    .eq('id', imageId)
-    .single();
-
-  if (!image) return { error: 'Image not found' };
-
-  const path = image.url.split('/store-images/')[1];
-  if (path) {
-    await supabase.storage.from('store-images').remove([path]);
-  }
-
-  const { error } = await supabase
-    .from('damage_images')
-    .delete()
-    .eq('id', imageId);
-
-  if (error) return { error: error.message };
-  return { success: true };
+export async function getDamageReturnList() {
+    const { supabase } = await operationsContext('damage_reports.approve');
+    const { data, error } = await supabase.from('damage_reports').select('id,barcode,product_name,brand,shade,batch,mrp,quantity,damage_type,created_at').eq('status','approved').order('created_at');
+    if (error) throw new Error('The return list could not be loaded.');
+    return data || [];
 }

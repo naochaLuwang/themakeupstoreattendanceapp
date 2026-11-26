@@ -1,0 +1,15 @@
+PASS all migrations apply on a clean database
+PASS manager-only section creation, store isolation and anonymous denial
+PASS inspection create, manager approval, editing and approval reset
+PASS failed photo validation rolls back the entire inspection
+PASS damage creation, approval reset after editing and negative quantity rejection
+PASS assigned task completion, protected task fields and restock approval enforcement
+PASS recurring tasks create exactly one next occurrence across reopen/recomplete
+PASS checklist templates, idempotent start, mandatory items/photo and preserved snapshots
+PASS manager-only audits, required answers, bounded scores, calculated totals and frozen history
+PASS incident store isolation, restock approval/completion sequence and transactional item validation
+PASS real reporting aggregates, audit score, date windows and manager/store authorization
+PASS workflow notifications, recipient privacy, push consent recheck, worker authorization and scheduled deduplication
+PASS storage upload ownership and private photo reads
+PASS operations Realtime publication
+PASS existing attendance clock-in and GPS-free checkout after all operations migrations
