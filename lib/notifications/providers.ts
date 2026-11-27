@@ -41,7 +41,7 @@ export async function sendFcm(delivery: Delivery, options: { fetcher?: Fetcher; 
             body: JSON.stringify({ message: { token: credential.token,
                 notification: delivery.category === 'operations' ? { title: 'Store operations update', body: 'Open HRM to review your store updates.' } : { title: 'Attendance reminder', body: 'Open HRM to review your current attendance.' },
                 data: { url: notificationPath(delivery.url), notificationId: delivery.notificationId },
-                android: { priority: 'normal', ttl: `${Math.min(seconds, 7200)}s`, collapse_key: delivery.category === 'operations' ? 'hrm_operations' : 'hrm_attendance', notification: { channel_id: 'hrm-attendance', icon: 'ic_stat_hrm', color: '#704858', tag: delivery.category === 'operations' ? 'hrm-operations' : 'hrm-attendance' } },
+                android: { priority: delivery.category === 'operations' ? 'high' : 'normal', ttl: `${Math.min(seconds, 7200)}s`, ...(delivery.category === 'operations' ? {} : { collapse_key: 'hrm_attendance' }), notification: { channel_id: delivery.category === 'operations' ? 'hrm-updates' : 'hrm-attendance', icon: 'ic_stat_hrm', color: '#704858', tag: delivery.category === 'operations' ? delivery.notificationId : 'hrm-attendance' } },
             } }),
         });
         if (response.ok) return { outcome: 'sent' };

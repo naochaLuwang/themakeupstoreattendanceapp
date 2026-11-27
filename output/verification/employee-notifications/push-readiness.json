@@ -1,0 +1,13 @@
+{
+  "androidVersion": "1.3.3",
+  "androidVersionCode": 7,
+  "apkSha256": "daa104266939d4593ddbc51e63a04f38a902810860a9fcc20d434d2cfda7f6f8",
+  "liveEnabledAndroidDevices": 0,
+  "liveOperationsPreferenceRows": 0,
+  "liveAttendanceWorkerUnauthenticatedStatus": 401,
+  "liveStandaloneOperationsWorkerUnauthenticatedStatus": 503,
+  "sharedAttendanceWorkerDrainsBothQueues": true,
+  "productionScheduleVerified": false,
+  "physicalPushDeliveryTested": false,
+  "schemaChanges": false
+}

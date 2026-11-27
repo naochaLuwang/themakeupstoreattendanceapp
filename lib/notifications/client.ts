@@ -13,7 +13,7 @@ export async function postNotification(command: NotificationCommand, expectedUse
 }
 export async function enableNativeNotifications(): Promise<string> {
     const configuration = await nativePushConfiguration();
-    if (!configuration.configured) throw new Error('Android push is not configured in this build yet. In-app reminders remain available.');
+    if (!configuration.configured) throw new Error('Android push is not configured in this build yet. In-app notifications remain available.');
     if (registrationActive) throw new Error('Notification registration is already in progress.');
     const { PushNotifications } = await import('@capacitor/push-notifications');
     if (registrationActive) throw new Error('Notification registration is already in progress.');
@@ -24,10 +24,13 @@ export async function enableNativeNotifications(): Promise<string> {
     let finished = false;
     try {
         const permission = await PushNotifications.requestPermissions();
-        if (permission.receive !== 'granted') throw new Error('Allow notifications in Android settings to receive attendance reminders.');
+        if (permission.receive !== 'granted') throw new Error('Allow notifications in Android settings to receive task updates and reminders.');
         const after = await nativePushConfiguration();
         if (!after.notificationsEnabled) throw new Error('Notifications are blocked in Android settings. You can enable them there.');
-        await PushNotifications.createChannel({ id: 'hrm-attendance', name: 'Attendance reminders', description: 'Shift reminders and attendance reviews', importance: 3, visibility: 0, vibration: false });
+        await Promise.all([
+            PushNotifications.createChannel({ id: 'hrm-attendance', name: 'Attendance reminders', description: 'Shift reminders and attendance reviews', importance: 3, visibility: 0, vibration: false }),
+            PushNotifications.createChannel({ id: 'hrm-updates', name: 'Task and store updates', description: 'Assigned tasks, approvals and store updates', importance: 4, visibility: 0, vibration: true }),
+        ]);
         const token = new Promise<string>((resolve, reject) => {
             timer = setTimeout(() => reject(new Error('Push registration timed out. Check your connection and try again.')), 15000);
             void Promise.all([

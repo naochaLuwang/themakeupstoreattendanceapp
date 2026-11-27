@@ -8,9 +8,22 @@ import ThemeToggle from '@/components/ThemeToggle';
 import AppBrand from '@/components/AppBrand';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import NotificationFeedProvider from '@/components/notifications/NotificationFeedProvider';
+import NotificationPanel from '@/components/store-ops/notifications/NotificationPanel';
 
 export default function EmployeeLayout({ children }: { children: React.ReactNode }) {
+    return <Suspense fallback={<WorkspaceSkeleton />}><EmployeeWorkspace>{children}</EmployeeWorkspace></Suspense>;
+}
+
+async function EmployeeWorkspace({ children }: { children: React.ReactNode }) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) redirect('/login');
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+    if (profile?.role === 'admin') redirect('/admin');
+
     return (
+        <NotificationFeedProvider key={user.id} userId={user.id}>
         <div className="employee-shell store-ui">
             <a href="#employee-content" className="employee-skip-link">Skip to content</a>
             <Suspense fallback={null}><NavWrapper /></Suspense>
@@ -19,35 +32,15 @@ export default function EmployeeLayout({ children }: { children: React.ReactNode
                     <div className="employee-mobile-brand">
                         <AppBrand subtitle="Staff workspace" />
                     </div>
-                    <ThemeToggle />
+                    <div className="employee-header-actions"><NotificationPanel userId={user.id} /><ThemeToggle /></div>
                 </div>
                 <div className="employee-content-inner">
                     <Suspense fallback={<WorkspaceSkeleton />}>
-                        <AuthGuard>{children}</AuthGuard>
+                        {children}
                     </Suspense>
                 </div>
             </div>
         </div>
+        </NotificationFeedProvider>
     );
-}
-
-async function AuthGuard({ children }: { children: React.ReactNode }) {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) redirect('/login');
-
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-    if (profile?.role === 'admin') {
-        // If an admin accidentally accesses employee routes, redirect to admin dash
-        redirect('/admin');
-    }
-
-    // Otherwise, as long as they are authenticated, let them through to employee
-    return <>{children}</>;
 }

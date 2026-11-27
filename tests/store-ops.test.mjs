@@ -98,5 +98,89 @@ test('operations push uses a generic lock-screen message and preserves the safe 
     assert.equal(result.outcome, 'sent');
     assert.equal(message.notification.title, 'Store operations update');
     assert.equal(message.data.url, '/employee/store-operations/tasks');
-    assert.equal(message.android.collapse_key, 'hrm_operations');
+    assert.equal(message.android.collapse_key, undefined);
+    assert.equal(message.android.priority, 'high');
+    assert.equal(message.android.notification.channel_id, 'hrm-updates');
+    assert.equal(message.android.notification.tag, message.data.notificationId);
+});
+
+const notificationFeed = compile('lib/notifications/feed.ts');
+function notificationClient({ unreadCount = 42, error = null } = {}) {
+    const queries = [];
+    const client = { from(table) {
+        const calls = [['from', table]];
+        const query = {
+            select(...args) { calls.push(['select', ...args]); return query; },
+            eq(...args) { calls.push(['eq', ...args]); return query; },
+            order(...args) { calls.push(['order', ...args]); return query; },
+            limit(...args) { calls.push(['limit', ...args]); return query; },
+            not(...args) { calls.push(['not', ...args]); return query; },
+            like(...args) { calls.push(['like', ...args]); return query; },
+            update(...args) { calls.push(['update', ...args]); return query; },
+            single() { return Promise.resolve({ data: error ? null : { id: 'own-notification' }, error }); },
+            then(resolve) {
+                queries.push(calls);
+                const countOnly = calls.some(call => call[0] === 'select' && call[2]?.head);
+                return Promise.resolve({ data: countOnly ? null : [{ id: 'own-notification', is_read: false }], count: countOnly ? unreadCount : null, error }).then(resolve);
+            },
+        };
+        return query;
+    } };
+    return { client, queries };
+}
+
+test('notification bell counts unread items beyond its twenty recent rows and scopes both queries to the recipient', async () => {
+    const { client, queries } = notificationClient();
+    const feed = await notificationFeed.loadNotificationFeed(client, 'employee-id');
+    assert.equal(feed.items.length, 1);
+    assert.equal(feed.unreadCount, 42);
+    assert.equal(queries.length, 2);
+    assert.ok(queries.every(calls => calls.some(call => call[0] === 'eq' && call[1] === 'user_id' && call[2] === 'employee-id')));
+    assert.ok(queries[0].some(call => call[0] === 'limit' && call[1] === 20));
+    assert.ok(queries[1].some(call => call[0] === 'eq' && call[1] === 'is_read' && call[2] === false));
+});
+test('reminder and operations history apply the same filter to rows and unread count', async () => {
+    for (const [scope, method, column] of [['attendance', 'not', 'attendance_reminder_id'], ['operations', 'like', 'type']]) {
+        const { client, queries } = notificationClient();
+        await notificationFeed.loadNotificationFeed(client, 'employee-id', scope);
+        assert.ok(queries.every(calls => calls.some(call => call[0] === method && call[1] === column)));
+    }
+});
+test('notification transport errors and missing exact counts do not become a false zero badge', async () => {
+    for (const options of [{ error: { message: 'private database details' } }, { unreadCount: null }]) {
+        const { client } = notificationClient(options);
+        await assert.rejects(notificationFeed.loadNotificationFeed(client, 'employee-id'), /Notifications could not be loaded/);
+    }
+});
+test('mark all read rejects another recipient and invalid filters before any write', async () => {
+    const { client, queries } = notificationClient();
+    const actions = compile('app/actions/store-ops/notifications.ts', {
+        '@/lib/store-ops/context': { operationsContext: async () => ({ supabase: client, user: { id: 'employee-id' } }), operationError: error => ({ error: error.message }) },
+    });
+    assert.ok((await actions.markAllAsRead('another-employee')).error);
+    assert.ok((await actions.markAllAsRead('employee-id', 'invalid')).error);
+    assert.equal(queries.length, 0);
+});
+test('mark all read preserves other notification categories in filtered history', async () => {
+    for (const [scope, method] of [['attendance', 'not'], ['operations', 'like'], ['all', null]]) {
+        const { client, queries } = notificationClient();
+        const actions = compile('app/actions/store-ops/notifications.ts', {
+            '@/lib/store-ops/context': { operationsContext: async () => ({ supabase: client, user: { id: 'employee-id' } }), operationError: error => ({ error: error.message }) },
+        });
+        assert.equal((await actions.markAllAsRead('employee-id', scope)).success, true);
+        assert.equal(queries.length, 1);
+        assert.ok(queries[0].some(call => call[0] === 'eq' && call[1] === 'user_id' && call[2] === 'employee-id'));
+        if (method) assert.ok(queries[0].some(call => call[0] === method));
+        else assert.ok(!queries[0].some(call => ['not','like'].includes(call[0])));
+    }
+});
+
+test('store push preferences reject a stale account before writing', async () => {
+    let writes = 0;
+    const actions = compile('app/actions/store-ops/notifications.ts', {
+        '@/lib/store-ops/context': { operationsContext: async () => ({ supabase: { from: () => { writes++; throw new Error('Unexpected database access'); } }, user: { id: 'current-user' } }), operationError: error => ({ success: false, error: error.message }) },
+    });
+    assert.equal((await actions.saveOperationsNotificationPreference(true, true, 'old-user')).success, false);
+    assert.equal((await actions.getOperationsNotificationPreference('old-user')).success, false);
+    assert.equal(writes, 0);
 });

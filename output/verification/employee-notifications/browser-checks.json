@@ -1,0 +1,45 @@
+{
+  "fixtureOnly": true,
+  "checks": [
+    {
+      "width": 320,
+      "scheme": "light",
+      "passed": true
+    },
+    {
+      "width": 390,
+      "scheme": "light",
+      "passed": true
+    },
+    {
+      "width": 768,
+      "scheme": "light",
+      "passed": true
+    },
+    {
+      "width": 1440,
+      "scheme": "light",
+      "passed": true
+    },
+    {
+      "width": 320,
+      "scheme": "dark",
+      "passed": true
+    },
+    {
+      "width": 390,
+      "scheme": "dark",
+      "passed": true
+    },
+    {
+      "width": 768,
+      "scheme": "dark",
+      "passed": true
+    },
+    {
+      "width": 1440,
+      "scheme": "dark",
+      "passed": true
+    }
+  ]
+}

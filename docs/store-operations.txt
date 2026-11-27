@@ -229,3 +229,61 @@ Run npm run graph:update after changing code; query with npm run graph:query --
 attachment paths that bypassed shared compression, and to review auth/media impact.
 This AST pass used no model/API tokens. The installed skill is available to Codex
 on subsequent turns as well as the CLI used in this repair session.
+
+Employee notification bell and Android push (27 November 2026)
+
+The employee header now shows a bell next to the theme toggle on phones,
+tablets and desktop. Both responsive controls share one feed/subscription.
+The bell includes every notification_log category for the signed-in recipient,
+including assigned tasks, approvals, store alerts and attendance reminders.
+Its exact unread count is independent of the twenty-item preview. Opening a
+notification marks it read and opens the existing safe application link.
+Escape, outside click and focus leaving the panel dismiss it. Loading, empty,
+error/retry, mobile viewport and dark-theme states are included. Realtime,
+foreground/resume and a foreground-only periodic refresh keep it current.
+Filtered history marks only its own notification category read.
+
+In Notifications settings, Enable push notifications explicitly asks Android
+permission, registers the current phone, then enables task/store-update push
+consent for that same account. The existing reminder preferences still control
+attendance reminders. If device registration succeeds but saving store consent
+fails, the interface reports the partial result and offers store-preference
+controls for retry. Both the operations page and notification settings use the
+same preference form. Device revocation stops both push categories on that
+phone without changing other devices. No permission is requested automatically.
+
+Android 1.3.3/code 7 enables foreground push presentation. Enrollment creates
+hrm-updates, a private high-importance channel for task/store updates, alongside
+the existing attendance channel. Operations messages use high delivery priority
+and distinct Android notification tags instead of replacing every store alert.
+Lock-screen content stays generic; tapping opens the authenticated detail page.
+No FCM message can change attendance. Delivery remains subject to Android,
+connectivity, valid enrollment, consent and the server worker.
+
+The existing bearer-protected /api/internal/attendance-reminders/run endpoint
+now drains both attendance and operations queues independently. An existing
+one-minute attendance schedule can deliver both with its current secret. A
+failure in either queue still lets the other run and returns a retryable 503
+without provider credentials. Do not add another scheduler if this shared job
+is already running. The standalone operations endpoint and Vault setup remain
+supported; its optional Cron script now runs once a minute. No schedule is
+installed automatically and no new schema/migration is required for this UI.
+
+Live readiness inspection found zero enabled Android registrations, zero store
+push preference rows, a configured attendance worker (unauthenticated POST 401),
+and an unconfigured standalone operations worker (503). No real push was sent.
+After deploying this change, verify that the existing attendance Cron job is
+active (supabase/deployment/attendance_reminder_cron.sql); otherwise install
+that one authenticated schedule with its existing server/Vault secret. Then
+employees must sign in on Android, choose Notifications from the bell and tap
+Enable push notifications. Test a newly assigned task on a physical phone in
+foreground/background, and verify its notification opens the task. Browser
+users keep the in-app feed; browser/PWA push remains removed.
+
+Validation: standalone TypeScript, production web build, changed-source ESLint,
+119 Node tests, real local operations/notification database regressions, and
+8 fictional-data browser scenarios at 320/390/768/1440px in light/dark themes.
+The debug APK was rebuilt and its version, signature, hash and foreground-push
+configuration were checked. Screenshots and browser evidence are under
+output/verification/employee-notifications/. Physical-device FCM delivery and
+Hostinger deployment are not claimed by these local tests.

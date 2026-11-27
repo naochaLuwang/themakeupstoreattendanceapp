@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/app/actions/store-ops/notifications.ts": {
-    "mtime": 1795614415.148729,
-    "ast_hash": "38996ecbdc99645ba5917ba200c0f58b",
+    "mtime": 1795758853.8029113,
+    "ast_hash": "4e3ee45d7e5167fcf31b4007ea1dcc79",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/app/actions/store-ops/settings.ts": {
@@ -560,13 +560,13 @@
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/notifications/NotificationPanel.tsx": {
-    "mtime": 1795669885.8868208,
-    "ast_hash": "e032ede064a9668da726320bb5daf18e",
+    "mtime": 1795707921.232948,
+    "ast_hash": "3dedf5c9088e7cef786d0081c8f2acba",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/notifications/OperationsNotifications.tsx": {
-    "mtime": 1795614415.1966715,
-    "ast_hash": "3577f94859c4e2e0b21ae6a9a4656c50",
+    "mtime": 1795758903.8479671,
+    "ast_hash": "099c5c2d7f5487cf3567b978c25bd48c",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/incidents/IncidentForm.tsx": {
@@ -745,8 +745,8 @@
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/lib/notifications/providers.ts": {
-    "mtime": 1795614483.9815397,
-    "ast_hash": "c332d311d0722d563974d9e5f475b624",
+    "mtime": 1795758903.6934364,
+    "ast_hash": "53213b492ab4fbde17b47cef4478c47d",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/lib/notifications/types.ts": {
@@ -760,8 +760,8 @@
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/lib/notifications/client.ts": {
-    "mtime": 1795532671.9128585,
-    "ast_hash": "e3d3140121b6594173660284bbe0e529",
+    "mtime": 1795759070.0396984,
+    "ast_hash": "dd08c7aa145e81cb7a79ffaf4fefe1ea",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/lib/notifications/config.ts": {
@@ -787,6 +787,26 @@
   "/Users/somojitarambam/Desktop/attendance-app/lib/attendance/smart-scan/settings.ts": {
     "mtime": 1795706154.319986,
     "ast_hash": "4efa3fec389404de307f22c700e2af27",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/notifications/OperationsNotificationPreferences.tsx": {
+    "mtime": 1795758853.8447227,
+    "ast_hash": "483571b2b205e8a8b17f64b6ac532151",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/lib/notifications/useNotificationFeed.ts": {
+    "mtime": 1795707939.3063323,
+    "ast_hash": "6d28abb72106a30ffe234b4ac6a9256a",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/lib/notifications/feed.ts": {
+    "mtime": 1795707875.5385141,
+    "ast_hash": "5acaeec4c79c6561ce77735369427fbf",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/lib/notifications/employee-push.ts": {
+    "mtime": 1795758853.8247082,
+    "ast_hash": "e630c824f4825264f31f03b2f7cdbc21",
     "semantic_hash": ""
   }
 }

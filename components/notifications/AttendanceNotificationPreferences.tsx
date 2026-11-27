@@ -2,10 +2,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { Bell, Smartphone, Loader2 } from 'lucide-react';
-import { enableNativeNotifications, nativePushConfiguration, openNativeNotificationSettings, postNotification } from '@/lib/notifications/client';
+import { nativePushConfiguration, openNativeNotificationSettings, postNotification } from '@/lib/notifications/client';
+import { enableEmployeePush } from '@/lib/notifications/employee-push';
 import type { NotificationCommand, NotificationReply, NotificationUserData, ProviderState, ReminderPreferences } from '@/lib/notifications/types';
 import { defaultPreferences } from '@/lib/notifications/types';
 import NotificationPanel from '@/components/store-ops/notifications/NotificationPanel';
+import OperationsNotificationPreferences from '@/components/store-ops/notifications/OperationsNotificationPreferences';
 import './notifications.css';
 
 const time = (minutes: number | null) => minutes === null ? '' : `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
@@ -47,10 +49,12 @@ export default function AttendanceNotificationPreferences({ userId }: { userId: 
         setBusy(true); setError(null); setNotice(null);
         try {
             if (!native) throw new Error('Push notifications are available in the Android app.');
-            const token = await enableNativeNotifications();
-            const command: NotificationCommand = { action: 'register', name: 'Android app', provider: 'fcm', credential: { token } };
+            const result = await enableEmployeePush(userId);
             setOsEnabled(true);
-            const result = await postNotification(command, userId); if (requestVersion === version.current && result.success && result.data.userId === userId) { setData(result.data); setNotice('Attendance push is enabled on this device.'); }
+            if (requestVersion === version.current && result.data.userId === userId) {
+                setData(result.data);
+                setNotice(result.operationsEnabled ? 'This device is registered for task, store update and attendance push notifications.' : 'This device is registered. Task push preferences could not be enabled; retry in Tasks and store updates below.');
+            }
         } catch (cause: unknown) { if (requestVersion === version.current) setError(cause instanceof Error ? cause.message : 'Notification registration could not be confirmed.'); }
         finally { mutation.current = false; setBusy(false); }
     };
@@ -70,11 +74,12 @@ export default function AttendanceNotificationPreferences({ userId }: { userId: 
                     <button type="submit" className="notification-primary" disabled={busy}>{busy ? 'Saving…' : 'Save preferences'}</button>
                 </form>
             </section>
-            {native && <section className="notification-card"><div className="notification-card-heading"><Smartphone size={20} /><div><h2>Push on this device</h2><p>{current?.enabled ? 'Attendance push is registered here.' : 'Get reminders when the workspace is in the background.'}</p></div></div>
-                {!configured ? <p className="notification-note">Android push needs app setup. In-app reminders remain available.</p> : <button type="button" disabled={busy} className="notification-primary" onClick={() => { if (current?.enabled) void save({ action: 'revoke', deviceId: current.id }, 'Attendance push is turned off on this device.'); else void enable(); }}>{busy ? 'Updating…' : current?.enabled ? 'Turn off attendance push' : 'Enable attendance push'}</button>}
+            {native && <section className="notification-card"><div className="notification-card-heading"><Smartphone size={20} /><div><h2>Push on this device</h2><p>{current?.enabled ? 'This device is registered for push notifications.' : 'Get task updates, store alerts and reminders when the app is closed.'}</p></div></div>
+                {!configured ? <p className="notification-note">Android push needs app setup. In-app notifications remain available.</p> : <button type="button" disabled={busy} className="notification-primary" onClick={() => { if (current?.enabled) void save({ action: 'revoke', deviceId: current.id }, 'Push notifications are turned off on this device.'); else void enable(); }}>{busy ? 'Updating…' : current?.enabled ? 'Turn off push on this device' : 'Enable push notifications'}</button>}
                 {native && nativeReady && !osEnabled && <button type="button" disabled={busy} onClick={() => void openNativeNotificationSettings().catch(() => setError('Open Android app settings to manage notification permission.'))}>Open Android notification settings</button>}
-                {data.devices.some(device => device.provider === 'fcm') && <div className="notification-devices">{data.devices.filter(device => device.provider === 'fcm').map(device => <div key={device.id}><div><strong>{device.name}{device.id === data.currentDeviceId ? ' · This device' : ''}</strong><p>{device.enabled && !device.revoked_at ? 'Registered' : 'Removed'} · Last active {new Date(device.last_seen_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}</p></div>{device.enabled && <button type="button" disabled={busy} onClick={() => void save({ action: 'revoke', deviceId: device.id }, 'Device removed from attendance push.')}>Remove</button>}</div>)}</div>}
+                {data.devices.some(device => device.provider === 'fcm') && <div className="notification-devices">{data.devices.filter(device => device.provider === 'fcm').map(device => <div key={device.id}><div><strong>{device.name}{device.id === data.currentDeviceId ? ' · This device' : ''}</strong><p>{device.enabled && !device.revoked_at ? 'Registered' : 'Removed'} · Last active {new Date(device.last_seen_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}</p></div>{device.enabled && <button type="button" disabled={busy} onClick={() => void save({ action: 'revoke', deviceId: device.id }, 'Device removed from push notifications.')}>Remove</button>}</div>)}</div>}
             </section>}
+            <OperationsNotificationPreferences key={`operations-${userId}`} userId={userId} />
             <NotificationPanel key={userId} userId={userId} embedded attendanceOnly />
         </>}
     </div>;

@@ -27,6 +27,9 @@ const config: CapacitorConfig = {
         backgroundColor: '#ffffff',
     },
     plugins: {
+        PushNotifications: {
+            presentationOptions: ['sound', 'alert'],
+        },
         SystemBars: {
             insetsHandling: 'native',
         },

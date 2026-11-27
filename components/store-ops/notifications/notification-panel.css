@@ -1,0 +1,38 @@
+.notification-feed { position: relative; flex-shrink: 0; }
+.notification-bell { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 1px solid var(--store-border); border-radius: 50%; background: var(--store-surface); color: var(--store-secondary); }
+.notification-bell:hover { background: var(--store-raised); }
+.notification-bell-count,.notification-bell-error { position: absolute; top: -3px; right: -4px; display: grid; place-items: center; min-width: 19px; height: 19px; padding-inline: 4px; border: 2px solid var(--store-surface); border-radius: 10px; background: var(--store-accent); color: var(--store-on-solid); font-size: 10px; font-weight: 600; line-height: 1; }
+.notification-bell-error { top: auto; bottom: -3px; background: var(--store-negative); color: #fff; }
+.notification-feed-panel { position: absolute; top: calc(100% + 12px); right: 0; z-index: 120; width: min(384px, calc(100vw - 32px)); overflow: hidden; border: 1px solid var(--store-border); border-radius: 16px; background: var(--store-surface); color: var(--store-ink); box-shadow: 0 12px 40px #00000018; text-align: left; }
+.notification-feed-embedded { position: static; width: 100%; box-shadow: none; }
+.notification-feed-heading,.notification-feed-tools { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--store-border); }
+.notification-feed-heading h3 { margin: 0; font-size: 18px; font-weight: 600; }
+.notification-feed-heading h3:focus { outline: none; }
+.notification-close { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin: -6px -8px -6px 0; border-radius: 50%; color: var(--store-muted); }
+.notification-close:hover { background: var(--store-raised); }
+.notification-feed-tools { padding-block: 4px; font-size: 13px; color: var(--store-muted); }
+.notification-feed-tools button { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--store-accent-ink); font-size: 13px; }
+.notification-feed-list { max-height: min(440px, calc(100dvh - 250px)); overflow-y: auto; overscroll-behavior: contain; }
+.notification-feed-item { display: flex; align-items: flex-start; gap: 12px; width: 100%; min-height: 72px; padding: 16px; text-align: left; border-bottom: 1px solid var(--store-border); }
+.notification-feed-item:last-child { border-bottom: 0; }
+.notification-feed-item:hover { background: var(--store-raised); }
+.notification-feed-item[data-unread='true'] { background: var(--store-accent-soft); }
+.notification-unread-dot { width: 7px; height: 7px; flex-shrink: 0; margin-top: 6px; border-radius: 50%; }
+.notification-feed-item[data-unread='true'] .notification-unread-dot { background: var(--store-accent); }
+.notification-feed-copy { display: grid; gap: 6px; min-width: 0; overflow-wrap: anywhere; }
+.notification-feed-copy strong { color: var(--store-ink); font-size: 14px; font-weight: 500; line-height: 1.4; }
+.notification-feed-item[data-unread='true'] strong { font-weight: 600; }
+.notification-feed-copy > span { font-size: 14px; line-height: 1.5; color: var(--store-secondary); }
+.notification-feed-copy time { font-size: 12px; color: var(--store-muted); }
+.notification-feed-empty { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 36px 20px; text-align: center; color: var(--store-muted); }
+.notification-feed-empty p { margin: 0; font-size: 14px; color: var(--store-ink); }
+.notification-feed-empty span { max-width: 260px; font-size: 13px; line-height: 1.6; }
+.notification-feed-error { padding: 16px; font-size: 14px; line-height: 1.5; color: var(--store-negative); }
+.notification-feed-error button { min-height: 44px; text-decoration: underline; text-underline-offset: 3px; }
+.notification-feed-footer { padding: 4px 16px; border-top: 1px solid var(--store-border); }
+.notification-feed-footer a { display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; color: var(--store-accent-ink); }
+.notification-feed :is(button,a):focus-visible { outline: 2px solid var(--store-accent); outline-offset: -3px; }
+.notification-feed button:disabled { cursor: wait; opacity: .65; }
+@media (max-width: 639px) {
+  .notification-feed-panel:not(.notification-feed-embedded) { position: fixed; top: calc(76px + env(safe-area-inset-top)); right: 16px; left: 16px; width: auto; }
+}

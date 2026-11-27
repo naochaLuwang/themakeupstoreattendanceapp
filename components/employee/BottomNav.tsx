@@ -8,6 +8,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 import AppBrand from '@/components/AppBrand';
 import { WORKSPACE_NAME } from '@/lib/branding';
 import { nativeFeedback, isNativeWorkspace } from '@/lib/native/experience';
+import NotificationPanel from '@/components/store-ops/notifications/NotificationPanel';
 
 export default function BottomNav({ userId, initialCount }: { userId: string, initialCount: number }) {
     const pathname = usePathname();
@@ -74,7 +75,7 @@ export default function BottomNav({ userId, initialCount }: { userId: string, in
                         );
                     })}
                 </div>
-                <div className="employee-theme-desktop"><ThemeToggle /></div>
+                <div className="employee-theme-desktop employee-header-actions"><NotificationPanel userId={userId} /><ThemeToggle /></div>
             </div>
         </nav>
     );

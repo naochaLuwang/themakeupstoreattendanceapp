@@ -98,7 +98,7 @@ test('worker reauthorizes every device, bounds provider concurrency and returns 
     assert.equal(sent, 6); assert.equal(maximum, 3); assert.equal(result.suppressed, 1); assert.equal(result.sent, 6); assert.equal(calls.filter(call => call.action === 'finish').length, 6); assert.ok(!JSON.stringify(result).includes('credential'));
 });
 test('the internal endpoint authenticates its own secret before creating a privileged worker', async () => {
-    let runs = 0; const route = loader({ 'next/server': { NextResponse: { json: (body, options) => ({ body, ...options }) } }, '@/lib/notifications/worker': { runAttendanceReminders: async () => { runs++; return { sent: 0 }; } } }, { ATTENDANCE_REMINDER_WORKER_SECRET: 'x'.repeat(48) })(resolve('app/api/internal/attendance-reminders/run/route.ts'));
+    let runs = 0; const route = loader({ 'next/server': { NextResponse: { json: (body, options) => ({ body, ...options }) } }, '@/lib/notifications/worker': { runAttendanceReminders: async () => { runs++; return { sent: 0 }; } }, '@/lib/store-ops/worker': { runOperationsWorker: async () => ({ sent: 0 }) } }, { ATTENDANCE_REMINDER_WORKER_SECRET: 'x'.repeat(48) })(resolve('app/api/internal/attendance-reminders/run/route.ts'));
     assert.equal((await route.POST({ headers: new Headers() })).status, 401); assert.equal(runs, 0);
     const accepted = await route.POST({ headers: new Headers({ authorization: 'Bearer ' + 'x'.repeat(48) }) }); assert.equal(accepted.body.success, true); assert.equal(runs, 1);
 });
@@ -106,4 +106,63 @@ test('an unconfigured Android build never calls the native permission or registr
     let requests = 0;
     const client = loader({ '@/lib/native/experience': { nativePushConfiguration: async () => ({ configured: false, notificationsEnabled: false }), openNativeNotificationSettings: async () => {} }, '@capacitor/push-notifications': { PushNotifications: { requestPermissions: async () => { requests++; return { receive: 'granted' }; }, register: async () => { requests++; } } } })(resolve('lib/notifications/client.ts'));
     await assert.rejects(client.enableNativeNotifications(), /not configured/); assert.equal(requests, 0);
+});
+
+test('employee push opt-in enrolls the phone and enables task delivery for the same verified account', async () => {
+    const calls = []; const events = [];
+    const client = loader({
+        './client': {
+            enableNativeNotifications: async () => { calls.push('permission'); return 'fictional-token'; },
+            postNotification: async (command, account) => { calls.push({ command, account }); return { success: true, data: { userId: account, devices: [] } }; },
+        },
+        '@/app/actions/store-ops/notifications': { saveOperationsNotificationPreference: async (...args) => { calls.push(args); return { success: true }; } },
+    }, {}, { window: { dispatchEvent: event => events.push(event.type) }, Event })(resolve('lib/notifications/employee-push.ts'));
+    const result = await client.enableEmployeePush(userId);
+    assert.equal(result.operationsEnabled, true);
+    assert.equal(calls[0], 'permission');
+    assert.equal(calls[1].command.action, 'register'); assert.equal(calls[1].account, userId);
+    assert.deepEqual(Array.from(calls[2]), [true, true, userId]);
+    assert.equal(events[0], 'hrm:operations-notification-preferences-updated');
+});
+test('denied push permission never registers or changes store notification consent', async () => {
+    let writes = 0;
+    const client = loader({
+        './client': { enableNativeNotifications: async () => { throw new Error('Permission denied'); }, postNotification: async () => { writes++; } },
+        '@/app/actions/store-ops/notifications': { saveOperationsNotificationPreference: async () => { writes++; } },
+    })(resolve('lib/notifications/employee-push.ts'));
+    await assert.rejects(client.enableEmployeePush(userId), /Permission denied/);
+    assert.equal(writes, 0);
+});
+test('partial push enrollment preserves the device result and reports task consent failure honestly', async () => {
+    const client = loader({
+        './client': { enableNativeNotifications: async () => 'fictional-token', postNotification: async () => ({ success: true, data: { userId, devices: [{ id: deviceId }] } }) },
+        '@/app/actions/store-ops/notifications': { saveOperationsNotificationPreference: async () => ({ success: false, error: 'unavailable' }) },
+    })(resolve('lib/notifications/employee-push.ts'));
+    const result = await client.enableEmployeePush(userId);
+    assert.equal(result.operationsEnabled, false); assert.equal(result.data.devices[0].id, deviceId);
+});
+test('a changed account cannot inherit store push consent from an old registration screen', async () => {
+    let writes = 0;
+    const client = loader({
+        './client': { enableNativeNotifications: async () => 'fictional-token', postNotification: async () => ({ success: true, data: { userId: otherId } }) },
+        '@/app/actions/store-ops/notifications': { saveOperationsNotificationPreference: async () => { writes++; } },
+    })(resolve('lib/notifications/employee-push.ts'));
+    await assert.rejects(client.enableEmployeePush(userId), /account changed/); assert.equal(writes, 0);
+});
+
+
+test('the authenticated notification schedule drains both queues even if one worker fails', async () => {
+    for (const failed of ['attendance','operations',null]) {
+        const calls=[];
+        const route=loader({
+            'next/server': {NextResponse:{json:(body,options)=>({body,...options})}},
+            '@/lib/notifications/worker': {runAttendanceReminders:async()=>{calls.push('attendance');if(failed==='attendance')throw new Error('private details');return {sent:1};}},
+            '@/lib/store-ops/worker': {runOperationsWorker:async()=>{calls.push('operations');if(failed==='operations')throw new Error('private details');return {sent:2};}},
+        },{ATTENDANCE_REMINDER_WORKER_SECRET:'x'.repeat(48)})(resolve('app/api/internal/attendance-reminders/run/route.ts'));
+        const response=await route.POST({headers:new Headers({authorization:'Bearer '+'x'.repeat(48)})});
+        assert.equal(calls.length,2);assert.equal(response.status,failed?503:200);
+        assert.equal(response.body.success,!failed);assert.ok(!JSON.stringify(response.body).includes('private details'));
+        if(failed!=='attendance')assert.equal(response.body.data.sent,1);
+        if(failed!=='operations')assert.equal(response.body.operations.sent,2);
+    }
 });
