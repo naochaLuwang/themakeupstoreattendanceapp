@@ -75,10 +75,6 @@
   .employee-content { padding: 40px 24px 64px; }
   .employee-schedule-layout { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 32px; }
 }
-.employee-ops-nav { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 12px; border-bottom: 1px solid var(--store-border); }
-.employee-ops-link { display: flex; align-items: center; flex-shrink: 0; gap: 8px; padding: 12px; min-height: 44px; border-radius: 8px; font-size: 13px; color: var(--store-secondary); }
-.employee-ops-link:hover { background: var(--store-raised); }
-.employee-ops-link[aria-current='page'] { color: var(--store-accent-ink); background: var(--store-accent-soft); }
 
 /* Today comes before schedule browsing, including on the smallest phone screens. */
 .employee-home { color: var(--store-ink); }

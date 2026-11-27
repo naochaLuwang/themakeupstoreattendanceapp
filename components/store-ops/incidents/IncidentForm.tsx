@@ -104,11 +104,11 @@ export default function IncidentForm({ initialData }: IncidentFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="ops-form space-y-8">
       {!isEditing && <StorePicker value={storeId} onChange={setStoreId} />}
       <VoiceNote value={voice} onChange={setVoice} />
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="ops-form-heading flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button
             type="button"

@@ -113,7 +113,7 @@ export default function TesterDetail({ tester, userRole, basePath, canEdit }: Te
   }
 
   return (
-    <div className="space-y-6">
+    <div className="ops-detail space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">

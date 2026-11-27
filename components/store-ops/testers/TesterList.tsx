@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useId } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Search, Filter, Plus, X, Loader2, FlaskConical } from 'lucide-react'
@@ -21,6 +21,7 @@ export default function TesterList({
   initialData, total, page: initialPage, totalPages: initialTotalPages, basePath, canCreate
 }: TesterListProps) {
   const router = useRouter()
+  const filterId = useId()
   const supabase = createClient()
 
   const [data, setData] = useState(initialData)
@@ -104,9 +105,9 @@ export default function TesterList({
   const hasFilters = search || conditionFilter || replacementFilter
 
   return (
-    <div className="space-y-6">
+    <div className="ops-record-list space-y-6">
       {loadError&&<p role="alert" className="rounded-lg border border-rose-300 p-3 text-sm text-rose-700">{loadError}</p>}
-      <div className="flex items-center justify-between">
+      <div className="ops-page-heading flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Testers</h1>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
@@ -116,7 +117,7 @@ export default function TesterList({
         {canCreate && (
           <button
             onClick={() => router.push(`${basePath}/new`)}
-            className="flex items-center gap-2 px-5 py-3 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all"
+            className="ops-primary-action flex items-center gap-2 px-5 py-3 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all"
           >
             <Plus size={14} />
             New Tester
@@ -124,10 +125,11 @@ export default function TesterList({
         )}
       </div>
 
-      <div className="flex items-center gap-3">
-        <form onSubmit={handleSearch} className="flex-1 relative">
+      <div className="ops-search-toolbar flex items-center gap-3">
+        <form onSubmit={handleSearch} className="ops-search flex-1 relative">
           <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
+            aria-label="Search testers"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by product name or brand..."
@@ -135,15 +137,20 @@ export default function TesterList({
           />
         </form>
         <button
+          type="button"
+          aria-label="Filter testers"
+          aria-expanded={showFilters}
+          aria-controls={filterId}
+          data-active={Boolean(hasFilters)}
           onClick={() => setShowFilters(!showFilters)}
-          className={`p-3 rounded-xl border transition-all ${showFilters || hasFilters ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-400 border-slate-200 hover:border-slate-300'}`}
+          className={`ops-filter-toggle p-3 rounded-xl border transition-all ${showFilters || hasFilters ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-400 border-slate-200 hover:border-slate-300'}`}
         >
-          <Filter size={18} />
+          <Filter size={18} aria-hidden="true" /><span className="ops-filter-label hidden">Filters</span>
         </button>
       </div>
 
       {showFilters && (
-        <div className="bg-slate-900 p-5 rounded-2xl space-y-4">
+        <div id={filterId} role="region" aria-label="Testers filters" className="ops-filter-panel bg-slate-900 p-5 rounded-2xl space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Filters</h3>
             {hasFilters && (
@@ -154,8 +161,8 @@ export default function TesterList({
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="space-y-1">
-              <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest ml-1">Condition</label>
-              <select
+              <label htmlFor={`${filterId}-conditionFilter`} className="text-[8px] font-black text-slate-500 uppercase tracking-widest ml-1">Condition</label>
+              <select id={`${filterId}-conditionFilter`}
                 value={conditionFilter}
                 onChange={(e) => { setConditionFilter(e.target.value); setCurrentPage(1) }}
                 className="w-full bg-slate-800 border-none rounded-xl px-3 py-2.5 text-[11px] font-bold text-white outline-none"
@@ -167,8 +174,8 @@ export default function TesterList({
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest ml-1">Needs Replacement</label>
-              <select
+              <label htmlFor={`${filterId}-replacementFilter`} className="text-[8px] font-black text-slate-500 uppercase tracking-widest ml-1">Needs Replacement</label>
+              <select id={`${filterId}-replacementFilter`}
                 value={replacementFilter}
                 onChange={(e) => { setReplacementFilter(e.target.value); setCurrentPage(1) }}
                 className="w-full bg-slate-800 border-none rounded-xl px-3 py-2.5 text-[11px] font-bold text-white outline-none"
@@ -179,8 +186,8 @@ export default function TesterList({
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest ml-1">Sort By</label>
-              <select
+              <label htmlFor={`${filterId}-sortBy`} className="text-[8px] font-black text-slate-500 uppercase tracking-widest ml-1">Sort By</label>
+              <select id={`${filterId}-sortBy`}
                 value={sortBy}
                 onChange={(e) => { setSortBy(e.target.value as typeof sortBy); setCurrentPage(1) }}
                 className="w-full bg-slate-800 border-none rounded-xl px-3 py-2.5 text-[11px] font-bold text-white outline-none"
@@ -195,7 +202,7 @@ export default function TesterList({
       )}
 
       {/* Desktop Table */}
-      <div className="hidden md:block bg-white border border-slate-200 rounded-2xl overflow-hidden">
+      <div className="ops-record-table hidden md:block bg-white border border-slate-200 rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-slate-100">
@@ -288,7 +295,7 @@ export default function TesterList({
       </div>
 
       {/* Mobile Cards */}
-      <div className="md:hidden space-y-3">
+      <div className="ops-record-cards md:hidden space-y-3">
         {loading ? (
           <div className="py-20 flex justify-center">
             <Loader2 size={24} className="animate-spin text-slate-300" />

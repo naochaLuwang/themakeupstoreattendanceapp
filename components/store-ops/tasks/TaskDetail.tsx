@@ -181,7 +181,7 @@ export default function TaskDetail({ task, userRole, basePath }: TaskDetailProps
   }
 
   return (
-    <div className="space-y-6">
+    <div className="ops-detail space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">

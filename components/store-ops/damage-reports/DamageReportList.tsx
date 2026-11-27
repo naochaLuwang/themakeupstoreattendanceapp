@@ -2,7 +2,7 @@
 
 import StoreImage from '@/components/store-ops/StoreImage'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useId } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Search, Filter, Plus, X, Loader2, ImageIcon } from 'lucide-react'
@@ -30,6 +30,7 @@ export default function DamageReportList({
   initialData, total, page: initialPage, totalPages: initialTotalPages, basePath, canCreate
 }: DamageReportListProps) {
   const router = useRouter()
+  const filterId = useId()
   const supabase = createClient()
 
   const [data, setData] = useState(initialData)
@@ -114,10 +115,10 @@ export default function DamageReportList({
   const hasFilters = search || statusFilter || typeFilter
 
   return (
-    <div className="space-y-6">
+    <div className="ops-record-list space-y-6">
       {loadError&&<p role="alert" className="rounded-lg border border-rose-300 p-3 text-sm text-rose-700">{loadError}</p>}
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="ops-page-heading flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Damage Reports</h1>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
@@ -127,7 +128,7 @@ export default function DamageReportList({
         {canCreate && (
           <button
             onClick={() => router.push(`${basePath}/new`)}
-            className="flex items-center gap-2 px-5 py-3 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all"
+            className="ops-primary-action flex items-center gap-2 px-5 py-3 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all"
           >
             <Plus size={14} />
             New Report
@@ -136,10 +137,11 @@ export default function DamageReportList({
       </div>
 
       {/* Search & Filters */}
-      <div className="flex items-center gap-3">
-        <form onSubmit={handleSearch} className="flex-1 relative">
+      <div className="ops-search-toolbar flex items-center gap-3">
+        <form onSubmit={handleSearch} className="ops-search flex-1 relative">
           <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
+            aria-label="Search damage reports"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by product name or barcode..."
@@ -147,16 +149,21 @@ export default function DamageReportList({
           />
         </form>
         <button
+          type="button"
+          aria-label="Filter damage reports"
+          aria-expanded={showFilters}
+          aria-controls={filterId}
+          data-active={Boolean(hasFilters)}
           onClick={() => setShowFilters(!showFilters)}
-          className={`p-3 rounded-xl border transition-all ${showFilters || hasFilters ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-400 border-slate-200 hover:border-slate-300'}`}
+          className={`ops-filter-toggle p-3 rounded-xl border transition-all ${showFilters || hasFilters ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-400 border-slate-200 hover:border-slate-300'}`}
         >
-          <Filter size={18} />
+          <Filter size={18} aria-hidden="true" /><span className="ops-filter-label hidden">Filters</span>
         </button>
       </div>
 
       {/* Filter Panel */}
       {showFilters && (
-        <div className="bg-slate-900 p-5 rounded-2xl space-y-4">
+        <div id={filterId} role="region" aria-label="Damage reports filters" className="ops-filter-panel bg-slate-900 p-5 rounded-2xl space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Filters</h3>
             {hasFilters && (
@@ -167,8 +174,8 @@ export default function DamageReportList({
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest ml-1">Status</label>
-              <select
+              <label htmlFor={`${filterId}-statusFilter`} className="text-[8px] font-black text-slate-500 uppercase tracking-widest ml-1">Status</label>
+              <select id={`${filterId}-statusFilter`}
                 value={statusFilter}
                 onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1) }}
                 className="w-full bg-slate-800 border-none rounded-xl px-3 py-2.5 text-[11px] font-bold text-white outline-none"
@@ -180,8 +187,8 @@ export default function DamageReportList({
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest ml-1">Damage Type</label>
-              <select
+              <label htmlFor={`${filterId}-typeFilter`} className="text-[8px] font-black text-slate-500 uppercase tracking-widest ml-1">Damage Type</label>
+              <select id={`${filterId}-typeFilter`}
                 value={typeFilter}
                 onChange={(e) => { setTypeFilter(e.target.value); setCurrentPage(1) }}
                 className="w-full bg-slate-800 border-none rounded-xl px-3 py-2.5 text-[11px] font-bold text-white outline-none"
@@ -197,7 +204,7 @@ export default function DamageReportList({
       )}
 
       {/* Desktop Table */}
-      <div className="hidden md:block bg-white border border-slate-200 rounded-2xl overflow-hidden">
+      <div className="ops-record-table hidden md:block bg-white border border-slate-200 rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-slate-100">
@@ -274,7 +281,7 @@ export default function DamageReportList({
       </div>
 
       {/* Mobile Cards */}
-      <div className="md:hidden space-y-3">
+      <div className="ops-record-cards md:hidden space-y-3">
         {loading ? (
           <div className="py-20 flex justify-center">
             <Loader2 size={24} className="animate-spin text-slate-300" />

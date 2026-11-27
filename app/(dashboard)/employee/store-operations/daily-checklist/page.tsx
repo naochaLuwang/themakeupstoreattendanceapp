@@ -9,8 +9,8 @@ export default async function EmployeeDailyChecklistPage() {
 
   return (
     <div className="space-y-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-medium text-slate-900 tracking-normal">Daily Checklist</h1>
+      <div className="ops-page-heading">
+        <h1 className="text-2xl font-medium text-slate-900 tracking-normal">Daily checklist</h1>
         <p className="text-sm font-medium text-slate-500 tracking-normal mt-1">
           Complete your opening and closing checklists
         </p>

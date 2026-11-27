@@ -145,7 +145,7 @@ export default function IncidentDetail({ incident, userRole, basePath }: Inciden
   const statusActions = INCIDENT_STATUSES.filter(s => s !== currentIncident.status)
 
   return (
-    <div className="space-y-6">
+    <div className="ops-detail space-y-6">
       {currentIncident.voice_note_url && <audio controls src={mediaUrl(currentIncident.voice_note_url)} aria-label="Incident voice note" className="w-full" />}
       {/* Header */}
       <div className="flex items-center justify-between">

@@ -109,10 +109,10 @@ export default function DamageReportForm({ initialData }: DamageReportFormProps)
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="ops-form space-y-8">
       {!isEditing && <StorePicker value={storeId} onChange={setStoreId} />}
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="ops-form-heading flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button
             type="button"

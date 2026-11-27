@@ -34,7 +34,7 @@ export default function DamageReportCard({
   return (
     <Link
       href={`${basePath}/${id}`}
-      className="block p-5 bg-white border border-slate-100 rounded-2xl hover:border-slate-300 hover:shadow-sm transition-all active:scale-[0.98]"
+      className="ops-record-card block p-5 bg-white border border-slate-100 rounded-2xl hover:border-slate-300 hover:shadow-sm transition-all active:scale-[0.98]"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">

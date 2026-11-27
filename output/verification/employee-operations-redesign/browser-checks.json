@@ -1,0 +1,32 @@
+{
+  "fixtureOnly": true,
+  "checks": [
+    "navigation, focus, module switching, task filters and layout 320 light",
+    "navigation, focus, module switching, task filters and layout 390 light",
+    "module page overview",
+    "module page shelf-inspection",
+    "module page damage-reports",
+    "module page testers",
+    "module page incidents",
+    "module page restocking",
+    "module page daily-checklist",
+    "module page notifications",
+    "create form shelf-inspection",
+    "create form damage-reports",
+    "create form incidents",
+    "create form restocking",
+    "detail page tasks",
+    "detail page shelf-inspection",
+    "detail page damage-reports",
+    "detail page testers",
+    "detail page incidents",
+    "detail page restocking",
+    "navigation, focus, module switching, task filters and layout 768 light",
+    "navigation, focus, module switching, task filters and layout 1024 light",
+    "navigation, focus, module switching, task filters and layout 1440 light",
+    "navigation, focus, module switching, task filters and layout 320 dark",
+    "navigation, focus, module switching, task filters and layout 390 dark",
+    "navigation, focus, module switching, task filters and layout 768 dark",
+    "navigation, focus, module switching, task filters and layout 1440 dark"
+  ]
+}

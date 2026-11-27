@@ -184,3 +184,16 @@ test('store push preferences reject a stale account before writing', async () =>
     assert.equal((await actions.getOperationsNotificationPreference('old-user')).success, false);
     assert.equal(writes, 0);
 });
+
+const employeeNavigation = compile('lib/store-ops/employee-navigation.ts');
+test('employee operation navigation keeps the parent module selected on detail and create routes', () => {
+    for (const module of employeeNavigation.employeeOperationsModules) {
+        const root = employeeNavigation.employeeOperationsRoot + '/' + module.path;
+        for (const route of [root, root + '/new', root + '/' + randomUUID(), root + '/' + randomUUID() + '/edit']) {
+            assert.equal(employeeNavigation.activeEmployeeOperation(route)?.path, module.path);
+        }
+    }
+    for (const route of ['/employee/store-operations','/employee/store-operations/tasks-archive','/employee/store-operations/testers-extra','/admin/store-operations/tasks','/employee/profile']) {
+        assert.equal(employeeNavigation.activeEmployeeOperation(route), undefined);
+    }
+});

@@ -40,7 +40,7 @@ export default function ShelfInspectionForm({ initialData }: Props) {
         } catch { setError('Could not save the inspection. Your draft is kept.'); }
     });
     const fieldClass = 'mt-1 w-full rounded-lg border bg-white p-3 text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100';
-    return <form onSubmit={save} className="space-y-6" aria-busy={form.formState.isSubmitting}>
+    return <form onSubmit={save} className="ops-form space-y-6" aria-busy={form.formState.isSubmitting}>
         <div><h1 className="text-2xl font-medium">{initialData ? 'Edit shelf inspection' : 'New shelf inspection'}</h1><p className="mt-1 text-sm text-slate-500">Record the shelf condition. Your draft saves on this device.</p></div>
         {error && <p role="alert" className="rounded-lg border border-rose-300 p-3 text-sm text-rose-700">{error}</p>}
         <div><label htmlFor="shelf-section" className="text-sm font-medium">Section</label><select id="shelf-section" {...form.register('section_id')} disabled={loading} className={fieldClass} aria-invalid={!!form.formState.errors.section_id}>

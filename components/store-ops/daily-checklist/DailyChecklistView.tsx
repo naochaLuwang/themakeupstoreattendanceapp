@@ -144,14 +144,16 @@ export default function DailyCheckListView({ initialType }: { initialType: 'open
   }
 
   return (
-    <div className="space-y-6">
+    <div className="ops-checklist space-y-6">
       <StorePicker value={storeId} onChange={setStoreId} />
       {loadError && <p role="alert" className="text-sm text-rose-600">{loadError}</p>}
       {/* Type Toggle */}
-      <div className="flex gap-2 bg-white border border-slate-200 rounded-2xl p-1.5 w-fit">
+      <div role="group" aria-label="Checklist type" className="ops-checklist-switch flex gap-2 bg-white border border-slate-200 rounded-2xl p-1.5 w-fit">
         {(['opening', 'closing'] as const).map(t => (
           <button
             key={t}
+            type="button"
+            aria-pressed={type === t}
             onClick={() => setType(t)}
             className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
               type === t ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400 hover:text-slate-700'

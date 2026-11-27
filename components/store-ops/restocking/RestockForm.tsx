@@ -90,11 +90,11 @@ export default function RestockForm({initialData}:{initialData?:{id:string;notes
   const errorBorder = (key: string) => errors[key] ? 'border-rose-300 bg-rose-50' : 'border-slate-200 bg-white'
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="ops-form space-y-8">
       {!initialData && <StorePicker value={storeId} onChange={setStoreId} />}
       {initialData && <label className="block text-sm">Supplier notes<textarea value={supplierNotes} onChange={e=>setSupplierNotes(e.target.value)} className="mt-1 w-full rounded border bg-transparent p-3" maxLength={5000}/></label>}
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="ops-form-heading flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button
             type="button"
