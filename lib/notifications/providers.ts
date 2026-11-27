@@ -35,13 +35,14 @@ export async function sendFcm(delivery: Delivery, options: { fetcher?: Fetcher; 
     let accessToken: string;
     try { accessToken = await (options.getToken || googleMessagingToken)(); }
     catch { return { outcome: 'blocked_configuration', errorCode: 'FCM_AUTH_UNAVAILABLE' }; }
+    const activity = delivery.category === 'operations' || delivery.category === 'attendance_event';
     try {
         const response = await (options.fetcher || fetch)(`https://fcm.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/messages:send`, {
             method: 'POST', signal: AbortSignal.timeout(8000), headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: { token: credential.token,
-                notification: delivery.category === 'operations' ? { title: 'Store operations update', body: 'Open HRM to review your store updates.' } : { title: 'Attendance reminder', body: 'Open HRM to review your current attendance.' },
+                notification: delivery.category === 'attendance_event' ? { title: 'Employee attendance update', body: 'An employee checked in or out. Open HRM to review.' } : delivery.category === 'operations' ? { title: 'Store operations update', body: 'Open HRM to review your store updates.' } : { title: 'Attendance reminder', body: 'Open HRM to review your current attendance.' },
                 data: { url: notificationPath(delivery.url), notificationId: delivery.notificationId },
-                android: { priority: delivery.category === 'operations' ? 'high' : 'normal', ttl: `${Math.min(seconds, 7200)}s`, ...(delivery.category === 'operations' ? {} : { collapse_key: 'hrm_attendance' }), notification: { channel_id: delivery.category === 'operations' ? 'hrm-updates' : 'hrm-attendance', icon: 'ic_stat_hrm', color: '#704858', tag: delivery.category === 'operations' ? delivery.notificationId : 'hrm-attendance' } },
+                android: { priority: activity ? 'high' : 'normal', ttl: `${Math.min(seconds, 7200)}s`, ...(activity ? {} : { collapse_key: 'hrm_attendance' }), notification: { channel_id: activity ? 'hrm-updates' : 'hrm-attendance', icon: 'ic_stat_hrm', color: '#704858', tag: activity ? delivery.notificationId : 'hrm-attendance' } },
             } }),
         });
         if (response.ok) return { outcome: 'sent' };

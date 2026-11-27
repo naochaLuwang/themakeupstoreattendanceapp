@@ -1,5 +1,38 @@
 # Intelligent attendance notifications — module 5
 
+## Admin check-in and check-out alerts (27 November 2026)
+
+Apply `supabase/migrations/20261127111931_attendance_admin_events.sql` after the
+existing attendance and Store Operations migrations. It adds a private trigger
+on successful attendance-engine operation receipts. Employee check-in/check-out
+creates one notification for each global admin or admin assigned to that branch.
+Manual attendance, server actions and Smart Scan share this receipt path. Failed
+attempts, unchanged requests, operation replays and admin corrections do not
+create alerts. Historical attendance is not backfilled.
+
+The existing notification history and Realtime feed show the employee name,
+branch and event time in India time; tapping opens `/admin/logs`. Attendance
+history filters and mark-all-read include these events. Android lock-screen
+messages remain generic and contain no employee names. Each event has its own
+high-priority FCM message/tag, without the reminder collapse key.
+
+The existing store-update preference and registered Android devices control
+delivery. At `/admin/attendance-notifications`, enable **Attendance and store
+updates**, its push toggle, and **Enable push notifications** on the Android
+device. Explicit opt-in is preserved; this migration does not enable push for
+anyone. The worker rechecks current admin role and branch before sending.
+
+After successful attendance, the server wakes the existing durable push queue
+using Next.js `after()`. Delivery runs after the attendance response and failure
+does not change the saved attendance result. The existing scheduled notification
+worker handles retries. Hosted FCM credentials and the additive SQL migration
+are required; GitHub website deployment alone does not install SQL migrations.
+No APK rebuild or new runtime dependency is required.
+
+Focused validation: six disposable PostgreSQL scenarios, 35 notification/store
+Node tests, TypeScript and changed-file ESLint. Provider sends are mocked; no
+physical-device delivery is claimed.
+
 Implemented and verified locally on 24 November 2026. No Firebase project exists yet. No hosted migration, web deployment, scheduler installation or real notification send was performed. All branches start with scheduled reminders disabled.
 
 ## Delivered behavior

@@ -1,6 +1,6 @@
 'use server';
 import {operationsContext,operationError} from '@/lib/store-ops/context';
-import type { NotificationScope } from '@/lib/notifications/feed';
+import { attendanceNotificationFilter, type NotificationScope } from '@/lib/notifications/feed';
 export async function getNotifications(userId:string) {
     try {const{supabase,user}=await operationsContext();if(userId!==user.id)throw new Error('Notifications belong to another account.');
         const{data,error}=await supabase.from('notification_log').select('*').eq('user_id',user.id).order('created_at',{ascending:false}).limit(50);if(error)throw new Error('Notifications could not be loaded.');return {data:data||[],error:undefined};
@@ -11,7 +11,7 @@ export async function markAsRead(id:string) {
     catch(error){return operationError(error);}
 }
 export async function markAllAsRead(userId:string,scope:NotificationScope='all') {
-    try {const{supabase,user}=await operationsContext();if(userId!==user.id)throw new Error('Notifications belong to another account.');if(!['all','attendance','operations'].includes(scope))throw new Error('Invalid notification filter.');let query=supabase.from('notification_log').update({is_read:true}).eq('user_id',user.id).eq('is_read',false);if(scope==='attendance')query=query.not('attendance_reminder_id','is',null);if(scope==='operations')query=query.like('type','ops_%');const{error}=await query;if(error)throw new Error('Notifications could not be marked read.');return {success:true,error:undefined};}
+    try {const{supabase,user}=await operationsContext();if(userId!==user.id)throw new Error('Notifications belong to another account.');if(!['all','attendance','operations'].includes(scope))throw new Error('Invalid notification filter.');let query=supabase.from('notification_log').update({is_read:true}).eq('user_id',user.id).eq('is_read',false);if(scope==='attendance')query=query.or(attendanceNotificationFilter);if(scope==='operations')query=query.like('type','ops_%');const{error}=await query;if(error)throw new Error('Notifications could not be marked read.');return {success:true,error:undefined};}
     catch(error){return operationError(error);}
 }
 export async function getOperationsNotificationPreference(userId:string) {

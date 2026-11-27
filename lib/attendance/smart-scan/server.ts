@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import type { Json } from '@/lib/supabase/database.types';
 import type { SmartCommand, SmartFailure, SmartReply } from './types';
+import { deliverAttendanceAlerts } from '@/lib/notifications/attendance-events';
 
 export function smartFailure(message: string, code = 'UNAVAILABLE'): SmartFailure {
     if (code === 'PGRST202' || code === '42883') return { success: false, error: 'Smart Scan is not ready for this workspace yet. Use manual attendance and let your manager know.', code: 'NOT_INSTALLED', status: 503 };
@@ -24,5 +25,6 @@ export async function performSmartScan(command: SmartCommand | { action: 'config
         if (data.state === 'confirmation_required' && (typeof data.confirmationId !== 'string' || typeof data.expiresAt !== 'string' || typeof data.serverNow !== 'string' || !Number.isFinite(Date.parse(data.expiresAt)) || !Number.isFinite(Date.parse(data.serverNow)))) return smartFailure('Invalid confirmation');
     }
     const result = data as unknown as SmartReply;
+    if ((data.state === 'clocked_in' || data.state === 'completed') && data.changed === true && data.replayed !== true) deliverAttendanceAlerts();
     return result;
 }

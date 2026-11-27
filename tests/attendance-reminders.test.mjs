@@ -166,3 +166,37 @@ test('the authenticated notification schedule drains both queues even if one wor
         if(failed!=='operations')assert.equal(response.body.operations.sent,2);
     }
 });
+
+
+test('admin attendance events use high priority and separate notification tags without collapsing check-in and check-out', async () => {
+    const provider = loader()(resolve('lib/notifications/providers.ts'));
+    let message;
+    const result = await provider.sendFcm({ ...payload, category: 'attendance_event', url: '/admin/logs' }, {
+        projectId: 'fictional-project', getToken: async () => 'test-auth',
+        fetcher: async (_url, request) => { message = JSON.parse(request.body).message; return new Response('{}', { status: 200 }); },
+    });
+    assert.equal(result.outcome, 'sent');
+    assert.equal(message.notification.title, 'Employee attendance update');
+    assert.equal(message.android.priority, 'high');
+    assert.equal(message.android.notification.tag, payload.notificationId);
+    assert.equal(message.android.collapse_key, undefined);
+    assert.equal(message.data.url, '/admin/logs');
+    assert.ok(!JSON.stringify(message).includes('Test employee'));
+});
+
+
+test('attendance delivery runs after the response and leaves durable retry work on failure', async () => {
+    let callback;
+    let runs = 0;
+    const alerts = loader({
+        'server-only': {},
+        'next/server': { after: task => { callback = task; } },
+        '@/lib/store-ops/worker': { runOperationsWorker: async options => { assert.equal(options.plan, false); runs++; throw new Error('provider unavailable'); } },
+    })(resolve('lib/notifications/attendance-events.ts'));
+    alerts.deliverAttendanceAlerts();
+    assert.equal(runs, 0);
+    await callback();
+    assert.equal(runs, 1);
+    const outsideRequest = loader({ 'server-only': {}, 'next/server': { after: () => { throw new Error('no request'); } } })(resolve('lib/notifications/attendance-events.ts'));
+    assert.doesNotThrow(() => outsideRequest.deliverAttendanceAlerts());
+});

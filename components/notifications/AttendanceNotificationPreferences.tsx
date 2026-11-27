@@ -79,7 +79,7 @@ export default function AttendanceNotificationPreferences({ userId }: { userId: 
                 {native && nativeReady && !osEnabled && <button type="button" disabled={busy} onClick={() => void openNativeNotificationSettings().catch(() => setError('Open Android app settings to manage notification permission.'))}>Open Android notification settings</button>}
                 {data.devices.some(device => device.provider === 'fcm') && <div className="notification-devices">{data.devices.filter(device => device.provider === 'fcm').map(device => <div key={device.id}><div><strong>{device.name}{device.id === data.currentDeviceId ? ' · This device' : ''}</strong><p>{device.enabled && !device.revoked_at ? 'Registered' : 'Removed'} · Last active {new Date(device.last_seen_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}</p></div>{device.enabled && <button type="button" disabled={busy} onClick={() => void save({ action: 'revoke', deviceId: device.id }, 'Device removed from push notifications.')}>Remove</button>}</div>)}</div>}
             </section>}
-            <OperationsNotificationPreferences key={`operations-${userId}`} userId={userId} />
+            <OperationsNotificationPreferences key={`operations-${userId}`} userId={userId} attendanceAlerts={data.role === 'admin'} />
             <NotificationPanel key={userId} userId={userId} embedded attendanceOnly />
         </>}
     </div>;

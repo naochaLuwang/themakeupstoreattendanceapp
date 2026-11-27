@@ -115,6 +115,7 @@ function notificationClient({ unreadCount = 42, error = null } = {}) {
             order(...args) { calls.push(['order', ...args]); return query; },
             limit(...args) { calls.push(['limit', ...args]); return query; },
             not(...args) { calls.push(['not', ...args]); return query; },
+            or(...args) { calls.push(['or', ...args]); return query; },
             like(...args) { calls.push(['like', ...args]); return query; },
             update(...args) { calls.push(['update', ...args]); return query; },
             single() { return Promise.resolve({ data: error ? null : { id: 'own-notification' }, error }); },
@@ -140,7 +141,7 @@ test('notification bell counts unread items beyond its twenty recent rows and sc
     assert.ok(queries[1].some(call => call[0] === 'eq' && call[1] === 'is_read' && call[2] === false));
 });
 test('reminder and operations history apply the same filter to rows and unread count', async () => {
-    for (const [scope, method, column] of [['attendance', 'not', 'attendance_reminder_id'], ['operations', 'like', 'type']]) {
+    for (const [scope, method, column] of [['attendance', 'or', notificationFeed.attendanceNotificationFilter], ['operations', 'like', 'type']]) {
         const { client, queries } = notificationClient();
         await notificationFeed.loadNotificationFeed(client, 'employee-id', scope);
         assert.ok(queries.every(calls => calls.some(call => call[0] === method && call[1] === column)));
@@ -155,6 +156,7 @@ test('notification transport errors and missing exact counts do not become a fal
 test('mark all read rejects another recipient and invalid filters before any write', async () => {
     const { client, queries } = notificationClient();
     const actions = compile('app/actions/store-ops/notifications.ts', {
+        '@/lib/notifications/feed': notificationFeed,
         '@/lib/store-ops/context': { operationsContext: async () => ({ supabase: client, user: { id: 'employee-id' } }), operationError: error => ({ error: error.message }) },
     });
     assert.ok((await actions.markAllAsRead('another-employee')).error);
@@ -162,22 +164,24 @@ test('mark all read rejects another recipient and invalid filters before any wri
     assert.equal(queries.length, 0);
 });
 test('mark all read preserves other notification categories in filtered history', async () => {
-    for (const [scope, method] of [['attendance', 'not'], ['operations', 'like'], ['all', null]]) {
+    for (const [scope, method] of [['attendance', 'or'], ['operations', 'like'], ['all', null]]) {
         const { client, queries } = notificationClient();
         const actions = compile('app/actions/store-ops/notifications.ts', {
-            '@/lib/store-ops/context': { operationsContext: async () => ({ supabase: client, user: { id: 'employee-id' } }), operationError: error => ({ error: error.message }) },
+            '@/lib/notifications/feed': notificationFeed,
+        '@/lib/store-ops/context': { operationsContext: async () => ({ supabase: client, user: { id: 'employee-id' } }), operationError: error => ({ error: error.message }) },
         });
         assert.equal((await actions.markAllAsRead('employee-id', scope)).success, true);
         assert.equal(queries.length, 1);
         assert.ok(queries[0].some(call => call[0] === 'eq' && call[1] === 'user_id' && call[2] === 'employee-id'));
         if (method) assert.ok(queries[0].some(call => call[0] === method));
-        else assert.ok(!queries[0].some(call => ['not','like'].includes(call[0])));
+        else assert.ok(!queries[0].some(call => ['not','or','like'].includes(call[0])));
     }
 });
 
 test('store push preferences reject a stale account before writing', async () => {
     let writes = 0;
     const actions = compile('app/actions/store-ops/notifications.ts', {
+        '@/lib/notifications/feed': notificationFeed,
         '@/lib/store-ops/context': { operationsContext: async () => ({ supabase: { from: () => { writes++; throw new Error('Unexpected database access'); } }, user: { id: 'current-user' } }), operationError: error => ({ success: false, error: error.message }) },
     });
     assert.equal((await actions.saveOperationsNotificationPreference(true, true, 'old-user')).success, false);
