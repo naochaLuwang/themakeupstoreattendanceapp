@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-27",
+  "reviewed_commit": "884802e",
+  "verdict": "HOLD",
+  "build": "pass",
+  "typecheck": "pass",
+  "node_tests": {
+    "passed": 126,
+    "failed": 0
+  },
+  "database_checks": {
+    "passed": 117,
+    "failed": 0
+  },
+  "eslint": {
+    "status": "failed",
+    "application_errors": 87,
+    "application_warnings": 10,
+    "full_errors": 6846,
+    "full_warnings": 12
+  },
+  "production_dependency_audit": {
+    "critical": 2,
+    "high": 6,
+    "moderate": 3,
+    "total": 11
+  },
+  "hosted_database_migrations": "unverified",
+  "scheduler_execution": "unverified",
+  "physical_android_push": "unverified",
+  "production_source_changes": false,
+  "test_fixture_fixes": [
+    "tests/attendance-smart-scan.test.mjs",
+    "tests/store-ops-install.py"
+  ]
+}

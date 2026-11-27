@@ -1,0 +1,6 @@
+PASS successful engine check-in queues one admin push; excludes other branches and managers
+PASS failed attempts, operation replays and already-checked-in requests do not duplicate alerts
+PASS successful checkout creates a separate alert; admin corrections do not
+PASS employee cannot read admin history or invoke the private alert function
+PASS worker authorizes attendance payloads and suppresses delivery after admin demotion
+PASS Smart Scan receipts use the same hook; disabled alerts and push opt-out are respected

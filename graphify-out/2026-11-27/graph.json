@@ -126,7 +126,7 @@
       "source_file": "app/actions/store-ops/damage-reports.ts",
       "source_location": "L71",
       "id": "store_ops_damage_reports_getdamagereturnlist",
-      "community": 0,
+      "community": 7,
       "norm_label": "getdamagereturnlist()"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "app/actions/store-ops/daily-checklist.ts",
       "source_location": "L19",
       "id": "store_ops_daily_checklist_createtemplate",
-      "community": 0,
+      "community": 15,
       "norm_label": "createtemplate()"
     },
     {
@@ -261,7 +261,7 @@
       "source_file": "app/actions/store-ops/incidents.ts",
       "source_location": "L1",
       "id": "app_actions_store_ops_incidents_ts",
-      "community": 4,
+      "community": 10,
       "norm_label": "incidents.ts"
     },
     {
@@ -288,7 +288,7 @@
       "source_file": "app/actions/store-ops/incidents.ts",
       "source_location": "L37",
       "id": "store_ops_incidents_createincident",
-      "community": 11,
+      "community": 10,
       "norm_label": "createincident()"
     },
     {
@@ -297,7 +297,7 @@
       "source_file": "app/actions/store-ops/incidents.ts",
       "source_location": "L38",
       "id": "store_ops_incidents_updateincident",
-      "community": 11,
+      "community": 10,
       "norm_label": "updateincident()"
     },
     {
@@ -306,7 +306,7 @@
       "source_file": "app/actions/store-ops/incidents.ts",
       "source_location": "L40",
       "id": "store_ops_incidents_deleteincident",
-      "community": 4,
+      "community": 10,
       "norm_label": "deleteincident()"
     },
     {
@@ -315,7 +315,7 @@
       "source_file": "app/actions/store-ops/incidents.ts",
       "source_location": "L71",
       "id": "store_ops_incidents_updateincidentstatus",
-      "community": 4,
+      "community": 10,
       "norm_label": "updateincidentstatus()"
     },
     {
@@ -324,7 +324,7 @@
       "source_file": "app/actions/store-ops/incidents.ts",
       "source_location": "L95",
       "id": "store_ops_incidents_assignincident",
-      "community": 4,
+      "community": 10,
       "norm_label": "assignincident()"
     },
     {
@@ -333,7 +333,7 @@
       "source_file": "app/actions/store-ops/incidents.ts",
       "source_location": "L119",
       "id": "store_ops_incidents_addincidentcomment",
-      "community": 4,
+      "community": 10,
       "norm_label": "addincidentcomment()"
     },
     {
@@ -342,7 +342,7 @@
       "source_file": "app/actions/store-ops/incidents.ts",
       "source_location": "L148",
       "id": "store_ops_incidents_uploadincidentimage",
-      "community": 11,
+      "community": 0,
       "norm_label": "uploadincidentimage()"
     },
     {
@@ -351,7 +351,7 @@
       "source_file": "app/actions/store-ops/incidents.ts",
       "source_location": "L150",
       "id": "store_ops_incidents_deleteincidentimage",
-      "community": 20,
+      "community": 10,
       "norm_label": "deleteincidentimage()"
     },
     {
@@ -477,7 +477,7 @@
       "source_file": "app/actions/store-ops/notifications.ts",
       "source_location": "L9",
       "id": "store_ops_notifications_markasread",
-      "community": 0,
+      "community": 6,
       "norm_label": "markasread()"
     },
     {
@@ -486,7 +486,7 @@
       "source_file": "app/actions/store-ops/notifications.ts",
       "source_location": "L13",
       "id": "store_ops_notifications_markallasread",
-      "community": 0,
+      "community": 6,
       "norm_label": "markallasread()"
     },
     {
@@ -495,7 +495,7 @@
       "source_file": "app/actions/store-ops/notifications.ts",
       "source_location": "L17",
       "id": "store_ops_notifications_getoperationsnotificationpreference",
-      "community": 6,
+      "community": 0,
       "norm_label": "getoperationsnotificationpreference()"
     },
     {
@@ -531,7 +531,7 @@
       "source_file": "app/actions/store-ops/testers.ts",
       "source_location": "L1",
       "id": "app_actions_store_ops_testers_ts",
-      "community": 3,
+      "community": 4,
       "norm_label": "testers.ts"
     },
     {
@@ -540,7 +540,7 @@
       "source_file": "app/actions/store-ops/testers.ts",
       "source_location": "L7",
       "id": "store_ops_testers_createtester",
-      "community": 8,
+      "community": 4,
       "norm_label": "createtester()"
     },
     {
@@ -549,7 +549,7 @@
       "source_file": "app/actions/store-ops/testers.ts",
       "source_location": "L57",
       "id": "store_ops_testers_updatetester",
-      "community": 8,
+      "community": 4,
       "norm_label": "updatetester()"
     },
     {
@@ -576,7 +576,7 @@
       "source_file": "app/actions/store-ops/testers.ts",
       "source_location": "L153",
       "id": "store_ops_testers_markneedsreplacement",
-      "community": 3,
+      "community": 4,
       "norm_label": "markneedsreplacement()"
     },
     {
@@ -585,7 +585,7 @@
       "source_file": "app/actions/store-ops/testers.ts",
       "source_location": "L180",
       "id": "store_ops_testers_updatetestercondition",
-      "community": 3,
+      "community": 4,
       "norm_label": "updatetestercondition()"
     },
     {
@@ -720,7 +720,7 @@
       "source_file": "app/actions/store-ops/tasks.ts",
       "source_location": "L9",
       "id": "store_ops_tasks_createtask",
-      "community": 12,
+      "community": 4,
       "norm_label": "createtask()"
     },
     {
@@ -774,7 +774,7 @@
       "source_file": "app/actions/store-ops/tasks.ts",
       "source_location": "L209",
       "id": "store_ops_tasks_uploadtaskattachment",
-      "community": 9,
+      "community": 0,
       "norm_label": "uploadtaskattachment()"
     },
     {
@@ -864,7 +864,7 @@
       "source_file": "app/actions/store-ops/audits.ts",
       "source_location": "L19",
       "id": "store_ops_audits_deleteaudittemplate",
-      "community": 2,
+      "community": 25,
       "norm_label": "deleteaudittemplate()"
     },
     {
@@ -1224,7 +1224,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/audits/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_admin_store_operations_audits_page_tsx",
-      "community": 25,
+      "community": 22,
       "norm_label": "page.tsx"
     },
     {
@@ -1233,7 +1233,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/audits/page.tsx",
       "source_location": "L6",
       "id": "audits_page_auditspage",
-      "community": 25,
+      "community": 22,
       "norm_label": "auditspage()"
     },
     {
@@ -1314,7 +1314,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/audits/[id]/AuditDetailView.tsx",
       "source_location": "L1",
       "id": "app_dashboard_admin_store_operations_audits_id_auditdetailview_tsx",
-      "community": 2,
+      "community": 25,
       "norm_label": "auditdetailview.tsx"
     },
     {
@@ -1323,7 +1323,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/audits/[id]/AuditDetailView.tsx",
       "source_location": "L12",
       "id": "id_auditdetailview_auditdetailviewprops",
-      "community": 2,
+      "community": 25,
       "norm_label": "auditdetailviewprops"
     },
     {
@@ -1332,7 +1332,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/audits/[id]/AuditDetailView.tsx",
       "source_location": "L18",
       "id": "id_auditdetailview_auditdetailview",
-      "community": 2,
+      "community": 25,
       "norm_label": "auditdetailview()"
     },
     {
@@ -1341,7 +1341,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/audits/[id]/AuditDetailView.tsx",
       "source_location": "L137",
       "id": "id_auditdetailview_detailrow",
-      "community": 2,
+      "community": 25,
       "norm_label": "detailrow()"
     },
     {
@@ -1350,7 +1350,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/audits/[id]/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_admin_store_operations_audits_id_page_tsx",
-      "community": 2,
+      "community": 25,
       "norm_label": "page.tsx"
     },
     {
@@ -1359,7 +1359,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/audits/[id]/page.tsx",
       "source_location": "L7",
       "id": "id_page_props",
-      "community": 2,
+      "community": 25,
       "norm_label": "props"
     },
     {
@@ -1368,7 +1368,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/audits/[id]/page.tsx",
       "source_location": "L11",
       "id": "id_page_auditdetailpage",
-      "community": 2,
+      "community": 25,
       "norm_label": "auditdetailpage()"
     },
     {
@@ -1377,7 +1377,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/testers/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_admin_store_operations_testers_page_tsx",
-      "community": 13,
+      "community": 4,
       "norm_label": "page.tsx"
     },
     {
@@ -1386,7 +1386,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/testers/page.tsx",
       "source_location": "L7",
       "id": "testers_page_testerspage",
-      "community": 13,
+      "community": 4,
       "norm_label": "testerspage()"
     },
     {
@@ -1413,7 +1413,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/testers/[id]/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_admin_store_operations_testers_id_page_tsx",
-      "community": 13,
+      "community": 3,
       "norm_label": "page.tsx"
     },
     {
@@ -1422,7 +1422,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/testers/[id]/page.tsx",
       "source_location": "L7",
       "id": "app_dashboard_admin_store_operations_testers_id_page_tsx_id_page_testerdetailpage",
-      "community": 13,
+      "community": 3,
       "norm_label": "testerdetailpage()"
     },
     {
@@ -1521,7 +1521,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/damage-reports/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_admin_store_operations_damage_reports_page_tsx",
-      "community": 22,
+      "community": 11,
       "norm_label": "page.tsx"
     },
     {
@@ -1530,7 +1530,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/damage-reports/page.tsx",
       "source_location": "L8",
       "id": "damage_reports_page_damagereportspage",
-      "community": 22,
+      "community": 11,
       "norm_label": "damagereportspage()"
     },
     {
@@ -1557,7 +1557,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/damage-reports/[id]/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_admin_store_operations_damage_reports_id_page_tsx",
-      "community": 22,
+      "community": 11,
       "norm_label": "page.tsx"
     },
     {
@@ -1566,7 +1566,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/damage-reports/[id]/page.tsx",
       "source_location": "L6",
       "id": "id_page_damagereportdetailpage",
-      "community": 22,
+      "community": 11,
       "norm_label": "damagereportdetailpage()"
     },
     {
@@ -1771,7 +1771,7 @@
       "label": "StoreOperationsLayout()",
       "file_type": "code",
       "source_file": "app/(dashboard)/employee/store-operations/layout.tsx",
-      "source_location": "L3",
+      "source_location": "L4",
       "id": "app_dashboard_employee_store_operations_layout_tsx_store_operations_layout_storeoperationslayout",
       "community": 36,
       "norm_label": "storeoperationslayout()"
@@ -1793,6 +1793,33 @@
       "id": "app_dashboard_employee_store_operations_loading_tsx",
       "community": 30,
       "norm_label": "loading.tsx"
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "app/(dashboard)/employee/store-operations/page.tsx",
+      "source_location": "L1",
+      "id": "app_dashboard_employee_store_operations_page_tsx",
+      "community": 13,
+      "norm_label": "page.tsx"
+    },
+    {
+      "label": "metadata",
+      "file_type": "code",
+      "source_file": "app/(dashboard)/employee/store-operations/page.tsx",
+      "source_location": "L5",
+      "id": "store_operations_page_metadata",
+      "community": 13,
+      "norm_label": "metadata"
+    },
+    {
+      "label": "EmployeeStoreOperationsPage()",
+      "file_type": "code",
+      "source_file": "app/(dashboard)/employee/store-operations/page.tsx",
+      "source_location": "L7",
+      "id": "store_operations_page_employeestoreoperationspage",
+      "community": 13,
+      "norm_label": "employeestoreoperationspage()"
     },
     {
       "label": "page.tsx",
@@ -1854,7 +1881,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/testers/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_employee_store_operations_testers_page_tsx",
-      "community": 13,
+      "community": 4,
       "norm_label": "page.tsx"
     },
     {
@@ -1863,7 +1890,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/testers/page.tsx",
       "source_location": "L7",
       "id": "testers_page_employeetesterspage",
-      "community": 13,
+      "community": 4,
       "norm_label": "employeetesterspage()"
     },
     {
@@ -1872,7 +1899,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/testers/[id]/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_employee_store_operations_testers_id_page_tsx",
-      "community": 13,
+      "community": 3,
       "norm_label": "page.tsx"
     },
     {
@@ -1881,7 +1908,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/testers/[id]/page.tsx",
       "source_location": "L7",
       "id": "app_dashboard_employee_store_operations_testers_id_page_tsx_id_page_testerdetailpage",
-      "community": 13,
+      "community": 3,
       "norm_label": "testerdetailpage()"
     },
     {
@@ -1944,7 +1971,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/damage-reports/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_employee_store_operations_damage_reports_page_tsx",
-      "community": 22,
+      "community": 11,
       "norm_label": "page.tsx"
     },
     {
@@ -1953,7 +1980,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/damage-reports/page.tsx",
       "source_location": "L7",
       "id": "damage_reports_page_employeedamagereportspage",
-      "community": 22,
+      "community": 11,
       "norm_label": "employeedamagereportspage()"
     },
     {
@@ -1980,7 +2007,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/damage-reports/[id]/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_employee_store_operations_damage_reports_id_page_tsx",
-      "community": 22,
+      "community": 11,
       "norm_label": "page.tsx"
     },
     {
@@ -1989,7 +2016,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/damage-reports/[id]/page.tsx",
       "source_location": "L6",
       "id": "id_page_employeedamagereportdetailpage",
-      "community": 22,
+      "community": 11,
       "norm_label": "employeedamagereportdetailpage()"
     },
     {
@@ -2016,7 +2043,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/incidents/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_employee_store_operations_incidents_page_tsx",
-      "community": 4,
+      "community": 20,
       "norm_label": "page.tsx"
     },
     {
@@ -2025,7 +2052,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/incidents/page.tsx",
       "source_location": "L7",
       "id": "incidents_page_employeeincidentspage",
-      "community": 4,
+      "community": 20,
       "norm_label": "employeeincidentspage()"
     },
     {
@@ -2205,7 +2232,7 @@
       "source_file": "components/store-ops/ImageUpload.tsx",
       "source_location": "L1",
       "id": "components_store_ops_imageupload_tsx",
-      "community": 10,
+      "community": 25,
       "norm_label": "imageupload.tsx"
     },
     {
@@ -2214,7 +2241,7 @@
       "source_file": "components/store-ops/ImageUpload.tsx",
       "source_location": "L9",
       "id": "store_ops_imageupload_imageuploadprops",
-      "community": 10,
+      "community": 25,
       "norm_label": "imageuploadprops"
     },
     {
@@ -2223,7 +2250,7 @@
       "source_file": "components/store-ops/ImageUpload.tsx",
       "source_location": "L16",
       "id": "store_ops_imageupload_imageupload",
-      "community": 10,
+      "community": 25,
       "norm_label": "imageupload()"
     },
     {
@@ -2511,7 +2538,7 @@
       "source_file": "components/store-ops/daily-checklist/ChecklistTemplateList.tsx",
       "source_location": "L1",
       "id": "components_store_ops_daily_checklist_checklisttemplatelist_tsx",
-      "community": 2,
+      "community": 3,
       "norm_label": "checklisttemplatelist.tsx"
     },
     {
@@ -2520,7 +2547,7 @@
       "source_file": "components/store-ops/daily-checklist/ChecklistTemplateList.tsx",
       "source_location": "L9",
       "id": "daily_checklist_checklisttemplatelist_templatelistprops",
-      "community": 2,
+      "community": 3,
       "norm_label": "templatelistprops"
     },
     {
@@ -2529,7 +2556,7 @@
       "source_file": "components/store-ops/daily-checklist/ChecklistTemplateList.tsx",
       "source_location": "L19",
       "id": "daily_checklist_checklisttemplatelist_checklisttemplatelist",
-      "community": 2,
+      "community": 3,
       "norm_label": "checklisttemplatelist()"
     },
     {
@@ -2538,7 +2565,7 @@
       "source_file": "components/store-ops/daily-checklist/ChecklistTemplateList.tsx",
       "source_location": "L63",
       "id": "daily_checklist_checklisttemplatelist_templategroup",
-      "community": 2,
+      "community": 3,
       "norm_label": "templategroup()"
     },
     {
@@ -2700,7 +2727,7 @@
       "source_file": "components/store-ops/audits/AuditRunner.tsx",
       "source_location": "L1",
       "id": "components_store_ops_audits_auditrunner_tsx",
-      "community": 2,
+      "community": 25,
       "norm_label": "auditrunner.tsx"
     },
     {
@@ -2709,7 +2736,7 @@
       "source_file": "components/store-ops/audits/AuditRunner.tsx",
       "source_location": "L15",
       "id": "audits_auditrunner_auditrunnerprops",
-      "community": 2,
+      "community": 25,
       "norm_label": "auditrunnerprops"
     },
     {
@@ -2718,7 +2745,7 @@
       "source_file": "components/store-ops/audits/AuditRunner.tsx",
       "source_location": "L19",
       "id": "audits_auditrunner_auditrunner",
-      "community": 2,
+      "community": 25,
       "norm_label": "auditrunner()"
     },
     {
@@ -2736,7 +2763,7 @@
       "source_file": "components/store-ops/audits/AuditList.tsx",
       "source_location": "L11",
       "id": "audits_auditlist_auditlistprops",
-      "community": 14,
+      "community": 25,
       "norm_label": "auditlistprops"
     },
     {
@@ -2788,7 +2815,7 @@
       "label": "condStyles",
       "file_type": "code",
       "source_file": "components/store-ops/testers/TesterList.tsx",
-      "source_location": "L363",
+      "source_location": "L370",
       "id": "testers_testerlist_condstyles",
       "community": 24,
       "norm_label": "condstyles"
@@ -3060,7 +3087,7 @@
       "source_file": "components/store-ops/restocking/RestockForm.tsx",
       "source_location": "L1",
       "id": "components_store_ops_restocking_restockform_tsx",
-      "community": 5,
+      "community": 8,
       "norm_label": "restockform.tsx"
     },
     {
@@ -3069,7 +3096,7 @@
       "source_file": "components/store-ops/restocking/RestockForm.tsx",
       "source_location": "L12",
       "id": "restocking_restockform_restockitemform",
-      "community": 5,
+      "community": 8,
       "norm_label": "restockitemform"
     },
     {
@@ -3078,7 +3105,7 @@
       "source_file": "components/store-ops/restocking/RestockForm.tsx",
       "source_location": "L20",
       "id": "restocking_restockform_restockform",
-      "community": 5,
+      "community": 8,
       "norm_label": "restockform()"
     },
     {
@@ -3195,7 +3222,7 @@
       "source_file": "components/store-ops/damage-reports/DamageReportList.tsx",
       "source_location": "L1",
       "id": "components_store_ops_damage_reports_damagereportlist_tsx",
-      "community": 24,
+      "community": 26,
       "norm_label": "damagereportlist.tsx"
     },
     {
@@ -3204,7 +3231,7 @@
       "source_file": "components/store-ops/damage-reports/DamageReportList.tsx",
       "source_location": "L13",
       "id": "damage_reports_damagereportlist_damagereportlistprops",
-      "community": 24,
+      "community": 26,
       "norm_label": "damagereportlistprops"
     },
     {
@@ -3213,7 +3240,7 @@
       "source_file": "components/store-ops/damage-reports/DamageReportList.tsx",
       "source_location": "L22",
       "id": "damage_reports_damagereportlist_statusstyles",
-      "community": 24,
+      "community": 26,
       "norm_label": "statusstyles"
     },
     {
@@ -3222,7 +3249,7 @@
       "source_file": "components/store-ops/damage-reports/DamageReportList.tsx",
       "source_location": "L29",
       "id": "damage_reports_damagereportlist_damagereportlist",
-      "community": 24,
+      "community": 26,
       "norm_label": "damagereportlist()"
     },
     {
@@ -3366,7 +3393,7 @@
       "source_file": "components/store-ops/incidents/IncidentForm.tsx",
       "source_location": "L1",
       "id": "components_store_ops_incidents_incidentform_tsx",
-      "community": 11,
+      "community": 10,
       "norm_label": "incidentform.tsx"
     },
     {
@@ -3375,7 +3402,7 @@
       "source_file": "components/store-ops/incidents/IncidentForm.tsx",
       "source_location": "L14",
       "id": "incidents_incidentform_incidentformprops",
-      "community": 11,
+      "community": 10,
       "norm_label": "incidentformprops"
     },
     {
@@ -3384,7 +3411,7 @@
       "source_file": "components/store-ops/incidents/IncidentForm.tsx",
       "source_location": "L26",
       "id": "incidents_incidentform_typelabels",
-      "community": 11,
+      "community": 10,
       "norm_label": "typelabels"
     },
     {
@@ -3393,7 +3420,7 @@
       "source_file": "components/store-ops/incidents/IncidentForm.tsx",
       "source_location": "L37",
       "id": "incidents_incidentform_incidentform",
-      "community": 11,
+      "community": 10,
       "norm_label": "incidentform()"
     },
     {
@@ -3402,7 +3429,7 @@
       "source_file": "components/store-ops/incidents/IncidentDetail.tsx",
       "source_location": "L1",
       "id": "components_store_ops_incidents_incidentdetail_tsx",
-      "community": 20,
+      "community": 10,
       "norm_label": "incidentdetail.tsx"
     },
     {
@@ -3411,7 +3438,7 @@
       "source_file": "components/store-ops/incidents/IncidentDetail.tsx",
       "source_location": "L23",
       "id": "incidents_incidentdetail_incidentdetailprops",
-      "community": 20,
+      "community": 10,
       "norm_label": "incidentdetailprops"
     },
     {
@@ -3420,7 +3447,7 @@
       "source_file": "components/store-ops/incidents/IncidentDetail.tsx",
       "source_location": "L29",
       "id": "incidents_incidentdetail_statusstyles",
-      "community": 20,
+      "community": 10,
       "norm_label": "statusstyles"
     },
     {
@@ -3429,7 +3456,7 @@
       "source_file": "components/store-ops/incidents/IncidentDetail.tsx",
       "source_location": "L36",
       "id": "incidents_incidentdetail_typelabels",
-      "community": 20,
+      "community": 10,
       "norm_label": "typelabels"
     },
     {
@@ -3447,7 +3474,7 @@
       "source_file": "components/store-ops/incidents/IncidentDetail.tsx",
       "source_location": "L401",
       "id": "incidents_incidentdetail_detailitem",
-      "community": 20,
+      "community": 10,
       "norm_label": "detailitem()"
     },
     {
@@ -3456,7 +3483,7 @@
       "source_file": "components/store-ops/incidents/IncidentDetail.tsx",
       "source_location": "L413",
       "id": "incidents_incidentdetail_timelineitem",
-      "community": 20,
+      "community": 10,
       "norm_label": "timelineitem()"
     },
     {
@@ -3465,7 +3492,7 @@
       "source_file": "components/store-ops/incidents/IncidentDetail.tsx",
       "source_location": "L428",
       "id": "incidents_incidentdetail_statrow",
-      "community": 20,
+      "community": 10,
       "norm_label": "statrow()"
     },
     {
@@ -3474,7 +3501,7 @@
       "source_file": "components/store-ops/incidents/IncidentList.tsx",
       "source_location": "L1",
       "id": "components_store_ops_incidents_incidentlist_tsx",
-      "community": 11,
+      "community": 10,
       "norm_label": "incidentlist.tsx"
     },
     {
@@ -3483,7 +3510,7 @@
       "source_file": "components/store-ops/incidents/IncidentList.tsx",
       "source_location": "L13",
       "id": "incidents_incidentlist_incidentlistprops",
-      "community": 11,
+      "community": 10,
       "norm_label": "incidentlistprops"
     },
     {
@@ -3492,7 +3519,7 @@
       "source_file": "components/store-ops/incidents/IncidentList.tsx",
       "source_location": "L22",
       "id": "incidents_incidentlist_statusstyles",
-      "community": 11,
+      "community": 10,
       "norm_label": "statusstyles"
     },
     {
@@ -3501,7 +3528,7 @@
       "source_file": "components/store-ops/incidents/IncidentList.tsx",
       "source_location": "L29",
       "id": "incidents_incidentlist_typelabels",
-      "community": 11,
+      "community": 10,
       "norm_label": "typelabels"
     },
     {
@@ -3510,7 +3537,7 @@
       "source_file": "components/store-ops/incidents/IncidentList.tsx",
       "source_location": "L40",
       "id": "incidents_incidentlist_incidentlist",
-      "community": 11,
+      "community": 10,
       "norm_label": "incidentlist()"
     },
     {
@@ -3672,7 +3699,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionList.tsx",
       "source_location": "L1",
       "id": "components_store_ops_shelf_inspection_shelfinspectionlist_tsx",
-      "community": 10,
+      "community": 23,
       "norm_label": "shelfinspectionlist.tsx"
     },
     {
@@ -3681,7 +3708,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionList.tsx",
       "source_location": "L14",
       "id": "shelf_inspection_shelfinspectionlist_shelfinspectionlistprops",
-      "community": 10,
+      "community": 23,
       "norm_label": "shelfinspectionlistprops"
     },
     {
@@ -3690,7 +3717,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionList.tsx",
       "source_location": "L24",
       "id": "shelf_inspection_shelfinspectionlist_statusstyles",
-      "community": 10,
+      "community": 23,
       "norm_label": "statusstyles"
     },
     {
@@ -3699,7 +3726,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionList.tsx",
       "source_location": "L34",
       "id": "shelf_inspection_shelfinspectionlist_statuslabels",
-      "community": 10,
+      "community": 23,
       "norm_label": "statuslabels"
     },
     {
@@ -3708,7 +3735,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionList.tsx",
       "source_location": "L44",
       "id": "shelf_inspection_shelfinspectionlist_shelfinspectionlist",
-      "community": 10,
+      "community": 23,
       "norm_label": "shelfinspectionlist()"
     },
     {
@@ -3735,7 +3762,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionForm.tsx",
       "source_location": "L1",
       "id": "components_store_ops_shelf_inspection_shelfinspectionform_tsx",
-      "community": 10,
+      "community": 0,
       "norm_label": "shelfinspectionform.tsx"
     },
     {
@@ -3744,7 +3771,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionForm.tsx",
       "source_location": "L16",
       "id": "shelf_inspection_shelfinspectionform_props",
-      "community": 10,
+      "community": 0,
       "norm_label": "props"
     },
     {
@@ -3753,7 +3780,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionForm.tsx",
       "source_location": "L17",
       "id": "shelf_inspection_shelfinspectionform_values",
-      "community": 10,
+      "community": 0,
       "norm_label": "values"
     },
     {
@@ -3762,7 +3789,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionForm.tsx",
       "source_location": "L19",
       "id": "shelf_inspection_shelfinspectionform_shelfinspectionform",
-      "community": 10,
+      "community": 0,
       "norm_label": "shelfinspectionform()"
     },
     {
@@ -3791,6 +3818,42 @@
       "id": "lib_admin_client_getadminclient",
       "community": 1,
       "norm_label": "getadminclient()"
+    },
+    {
+      "label": "progress.ts",
+      "file_type": "code",
+      "source_file": "lib/attendance/smart-scan/progress.ts",
+      "source_location": "L1",
+      "id": "lib_attendance_smart_scan_progress_ts",
+      "community": 28,
+      "norm_label": "progress.ts"
+    },
+    {
+      "label": "ScanStepState",
+      "file_type": "code",
+      "source_file": "lib/attendance/smart-scan/progress.ts",
+      "source_location": "L3",
+      "id": "smart_scan_progress_scanstepstate",
+      "community": 28,
+      "norm_label": "scanstepstate"
+    },
+    {
+      "label": "ScanStep",
+      "file_type": "code",
+      "source_file": "lib/attendance/smart-scan/progress.ts",
+      "source_location": "L4",
+      "id": "smart_scan_progress_scanstep",
+      "community": 28,
+      "norm_label": "scanstep"
+    },
+    {
+      "label": "scanProgress()",
+      "file_type": "code",
+      "source_file": "lib/attendance/smart-scan/progress.ts",
+      "source_location": "L7",
+      "id": "smart_scan_progress_scanprogress",
+      "community": 28,
+      "norm_label": "scanprogress()"
     },
     {
       "label": "settings.ts",
@@ -3879,7 +3942,7 @@
       "source_file": "lib/store-ops/client-action.ts",
       "source_location": "L1",
       "id": "lib_store_ops_client_action_ts",
-      "community": 2,
+      "community": 3,
       "norm_label": "client-action.ts"
     },
     {
@@ -3888,7 +3951,7 @@
       "source_file": "lib/store-ops/client-action.ts",
       "source_location": "L4",
       "id": "store_ops_client_action_runoperation",
-      "community": 2,
+      "community": 3,
       "norm_label": "runoperation()"
     },
     {
@@ -3960,7 +4023,7 @@
       "source_file": "lib/store-ops/validation.ts",
       "source_location": "L8",
       "id": "store_ops_validation_shelfschema",
-      "community": 10,
+      "community": 0,
       "norm_label": "shelfschema"
     },
     {
@@ -3996,7 +4059,7 @@
       "source_file": "lib/store-ops/validation.ts",
       "source_location": "L12",
       "id": "store_ops_validation_testerschema",
-      "community": 3,
+      "community": 10,
       "norm_label": "testerschema"
     },
     {
@@ -4005,7 +4068,7 @@
       "source_file": "lib/store-ops/validation.ts",
       "source_location": "L14",
       "id": "store_ops_validation_validationmessage",
-      "community": 0,
+      "community": 4,
       "norm_label": "validationmessage()"
     },
     {
@@ -4014,7 +4077,7 @@
       "source_file": "lib/store-ops/use-form-draft.ts",
       "source_location": "L1",
       "id": "lib_store_ops_use_form_draft_ts",
-      "community": 10,
+      "community": 24,
       "norm_label": "use-form-draft.ts"
     },
     {
@@ -4023,7 +4086,7 @@
       "source_file": "lib/store-ops/use-form-draft.ts",
       "source_location": "L6",
       "id": "store_ops_use_form_draft_useformdraft",
-      "community": 10,
+      "community": 0,
       "norm_label": "useformdraft()"
     },
     {
@@ -4149,7 +4212,7 @@
       "source_file": "lib/store-ops/permissions.ts",
       "source_location": "L3",
       "id": "store_ops_permissions_permission",
-      "community": 4,
+      "community": 0,
       "norm_label": "permission"
     },
     {
@@ -4302,7 +4365,7 @@
       "source_file": "lib/store-ops/types.ts",
       "source_location": "L8",
       "id": "store_ops_types_damagereportwithrelations",
-      "community": 22,
+      "community": 11,
       "norm_label": "damagereportwithrelations"
     },
     {
@@ -4338,7 +4401,7 @@
       "source_file": "lib/store-ops/types.ts",
       "source_location": "L40",
       "id": "store_ops_types_testerwithrelations",
-      "community": 13,
+      "community": 3,
       "norm_label": "testerwithrelations"
     },
     {
@@ -4365,7 +4428,7 @@
       "source_file": "lib/store-ops/types.ts",
       "source_location": "L60",
       "id": "store_ops_types_auditwithrelations",
-      "community": 2,
+      "community": 25,
       "norm_label": "auditwithrelations"
     },
     {
@@ -4491,7 +4554,7 @@
       "source_file": "lib/store-ops/constants.ts",
       "source_location": "L6",
       "id": "store_ops_constants_damage_report_statuses",
-      "community": 24,
+      "community": 26,
       "norm_label": "damage_report_statuses"
     },
     {
@@ -4536,7 +4599,7 @@
       "source_file": "lib/store-ops/constants.ts",
       "source_location": "L37",
       "id": "store_ops_constants_inspection_statuses",
-      "community": 10,
+      "community": 23,
       "norm_label": "inspection_statuses"
     },
     {
@@ -4545,7 +4608,7 @@
       "source_file": "lib/store-ops/constants.ts",
       "source_location": "L39",
       "id": "store_ops_constants_tester_conditions",
-      "community": 24,
+      "community": 8,
       "norm_label": "tester_conditions"
     },
     {
@@ -4599,7 +4662,7 @@
       "source_file": "lib/store-ops/constants.ts",
       "source_location": "L48",
       "id": "store_ops_constants_incident_types",
-      "community": 11,
+      "community": 10,
       "norm_label": "incident_types"
     },
     {
@@ -4608,7 +4671,7 @@
       "source_file": "lib/store-ops/constants.ts",
       "source_location": "L49",
       "id": "store_ops_constants_incident_priorities",
-      "community": 11,
+      "community": 10,
       "norm_label": "incident_priorities"
     },
     {
@@ -4617,7 +4680,7 @@
       "source_file": "lib/store-ops/constants.ts",
       "source_location": "L50",
       "id": "store_ops_constants_incident_statuses",
-      "community": 11,
+      "community": 10,
       "norm_label": "incident_statuses"
     },
     {
@@ -4815,7 +4878,7 @@
       "source_file": "lib/store-ops/image-compression.ts",
       "source_location": "L1",
       "id": "lib_store_ops_image_compression_ts",
-      "community": 10,
+      "community": 25,
       "norm_label": "image-compression.ts"
     },
     {
@@ -4824,7 +4887,7 @@
       "source_file": "lib/store-ops/image-compression.ts",
       "source_location": "L3",
       "id": "store_ops_image_compression_encode",
-      "community": 10,
+      "community": 25,
       "norm_label": "encode()"
     },
     {
@@ -4833,7 +4896,7 @@
       "source_file": "lib/store-ops/image-compression.ts",
       "source_location": "L7",
       "id": "store_ops_image_compression_prepareimage",
-      "community": 10,
+      "community": 25,
       "norm_label": "prepareimage()"
     },
     {
@@ -4869,7 +4932,7 @@
       "source_file": "lib/store-ops/audits.ts",
       "source_location": "L1",
       "id": "lib_store_ops_audits_ts",
-      "community": 25,
+      "community": 22,
       "norm_label": "audits.ts"
     },
     {
@@ -4878,7 +4941,7 @@
       "source_file": "lib/store-ops/audits.ts",
       "source_location": "L4",
       "id": "store_ops_audits_getaudittemplates",
-      "community": 25,
+      "community": 22,
       "norm_label": "getaudittemplates()"
     },
     {
@@ -4887,7 +4950,7 @@
       "source_file": "lib/store-ops/audits.ts",
       "source_location": "L20",
       "id": "store_ops_audits_getaudittemplatewithquestions",
-      "community": 25,
+      "community": 22,
       "norm_label": "getaudittemplatewithquestions()"
     },
     {
@@ -4896,7 +4959,7 @@
       "source_file": "lib/store-ops/audits.ts",
       "source_location": "L37",
       "id": "store_ops_audits_getaudits",
-      "community": 25,
+      "community": 22,
       "norm_label": "getaudits()"
     },
     {
@@ -4905,8 +4968,44 @@
       "source_file": "lib/store-ops/audits.ts",
       "source_location": "L80",
       "id": "store_ops_audits_getauditbyid",
-      "community": 2,
+      "community": 25,
       "norm_label": "getauditbyid()"
+    },
+    {
+      "label": "employee-navigation.ts",
+      "file_type": "code",
+      "source_file": "lib/store-ops/employee-navigation.ts",
+      "source_location": "L1",
+      "id": "lib_store_ops_employee_navigation_ts",
+      "community": 13,
+      "norm_label": "employee-navigation.ts"
+    },
+    {
+      "label": "employeeOperationsModules",
+      "file_type": "code",
+      "source_file": "lib/store-ops/employee-navigation.ts",
+      "source_location": "L3",
+      "id": "store_ops_employee_navigation_employeeoperationsmodules",
+      "community": 13,
+      "norm_label": "employeeoperationsmodules"
+    },
+    {
+      "label": "EmployeeOperationPath",
+      "file_type": "code",
+      "source_file": "lib/store-ops/employee-navigation.ts",
+      "source_location": "L14",
+      "id": "store_ops_employee_navigation_employeeoperationpath",
+      "community": 13,
+      "norm_label": "employeeoperationpath"
+    },
+    {
+      "label": "activeEmployeeOperation()",
+      "file_type": "code",
+      "source_file": "lib/store-ops/employee-navigation.ts",
+      "source_location": "L16",
+      "id": "store_ops_employee_navigation_activeemployeeoperation",
+      "community": 13,
+      "norm_label": "activeemployeeoperation()"
     },
     {
       "label": "schema.types.ts",
@@ -4986,7 +5085,7 @@
       "source_file": "lib/supabase/database.types.ts",
       "source_location": "L4",
       "id": "supabase_database_types_json",
-      "community": 0,
+      "community": 1,
       "norm_label": "json"
     },
     {
@@ -7861,9 +7960,9 @@
       "source_file": "app/actions/store-ops/notifications.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_actions_store_ops_notifications_ts",
-      "target": "lib_notifications_feed_ts",
-      "confidence_score": 1.0
+      "target": "lib_notifications_feed_ts"
     },
     {
       "relation": "imports_from",
@@ -7883,9 +7982,9 @@
       "source_file": "app/actions/store-ops/notifications.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_actions_store_ops_notifications_ts",
-      "target": "notifications_feed_notificationscope",
-      "confidence_score": 1.0
+      "target": "notifications_feed_notificationscope"
     },
     {
       "relation": "imports",
@@ -7925,9 +8024,9 @@
       "source_file": "app/actions/store-ops/notifications.ts",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "app_actions_store_ops_notifications_ts",
-      "target": "store_ops_notifications_getoperationsnotificationpreference",
-      "confidence_score": 1.0
+      "target": "store_ops_notifications_getoperationsnotificationpreference"
     },
     {
       "relation": "contains",
@@ -7977,9 +8076,9 @@
       "source_file": "components/store-ops/notifications/OperationsNotificationPreferences.tsx",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_store_ops_notifications_operationsnotificationpreferences_tsx",
-      "target": "app_actions_store_ops_notifications_ts",
-      "confidence_score": 1.0
+      "target": "app_actions_store_ops_notifications_ts"
     },
     {
       "relation": "imports_from",
@@ -7999,9 +8098,9 @@
       "source_file": "lib/notifications/employee-push.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_employee_push_ts",
-      "target": "app_actions_store_ops_notifications_ts",
-      "confidence_score": 1.0
+      "target": "app_actions_store_ops_notifications_ts"
     },
     {
       "relation": "imports_from",
@@ -8010,9 +8109,9 @@
       "source_file": "lib/notifications/useNotificationFeed.ts",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_usenotificationfeed_ts",
-      "target": "app_actions_store_ops_notifications_ts",
-      "confidence_score": 1.0
+      "target": "app_actions_store_ops_notifications_ts"
     },
     {
       "relation": "calls",
@@ -8054,9 +8153,9 @@
       "source_file": "lib/notifications/useNotificationFeed.ts",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_usenotificationfeed_ts",
-      "target": "store_ops_notifications_markasread",
-      "confidence_score": 1.0
+      "target": "store_ops_notifications_markasread"
     },
     {
       "relation": "calls",
@@ -8098,9 +8197,9 @@
       "source_file": "lib/notifications/useNotificationFeed.ts",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_usenotificationfeed_ts",
-      "target": "store_ops_notifications_markallasread",
-      "confidence_score": 1.0
+      "target": "store_ops_notifications_markallasread"
     },
     {
       "relation": "calls",
@@ -8131,9 +8230,9 @@
       "source_file": "components/store-ops/notifications/OperationsNotificationPreferences.tsx",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_store_ops_notifications_operationsnotificationpreferences_tsx",
-      "target": "store_ops_notifications_getoperationsnotificationpreference",
-      "confidence_score": 1.0
+      "target": "store_ops_notifications_getoperationsnotificationpreference"
     },
     {
       "relation": "calls",
@@ -8164,9 +8263,9 @@
       "source_file": "components/store-ops/notifications/OperationsNotificationPreferences.tsx",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_store_ops_notifications_operationsnotificationpreferences_tsx",
-      "target": "store_ops_notifications_saveoperationsnotificationpreference",
-      "confidence_score": 1.0
+      "target": "store_ops_notifications_saveoperationsnotificationpreference"
     },
     {
       "relation": "imports",
@@ -8186,9 +8285,9 @@
       "source_file": "lib/notifications/employee-push.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_employee_push_ts",
-      "target": "store_ops_notifications_saveoperationsnotificationpreference",
-      "confidence_score": 1.0
+      "target": "store_ops_notifications_saveoperationsnotificationpreference"
     },
     {
       "relation": "calls",
@@ -13341,6 +13440,48 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "app/(dashboard)/employee/store-operations/page.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "app_dashboard_employee_store_operations_page_tsx",
+      "target": "lib_store_ops_employee_navigation_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(dashboard)/employee/store-operations/page.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "app_dashboard_employee_store_operations_page_tsx",
+      "target": "store_operations_page_employeestoreoperationspage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(dashboard)/employee/store-operations/page.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "app_dashboard_employee_store_operations_page_tsx",
+      "target": "store_operations_page_metadata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(dashboard)/employee/store-operations/page.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "app_dashboard_employee_store_operations_page_tsx",
+      "target": "store_ops_employee_navigation_employeeoperationsmodules",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "app/(dashboard)/employee/store-operations/tasks/page.tsx",
       "source_location": "L4",
       "weight": 1.0,
@@ -17711,9 +17852,9 @@
       "source_file": "components/store-ops/notifications/NotificationPanel.tsx",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_store_ops_notifications_notificationpanel_tsx",
-      "target": "lib_notifications_feed_ts",
-      "confidence_score": 1.0
+      "target": "lib_notifications_feed_ts"
     },
     {
       "relation": "imports_from",
@@ -17733,9 +17874,9 @@
       "source_file": "components/store-ops/notifications/NotificationPanel.tsx",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_store_ops_notifications_notificationpanel_tsx",
-      "target": "lib_notifications_usenotificationfeed_ts",
-      "confidence_score": 1.0
+      "target": "lib_notifications_usenotificationfeed_ts"
     },
     {
       "relation": "imports_from",
@@ -17777,9 +17918,9 @@
       "source_file": "components/store-ops/notifications/NotificationPanel.tsx",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_store_ops_notifications_notificationpanel_tsx",
-      "target": "notifications_feed_notificationscope",
-      "confidence_score": 1.0
+      "target": "notifications_feed_notificationscope"
     },
     {
       "relation": "imports",
@@ -17798,9 +17939,9 @@
       "source_file": "components/store-ops/notifications/NotificationPanel.tsx",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_store_ops_notifications_notificationpanel_tsx",
-      "target": "notifications_notificationpanel_feed",
-      "confidence_score": 1.0
+      "target": "notifications_notificationpanel_feed"
     },
     {
       "relation": "contains",
@@ -17828,9 +17969,9 @@
       "source_file": "components/store-ops/notifications/NotificationPanel.tsx",
       "source_location": "L35",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_store_ops_notifications_notificationpanel_tsx",
-      "target": "notifications_notificationpanel_notificationpanelview",
-      "confidence_score": 1.0
+      "target": "notifications_notificationpanel_notificationpanelview"
     },
     {
       "relation": "contains",
@@ -17838,9 +17979,9 @@
       "source_file": "components/store-ops/notifications/NotificationPanel.tsx",
       "source_location": "L29",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_store_ops_notifications_notificationpanel_tsx",
-      "target": "notifications_notificationpanel_standalonenotificationpanel",
-      "confidence_score": 1.0
+      "target": "notifications_notificationpanel_standalonenotificationpanel"
     },
     {
       "relation": "imports",
@@ -17849,9 +17990,9 @@
       "source_file": "components/store-ops/notifications/NotificationPanel.tsx",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_store_ops_notifications_notificationpanel_tsx",
-      "target": "notifications_usenotificationfeed_usenotificationfeed",
-      "confidence_score": 1.0
+      "target": "notifications_usenotificationfeed_usenotificationfeed"
     },
     {
       "relation": "imports",
@@ -17904,9 +18045,9 @@
       "source_file": "components/store-ops/notifications/NotificationPanel.tsx",
       "source_location": "L31",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "notifications_notificationpanel_standalonenotificationpanel",
-      "target": "notifications_usenotificationfeed_usenotificationfeed",
-      "confidence_score": 1.0
+      "target": "notifications_usenotificationfeed_usenotificationfeed"
     },
     {
       "relation": "contains",
@@ -17914,9 +18055,9 @@
       "source_file": "components/store-ops/notifications/OperationsNotificationPreferences.tsx",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_store_ops_notifications_operationsnotificationpreferences_tsx",
-      "target": "notifications_operationsnotificationpreferences_operationsnotificationpreferences",
-      "confidence_score": 1.0
+      "target": "notifications_operationsnotificationpreferences_operationsnotificationpreferences"
     },
     {
       "relation": "contains",
@@ -17924,9 +18065,9 @@
       "source_file": "components/store-ops/notifications/OperationsNotificationPreferences.tsx",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_store_ops_notifications_operationsnotificationpreferences_tsx",
-      "target": "notifications_operationsnotificationpreferences_preferences",
-      "confidence_score": 1.0
+      "target": "notifications_operationsnotificationpreferences_preferences"
     },
     {
       "relation": "imports_from",
@@ -17935,9 +18076,9 @@
       "source_file": "components/store-ops/notifications/OperationsNotifications.tsx",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_store_ops_notifications_operationsnotifications_tsx",
-      "target": "components_store_ops_notifications_operationsnotificationpreferences_tsx",
-      "confidence_score": 1.0
+      "target": "components_store_ops_notifications_operationsnotificationpreferences_tsx"
     },
     {
       "relation": "contains",
@@ -19109,6 +19250,36 @@
       "weight": 1.0,
       "source": "store_ops_worker_runoperationsworker",
       "target": "lib_admin_client_createserviceclient"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/attendance/smart-scan/progress.ts",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "lib_attendance_smart_scan_progress_ts",
+      "target": "smart_scan_progress_scanprogress"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/attendance/smart-scan/progress.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "lib_attendance_smart_scan_progress_ts",
+      "target": "smart_scan_progress_scanstep"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/attendance/smart-scan/progress.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "lib_attendance_smart_scan_progress_ts",
+      "target": "smart_scan_progress_scanstepstate"
     },
     {
       "relation": "imports_from",
@@ -21055,6 +21226,36 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "lib/store-ops/employee-navigation.ts",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "lib_store_ops_employee_navigation_ts",
+      "target": "store_ops_employee_navigation_activeemployeeoperation",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/store-ops/employee-navigation.ts",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "lib_store_ops_employee_navigation_ts",
+      "target": "store_ops_employee_navigation_employeeoperationpath",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/store-ops/employee-navigation.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "lib_store_ops_employee_navigation_ts",
+      "target": "store_ops_employee_navigation_employeeoperationsmodules",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "lib/store-ops/schema.types.ts",
       "source_location": "L3",
       "weight": 1.0,
@@ -21208,9 +21409,9 @@
       "source_file": "lib/notifications/feed.ts",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_feed_ts",
-      "target": "lib_supabase_database_types_ts",
-      "confidence_score": 1.0
+      "target": "lib_supabase_database_types_ts"
     },
     {
       "relation": "imports_from",
@@ -21327,9 +21528,9 @@
       "source_file": "lib/notifications/feed.ts",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_feed_ts",
-      "target": "supabase_database_types_database",
-      "confidence_score": 1.0
+      "target": "supabase_database_types_database"
     },
     {
       "relation": "imports",
@@ -21371,9 +21572,9 @@
       "source_file": "lib/notifications/useNotificationFeed.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_usenotificationfeed_ts",
-      "target": "lib_supabase_client_ts",
-      "confidence_score": 1.0
+      "target": "lib_supabase_client_ts"
     },
     {
       "relation": "contains",
@@ -21392,9 +21593,9 @@
       "source_file": "lib/notifications/useNotificationFeed.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_usenotificationfeed_ts",
-      "target": "supabase_client_createclient",
-      "confidence_score": 1.0
+      "target": "supabase_client_createclient"
     },
     {
       "relation": "imports_from",
@@ -21866,9 +22067,9 @@
       "source_file": "lib/notifications/useNotificationFeed.ts",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_usenotificationfeed_ts",
-      "target": "lib_notifications_feed_ts",
-      "confidence_score": 1.0
+      "target": "lib_notifications_feed_ts"
     },
     {
       "relation": "imports",
@@ -21877,9 +22078,9 @@
       "source_file": "lib/notifications/useNotificationFeed.ts",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_usenotificationfeed_ts",
-      "target": "notifications_feed_loadnotificationfeed",
-      "confidence_score": 1.0
+      "target": "notifications_feed_loadnotificationfeed"
     },
     {
       "relation": "imports",
@@ -21888,9 +22089,9 @@
       "source_file": "lib/notifications/useNotificationFeed.ts",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_usenotificationfeed_ts",
-      "target": "notifications_feed_notificationscope",
-      "confidence_score": 1.0
+      "target": "notifications_feed_notificationscope"
     },
     {
       "relation": "imports",
@@ -21899,9 +22100,9 @@
       "source_file": "lib/notifications/useNotificationFeed.ts",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_usenotificationfeed_ts",
-      "target": "notifications_feed_notificationsnapshot",
-      "confidence_score": 1.0
+      "target": "notifications_feed_notificationsnapshot"
     },
     {
       "relation": "contains",
@@ -21909,9 +22110,9 @@
       "source_file": "lib/notifications/useNotificationFeed.ts",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_usenotificationfeed_ts",
-      "target": "notifications_usenotificationfeed_usenotificationfeed",
-      "confidence_score": 1.0
+      "target": "notifications_usenotificationfeed_usenotificationfeed"
     },
     {
       "relation": "imports_from",
@@ -22519,9 +22720,9 @@
       "source_file": "lib/notifications/feed.ts",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_feed_ts",
-      "target": "notifications_feed_loadnotificationfeed",
-      "confidence_score": 1.0
+      "target": "notifications_feed_loadnotificationfeed"
     },
     {
       "relation": "contains",
@@ -22529,9 +22730,9 @@
       "source_file": "lib/notifications/feed.ts",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_feed_ts",
-      "target": "notifications_feed_notificationitem",
-      "confidence_score": 1.0
+      "target": "notifications_feed_notificationitem"
     },
     {
       "relation": "contains",
@@ -22539,9 +22740,9 @@
       "source_file": "lib/notifications/feed.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_feed_ts",
-      "target": "notifications_feed_notificationscope",
-      "confidence_score": 1.0
+      "target": "notifications_feed_notificationscope"
     },
     {
       "relation": "contains",
@@ -22549,9 +22750,9 @@
       "source_file": "lib/notifications/feed.ts",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_feed_ts",
-      "target": "notifications_feed_notificationsnapshot",
-      "confidence_score": 1.0
+      "target": "notifications_feed_notificationsnapshot"
     },
     {
       "relation": "contains",
@@ -22600,9 +22801,9 @@
       "source_file": "lib/notifications/employee-push.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_employee_push_ts",
-      "target": "lib_notifications_client_ts",
-      "confidence_score": 1.0
+      "target": "lib_notifications_client_ts"
     },
     {
       "relation": "imports",
@@ -22611,9 +22812,9 @@
       "source_file": "lib/notifications/employee-push.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_employee_push_ts",
-      "target": "notifications_client_postnotification",
-      "confidence_score": 1.0
+      "target": "notifications_client_postnotification"
     },
     {
       "relation": "calls",
@@ -22633,9 +22834,9 @@
       "source_file": "lib/notifications/employee-push.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_employee_push_ts",
-      "target": "notifications_client_enablenativenotifications",
-      "confidence_score": 1.0
+      "target": "notifications_client_enablenativenotifications"
     },
     {
       "relation": "calls",
@@ -22781,9 +22982,9 @@
       "source_file": "lib/notifications/employee-push.ts",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_notifications_employee_push_ts",
-      "target": "notifications_employee_push_enableemployeepush",
-      "confidence_score": 1.0
+      "target": "notifications_employee_push_enableemployeepush"
     },
     {
       "relation": "contains",
@@ -22797,5 +22998,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "dd71402094259746e36ef212f07cf1b6048d9e53"
+  "built_at_commit": "7034b5f2a625c1d77afe9cceb7e9cc6504ebe364"
 }

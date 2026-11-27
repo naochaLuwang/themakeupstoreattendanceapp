@@ -11,7 +11,9 @@ ROOT = Path(__file__).resolve().parents[1]
 subprocess.run(['node', 'scripts/build-store-operations-sql.mjs'], cwd=ROOT, check=True)
 bundle = (ROOT/'supabase/deployment/store_operations_install.sql').read_text()
 security = (ROOT/'supabase/migrations/20261125132304_store_operations_security.sql').read_text()
-baseline = [path.name for path in sorted((ROOT/'supabase/migrations').glob('*.sql')) if not path.name.startswith('20261125')]
+# Recovery fixtures start before the first operations repair. Later additive
+# migrations depend on that repair and cannot be included in the baseline.
+baseline = [path.name for path in sorted((ROOT/'supabase/migrations').glob('*.sql')) if path.name < '20261125132304_store_operations_security.sql']
 without_checklists = [name for name in baseline if name != '003_daily_checklist.sql']
 
 with database(without_checklists) as sql:

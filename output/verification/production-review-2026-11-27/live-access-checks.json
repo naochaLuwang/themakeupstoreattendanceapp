@@ -1,0 +1,62 @@
+[
+  {
+    "method": "GET",
+    "path": "/login",
+    "status": 200,
+    "location": null,
+    "cache_control": "s-maxage=31536000",
+    "content_type": "text/html; charset=utf-8"
+  },
+  {
+    "method": "GET",
+    "path": "/employee",
+    "status": 307,
+    "location": "/login",
+    "cache_control": null,
+    "content_type": null
+  },
+  {
+    "method": "GET",
+    "path": "/admin",
+    "status": 307,
+    "location": "/login",
+    "cache_control": null,
+    "content_type": null
+  },
+  {
+    "method": "GET",
+    "path": "/api/attendance/state",
+    "status": 401,
+    "location": null,
+    "cache_control": "no-store",
+    "content_type": "application/json",
+    "response": "{\"success\":false,\"error\":\"sign in to continue\",\"code\":\"ATTENDANCE_ERROR\",\"status\":401}"
+  },
+  {
+    "method": "GET",
+    "path": "/api/notifications",
+    "status": 401,
+    "location": null,
+    "cache_control": "no-store, private",
+    "content_type": "application/json",
+    "response": "{\"success\":false,\"error\":\"sign in to manage notifications\",\"code\":\"42501\",\"status\":401,\"providers\":{\"fcm\":true,\"worker\":true}}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/internal/store-operations/run",
+    "status": 401,
+    "location": null,
+    "cache_control": "no-store, private",
+    "content_type": "application/json",
+    "response": "{\"error\":\"Unauthorized\"}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/internal/attendance-reminders/run",
+    "status": 401,
+    "location": null,
+    "cache_control": "no-store, private",
+    "content_type": "application/json",
+    "response": "{\"error\":\"Unauthorized\"}"
+  }
+]

@@ -1,0 +1,30 @@
+PASS: migrations apply in order and station migration reruns safely
+PASS: only administrators manage stations; raw writes and credential-table access are denied
+PASS: anonymous displays receive a short-lived pairing challenge, never raw stored credentials or employee metadata
+PASS: pairing is station-bound and single-use; another station cannot reuse the browser credential
+PASS: authorized displays issue branch-bound tokens that multiple authenticated employees can verify without changing attendance
+PASS: lost-response retries and refresh recovery reuse one code; early rotations are rate-limited
+PASS: tampering, wrong purpose/version, unauthorized branch, anonymous use and expired-code reuse fail
+PASS: revoking a display immediately invalidates its credential and still-unexpired QR codes
+PASS: stale management forms fail and invalid edits roll back device revocation with station changes
+PASS: reactivating a station never resurrects revoked browser credentials
+PASS: expired pairing codes cannot be authorized and a revoked browser can unpair itself
+PASS: concurrent issuance is idempotent and moving branches revokes all displays with audit history
+{
+  "database": "disposable local PostgreSQL only",
+  "passed": 12,
+  "checks": [
+    "migrations apply in order and station migration reruns safely",
+    "only administrators manage stations; raw writes and credential-table access are denied",
+    "anonymous displays receive a short-lived pairing challenge, never raw stored credentials or employee metadata",
+    "pairing is station-bound and single-use; another station cannot reuse the browser credential",
+    "authorized displays issue branch-bound tokens that multiple authenticated employees can verify without changing attendance",
+    "lost-response retries and refresh recovery reuse one code; early rotations are rate-limited",
+    "tampering, wrong purpose/version, unauthorized branch, anonymous use and expired-code reuse fail",
+    "revoking a display immediately invalidates its credential and still-unexpired QR codes",
+    "stale management forms fail and invalid edits roll back device revocation with station changes",
+    "reactivating a station never resurrects revoked browser credentials",
+    "expired pairing codes cannot be authorized and a revoked browser can unpair itself",
+    "concurrent issuance is idempotent and moving branches revokes all displays with audit history"
+  ]
+}

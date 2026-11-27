@@ -1,0 +1,172 @@
+THE MAKEUP STORE HRM — PRODUCTION READINESS REVIEW
+27 November 2026, India time
+Reviewed application commit: 884802e
+Verdict: HOLD. The release does not yet meet production readiness criteria.
+
+SCOPE AND LIMITS
+Reviewed the local release build, TypeScript, complete Node suite, database
+regressions, source lint, installed production dependency advisories, live
+anonymous access controls, attendance-alert wiring, deployment configuration,
+and available Android build metadata. Tests used fictional disposable local
+PostgreSQL databases. No live attendance records were changed, no notification
+was sent, and no authenticated worker job was invoked. No production dependency,
+application logic, deployment, environment, secret or hosted schema was changed.
+The two local code edits repair test fixtures, described below.
+
+VERIFICATION RESULTS
+- Production build: PASS (Next.js 16.1.6, webpack).
+- Standalone TypeScript: PASS.
+- Complete Node suite: 126 passed, zero failed after fixing the test fixture.
+- Disposable PostgreSQL: 117 printed passing checks, zero failures:
+  shift locking 21; attendance engine 25; QR stations 12; Smart Scan 14;
+  reminders 18; Store Operations 15; admin attendance alerts 6; installer 6.
+- All current migrations apply together in the disposable fixture. Installer
+  tests cover missing prerequisites, preserving existing records, partial base
+  recovery, blocking repeated installation and transaction rollback on failure.
+- Changed Smart Scan test: ESLint PASS.
+- Whole repository ESLint: FAIL, 6,846 errors and 12 warnings. Most errors come
+  from scanning generated .next/Android/audit files. Actual app/components
+  source still contains 87 errors and 10 warnings, primarily existing explicit
+  any types, entity escaping and React hook dependency warnings. Do not treat
+  the successful build as a successful ESLint check.
+- Private bundle check: the known local Supabase service-role value was not
+  found in the newly generated public JavaScript bundles. This is a focused
+  check, not a full historical secret audit. No tracked env files, service-account
+  JSON, signing keystores or PEM keys were found by the filename scan.
+
+RELEASE BLOCKER 1 — DEPENDENCY SECURITY
+Fresh npm audit --omit=dev reports 11 affected production package entries:
+2 critical, 6 high and 3 moderate. These are package counts, not a count of
+individual CVEs, exploitable paths, or confirmed attacks on this application.
+Installed direct affected dependencies include:
+- next 16.1.6: critical; audit proposes 16.4.6.
+- jspdf 4.1.0: critical; audit reports affected versions through 4.2.0.
+- zod 4.1.12: high; audit proposes 4.6.7, with advisory affecting <4.6.6.
+Other affected entries: postcss, sharp, nanoid, source-map-js, ws,
+baseline-browser-mapping, dompurify and fflate. Some are transitive dependencies.
+Upgrade to patched compatible versions, review lockfile changes, then repeat
+build, tests and dependency audit. No blind npm audit fix or dependency upgrade
+was applied during this review. An advisory's applicability depends on deployed
+platform, configuration and reachable features; no exploit was attempted.
+Primary reference for an affected Next.js advisory:
+https://github.com/vercel/next.js/security/advisories/GHSA-2464-fhr4-w9xw
+jsPDF maintainer advisories:
+https://github.com/parallax/jsPDF/security/advisories
+Complete npm evidence: output/verification/production-review-2026-11-27/dependency-audit.json
+
+RELEASE BLOCKER 2 — SOURCE QUALITY GATE
+The full lint command currently scans generated artifacts and is not clean.
+Set the intended generated-file exclusions and resolve the remaining application
+source findings. Source findings cover payroll, reports, roster, auth/report API
+code, admin attendance components, leave management and employee views.
+Details: output/verification/production-review-2026-11-27/source-eslint-findings.txt
+These findings do not by themselves prove runtime failures, but the repository's
+required production lint gate is failing.
+
+LIVE HOST CHECKS
+Target: https://hrm.themakeupstorewangkhei.com
+TLS verification succeeded using a trusted CA bundle. An initial Python default
+CA-store failure was local to the verification environment and was resolved;
+certificate verification was never disabled.
+- GET /login: 200.
+- GET /employee and /admin: 307 redirect to /login without a staff session.
+- GET /api/attendance/state: 401, no-store.
+- GET /api/notifications: 401, no-store/private.
+- POST /api/internal/store-operations/run without a bearer secret: 401.
+- POST /api/internal/attendance-reminders/run without a bearer secret: 401.
+Both workers rejected requests before running jobs. The notification endpoint
+reports fcm=true and worker=true. These flags check configuration presence only;
+they do not validate Firebase credentials, an active scheduler, successful FCM
+authorization, provider acceptance or delivery to a phone. Live route availability
+does not independently identify the deployed Git commit. Authenticated role
+isolation was tested locally, not against real hosted staff accounts.
+
+ATTENDANCE-TO-ADMIN NOTIFICATION FLOW
+The private database trigger on completed attendance_operations creates alerts
+for successful changed employee clock_in/clock_out operations. It covers manual
+attendance, server actions and the Smart Scan engine receipt path. It ignores
+failed attempts, unchanged requests, operation replays and administrator
+corrections. A unique private event key deduplicates notification creation.
+Global admins and admins assigned to the attendance branch are recipients;
+notification preferences and device opt-in remain in force. A current admin
+role and matching branch are rechecked before attendance-alert delivery.
+
+Notifications use existing history and Realtime, include employee/branch/India
+time in the authenticated app, and open /admin/logs. Lock-screen text remains
+generic. Each alert has a separate high-priority FCM message/tag without the
+reminder collapse key. After a successful response, Next.js after() wakes the
+durable queue. Failures do not change the returned attendance result; scheduled
+workers drain retries. Delivery is at least once, and OS/network restrictions
+can delay it. Local provider tests mock FCM, not a physical phone.
+
+RELEASE GATE 3 — HOSTED DATABASE AND SCHEDULER VERIFICATION
+Hosted trigger installation, private grants/RLS, active cron jobs, Vault values,
+recent scheduler HTTP outcomes and queue delivery outcomes could not be verified
+through a working authenticated database management connection in this session.
+Previous user-reported cron errors show that setup failed at that time; they do
+not establish whether the user has since corrected Vault configuration.
+Do not infer completion from a successful website deployment or passing local SQL.
+
+Required mapping (never put secret values in this report):
+- Server STORE_OPERATIONS_WORKER_SECRET matches Vault
+  store_operations_worker_secret (at least 32 random characters).
+- Vault store_operations_worker_url:
+  https://hrm.themakeupstorewangkhei.com/api/internal/store-operations/run
+- Server ATTENDANCE_REMINDER_WORKER_SECRET matches Vault
+  attendance_reminder_worker_secret (at least 32 random characters).
+- Vault attendance_reminder_worker_url:
+  https://hrm.themakeupstorewangkhei.com/api/internal/attendance-reminders/run
+- Server SUPABASE_SERVICE_ROLE_KEY and FCM_PROJECT_ID; one supported private
+  Firebase credential mode such as FCM_SERVICE_ACCOUNT_JSON.
+The attendance scheduler endpoint already runs both attendance and operations
+queues. It can cover both feeds; an additional operations schedule is optional.
+Both schedules use leased queues, but duplicate scheduling adds avoidable work.
+Validate the selected schedule's recent runs and actual delivery outcomes.
+Confirm migration 20261127111931_attendance_admin_events.sql is installed.
+The deployment recovery installer deliberately stops on existing repairs; do not
+remove its guard or rerun the whole repair bundle for an already repaired schema.
+
+RELEASE GATE 4 — ANDROID END-TO-END ACCEPTANCE
+The available package is the existing debug APK, version 1.3.3, versionCode 7.
+The wrapper targets the HTTPS live host. Local Android Firebase configuration
+is present and ignored by Git. No new APK was built during this audit. Release
+signing, a signed release package and physical-device behavior were not validated.
+Prepare a properly signed release package for production Android distribution.
+On a controlled authorized real-device test, sign in as admin, allow Android
+notification permission, enable attendance/store alerts and register push.
+Perform an employee check-in and checkout; confirm each creates an in-app alert
+and a separate Android notification while the admin app is in the background.
+Also confirm tap routing and account sign-out/revocation. Do not treat provider
+HTTP acceptance as proof the OS displayed or the admin read a notification.
+
+TEST FIXTURES CORRECTED DURING THE REVIEW
+1. tests/attendance-smart-scan.test.mjs: mock the new attendance delivery hook,
+   assert it wakes for a successful changed scan and stays idle for replay or
+   pending confirmation. This fixes three failed tests caused by the test loader
+   attempting to load the server-only dependency as an ordinary source file.
+2. tests/store-ops-install.py: select the baseline migrations before the first
+   operations repair. The prior date-prefix filter incorrectly put the newer
+   admin-alert migration ahead of its Store Operations prerequisites. Production
+   migration ordering and production SQL were not changed.
+Both corrected suites passed. Test changes remain local for review; this audit
+has not pushed or deployed an application change.
+
+UX EVIDENCE AND LIMITS
+The preceding employee operations redesign has recorded 27 browser scenarios
+covering 320/390/768/1024/1440px layouts, themes, navigation, filters, forms and
+record detail views. Those historical checks were not rerun in this audit because
+this review did not change production UI. See the existing employee-operations-
+redesign evidence folder. This review is not a fresh full cross-browser, camera,
+accessibility, payroll reconciliation, load/soak or physical-device certification.
+
+RELEASE EXIT CRITERIA
+1. Patch the critical/high production dependencies and revalidate compatibility.
+2. Make the intended application lint gate pass; exclude generated artifacts.
+3. Confirm the hosted migration, selected cron job, Vault/server-secret matches,
+   recent worker execution and absence of unexplained queue/provider failures.
+4. Pass the controlled physical Android check-in/check-out push acceptance test.
+5. For Android production distribution, verify the signed release build.
+Until these are evidenced, the build is functional in tested scenarios but the
+release should remain on hold.
+
+Evidence directory: output/verification/production-review-2026-11-27/

@@ -1,0 +1,42 @@
+PASS: migrations rerun; branches default off; employee/admin/worker permissions are separate
+PASS: registration stores credentials privately and rejects token hijacking and arbitrary push URLs
+PASS: due reminders publish once, keep recipient-only history and acknowledge successful per-device delivery
+PASS: attendance is rechecked after claiming so an obsolete clock-in push is suppressed
+PASS: disabled preferences, approved leave and off days produce no reminders
+PASS: quiet hours defer delivery without creating history or consuming retries
+PASS: transient errors back off; absent provider configuration does not exhaust attempt budgets
+PASS: an invalid old token cannot revoke a newly rotated token
+PASS: a genuinely expired current token disables only that device
+PASS: expired worker leases are reclaimed and stale workers cannot acknowledge a replacement lease
+PASS: account switching detaches old-user delivery without exposing the other account
+PASS: late attendance escalates only to authorized managers/admins and history follows current branch permissions
+PASS: changing a shift after enqueue cancels its old push before transport
+PASS: active sessions get finish/checkout reminders with cooldown between event kinds
+PASS: an unresolved active session escalates to current branch managers and administrators
+PASS: overnight shift reminder windows use the existing India-time schedule convention
+PASS: a trusted existing re-entry approval creates one durable approval notice
+PASS: concurrent workers publish and lease a due employee/device notification once
+{
+  "database": "disposable local PostgreSQL only",
+  "passed": 18,
+  "checks": [
+    "migrations rerun; branches default off; employee/admin/worker permissions are separate",
+    "registration stores credentials privately and rejects token hijacking and arbitrary push URLs",
+    "due reminders publish once, keep recipient-only history and acknowledge successful per-device delivery",
+    "attendance is rechecked after claiming so an obsolete clock-in push is suppressed",
+    "disabled preferences, approved leave and off days produce no reminders",
+    "quiet hours defer delivery without creating history or consuming retries",
+    "transient errors back off; absent provider configuration does not exhaust attempt budgets",
+    "an invalid old token cannot revoke a newly rotated token",
+    "a genuinely expired current token disables only that device",
+    "expired worker leases are reclaimed and stale workers cannot acknowledge a replacement lease",
+    "account switching detaches old-user delivery without exposing the other account",
+    "late attendance escalates only to authorized managers/admins and history follows current branch permissions",
+    "changing a shift after enqueue cancels its old push before transport",
+    "active sessions get finish/checkout reminders with cooldown between event kinds",
+    "an unresolved active session escalates to current branch managers and administrators",
+    "overnight shift reminder windows use the existing India-time schedule convention",
+    "a trusted existing re-entry approval creates one durable approval notice",
+    "concurrent workers publish and lease a due employee/device notification once"
+  ]
+}

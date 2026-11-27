@@ -1,0 +1,140 @@
+Full npm run lint failed: 6846 errors, 12 warnings.
+Application source: 87 errors, 10 warnings.
+Other findings: generated .next, generated Android assets and saved audit output.
+
+app/(dashboard)/admin/payroll/AdvanceForm.tsx
+  5:63  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+app/(dashboard)/admin/payroll/History.tsx
+   7:64  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  15:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+app/(dashboard)/admin/payroll/PayrollTable.tsx
+  4:10  error  'IndianRupee' is defined but never used   @typescript-eslint/no-unused-vars
+  4:23  error  'Zap' is defined but never used           @typescript-eslint/no-unused-vars
+  4:28  error  'Calculator' is defined but never used    @typescript-eslint/no-unused-vars
+  6:79  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  6:95  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  7:67  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+app/(dashboard)/admin/reports/consolidated/page.tsx
+   13:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   17:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   18:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  386:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  387:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+app/(dashboard)/admin/reports/graphs/page.tsx
+   12:7   error  'MONTHS' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   26:48  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   27:56  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   28:50  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   29:52  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   30:40  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   31:52  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   32:44  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   55:58  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   67:25  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   77:25  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  120:26  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  123:24  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  165:24  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  175:26  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  240:56  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  346:87  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  373:63  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+
+app/(dashboard)/admin/reports/reliability/page.tsx
+   5:5   error  'CalendarCheck' is defined but never used  @typescript-eslint/no-unused-vars
+   5:43  error  'Loader2' is defined but never used        @typescript-eslint/no-unused-vars
+  39:18  error  'err' is defined but never used            @typescript-eslint/no-unused-vars
+
+app/(dashboard)/admin/roaster/page.tsx
+  4:8  error  'OverridesList' is defined but never used  @typescript-eslint/no-unused-vars
+
+app/api/auth/login/route.ts
+  45:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+app/api/reports/reliability/route.ts
+  56:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+components/admin/AdminDashboard.tsx
+   12:33  error    'User' is defined but never used                                                                                                                                         @typescript-eslint/no-unused-vars
+   12:62  error    'Filter' is defined but never used                                                                                                                                       @typescript-eslint/no-unused-vars
+   15:80  error    Unexpected any. Specify a different type                                                                                                                                 @typescript-eslint/no-explicit-any
+   23:48  error    Unexpected any. Specify a different type                                                                                                                                 @typescript-eslint/no-explicit-any
+   24:42  error    Unexpected any. Specify a different type                                                                                                                                 @typescript-eslint/no-explicit-any
+   25:54  error    Unexpected any. Specify a different type                                                                                                                                 @typescript-eslint/no-explicit-any
+   52:8   warning  React Hook useEffect has missing dependencies: 'fetchLeaveHistory', 'fetchLeaves', 'fetchOverrides', and 'supabase'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  125:69  error    Unexpected any. Specify a different type                                                                                                                                 @typescript-eslint/no-explicit-any
+  185:53  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                          react/no-unescaped-entities
+  185:98  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                          react/no-unescaped-entities
+  203:71  error    Unexpected any. Specify a different type                                                                                                                                 @typescript-eslint/no-explicit-any
+  260:62  error    Unexpected any. Specify a different type                                                                                                                                 @typescript-eslint/no-explicit-any
+
+components/admin/AdminShiftCalendar.tsx
+    9:48  error    Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+   10:42  error    Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+   11:42  error    Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+   56:42  warning  React Hook useEffect has a missing dependency: 'fetchRoaster'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  115:24  error    Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+  116:20  error    Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+  125:8   warning  React Hook useMemo has a missing dependency: 'getStatus'. Either include it or remove the dependency array       react-hooks/exhaustive-deps
+  243:36  error    Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+
+components/admin/AttendanceLogTable.tsx
+    9:72  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+   11:38  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+   55:39  warning  React Hook useEffect has a missing dependency: 'fetchLogs'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  171:68  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+  226:64  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+
+components/admin/AttendanceOversight.tsx
+   5:10  error    'Play' is defined but never used                                                                               @typescript-eslint/no-unused-vars
+   5:36  error    'CheckCircle2' is defined but never used                                                                       @typescript-eslint/no-unused-vars
+   5:50  error    'Loader2' is defined but never used                                                                            @typescript-eslint/no-unused-vars
+   5:59  error    'RefreshCw' is defined but never used                                                                          @typescript-eslint/no-unused-vars
+  11:60  error    Unexpected any. Specify a different type                                                                       @typescript-eslint/no-explicit-any
+  12:12  error    'isRunning' is assigned a value but never used                                                                 @typescript-eslint/no-unused-vars
+  29:40  warning  React Hook useEffect has a missing dependency: 'fetchStats'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  41:11  error    'runAutoCheckoutJob' is assigned a value but never used                                                        @typescript-eslint/no-unused-vars
+  43:17  error    'data' is assigned a value but never used                                                                      @typescript-eslint/no-unused-vars
+
+components/admin/GeotagAnalysisClient.tsx
+  5:84  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  6:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+components/admin/LeaveManagementWrapper.tsx
+    4:20  error    'Clock' is defined but never used                                                                                                         @typescript-eslint/no-unused-vars
+    6:72  error    Unexpected any. Specify a different type                                                                                                  @typescript-eslint/no-explicit-any
+    9:42  error    Unexpected any. Specify a different type                                                                                                  @typescript-eslint/no-explicit-any
+   10:54  error    Unexpected any. Specify a different type                                                                                                  @typescript-eslint/no-explicit-any
+   17:8   warning  React Hook useEffect has missing dependencies: 'fetchLeaveHistory' and 'fetchLeaves'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+   74:13  error    Expected an assignment or function call and instead saw an expression                                                                     @typescript-eslint/no-unused-expressions
+  106:55  error    Unexpected any. Specify a different type                                                                                                  @typescript-eslint/no-explicit-any
+  149:33  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                           react/no-unescaped-entities
+  149:59  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                           react/no-unescaped-entities
+
+components/admin/OverridesList.tsx
+  12:41  error    'adminId' is defined but never used                                                                                                 @typescript-eslint/no-unused-vars
+  14:48  error    Unexpected any. Specify a different type                                                                                            @typescript-eslint/no-explicit-any
+  39:8   warning  React Hook useEffect has missing dependencies: 'fetchOverrides' and 'supabase'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+components/admin/PresetManager.tsx
+   7:44  error    Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+  15:8   warning  React Hook useEffect has a missing dependency: 'fetchPresets'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+components/employee/ActivityLogViews.tsx
+   13:38  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+   18:39  warning  React Hook useEffect has a missing dependency: 'fetchLogs'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  252:54  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+
+components/employee/EmployeePayslipsClient.tsx
+   7:72  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  14:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+components/employee/LeaveRequestView.tsx
+  11:44   error    Unexpected any. Specify a different type                                                                           @typescript-eslint/no-explicit-any
+  22:8    warning  React Hook useEffect has a missing dependency: 'fetchLeaveData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  91:107  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                    react/no-unescaped-entities
+  91:120  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                    react/no-unescaped-entities

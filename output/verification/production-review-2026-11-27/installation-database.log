@@ -1,0 +1,7 @@
+Wrote /Users/somojitarambam/Desktop/attendance-app/supabase/deployment/store_operations_install.sql (12 ordered migrations, one transaction).
+PASS missing checklist base tables fail before any repair changes, with prerequisite instructions
+PASS ordered SQL Editor bundle repairs a database missing migration 003 and preserves existing data
+PASS repeat installation stops before changing an already repaired database
+PASS existing complete base schema and repeat checklist setup install successfully
+PASS existing attendance installation can initialize all missing operations base tables
+PASS a later migration failure rolls back the whole bundle, including base tables and security changes

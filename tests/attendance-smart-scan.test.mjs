@@ -58,18 +58,23 @@ test('GET reads only configuration; POST carries its exact UUID and never retrie
 });
 function service(result, { user = employee, error = null } = {}) {
     const calls = [];
-    const load = loader({ '@/lib/supabase/server': { createClient: async () => ({ auth: { getUser: async () => ({ data: { user: user ? { id: user } : null }, error: null }) }, rpc: async (...args) => { calls.push(args); return { data: result, error }; } }) } });
-    return { ...load(resolve('lib/attendance/smart-scan/server.ts')), calls };
+    let deliveries = 0;
+    const load = loader({
+        '@/lib/notifications/attendance-events': { deliverAttendanceAlerts: () => { deliveries++; } },
+        '@/lib/supabase/server': { createClient: async () => ({ auth: { getUser: async () => ({ data: { user: user ? { id: user } : null }, error: null }) }, rpc: async (...args) => { calls.push(args); return { data: result, error }; } }) },
+    });
+    return { ...load(resolve('lib/attendance/smart-scan/server.ts')), calls, deliveries: () => deliveries };
 }
 test('verified identity gates the scan RPC, forwarding the exact command once without a service key', async () => {
     const missing = service(null, { user: null }); assert.equal((await missing.performSmartScan({ action: 'config' })).status, 401); assert.equal(missing.calls.length, 0);
     const app = service({ success: true, state: 'clocked_in', changed: true, data: saved, branchName: 'Test' });
     const command = { action: 'scan', token, location }; assert.equal((await app.performSmartScan(command, operationId)).success, true);
     assert.equal(app.calls[0][0], 'attendance_smart_scan'); assert.equal(app.calls[0][1].p_operation_id, operationId); assert.equal(app.calls.length, 1);
+    assert.equal(app.deliveries(), 1);
 });
 test('confirmations and replays preserve the server state without a second attendance mutation', async () => {
     for (const result of [{ success: true, state: 'clocked_in', changed: false, replayed: true, data: saved }, { success: true, state: 'confirmation_required', changed: false, data: saved, confirmationId, expiresAt: '2026-11-24T10:02:00Z', serverNow: '2026-11-24T10:00:00Z' }]) {
-        const app = service(result); assert.equal((await app.performSmartScan({ action: 'scan', token, location }, operationId)).success, true); assert.equal(app.calls.length, 1);
+        const app = service(result); assert.equal((await app.performSmartScan({ action: 'scan', token, location }, operationId)).success, true); assert.equal(app.calls.length, 1); assert.equal(app.deliveries(), 0);
     }
 });
 test('missing migration and malformed successes fail closed without exposing transport details', async () => {
