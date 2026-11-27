@@ -13,6 +13,7 @@
     "android:run": "node scripts/android.mjs run",
     "android:build": "node scripts/android.mjs build",
     "android:bundle": "node scripts/android.mjs bundle",
+    "android:release": "node scripts/android.mjs release",
     "graph:update": "graphify update .",
     "graph:query": "graphify query",
     "store-ops:sql": "node scripts/build-store-operations-sql.mjs"

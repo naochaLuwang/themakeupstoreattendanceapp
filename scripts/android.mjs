@@ -9,8 +9,8 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const nativeDir = join(root, 'android');
 const command = process.argv[2] || 'sync';
-if (!['sync', 'assets', 'open', 'run', 'build', 'bundle'].includes(command)) {
-    throw new Error('Use sync, assets, open, run, build, or bundle.');
+if (!['sync', 'assets', 'open', 'run', 'build', 'bundle', 'release'].includes(command)) {
+    throw new Error('Use sync, assets, open, run, build, bundle, or release.');
 }
 
 const environment = { ...process.env };
@@ -42,8 +42,15 @@ function run(executable, args, cwd = root) {
     if (result.status !== 0) process.exit(result.status || 1);
 }
 const capacitor = join(root, 'node_modules/@capacitor/cli/bin/capacitor');
+if (['bundle', 'release'].includes(command)) {
+    const firebase = JSON.parse(await readFile(join(nativeDir, 'app/google-services.json'), 'utf8'));
+    const app = JSON.parse(await readFile(join(root, 'mobile/app.json'), 'utf8'));
+    if (!firebase.client?.some(client => client.client_info?.android_client_info?.package_name === app.appId)) {
+        throw new Error('The release needs Firebase Android configuration for this application ID.');
+    }
+}
 run(process.execPath, [join(root, 'scripts/prepare-mobile.mjs')]);
-if (['assets', 'build', 'bundle'].includes(command)) {
+if (['assets', 'build', 'bundle', 'release'].includes(command)) {
     const assetTool = join(root, 'node_modules/@capacitor/assets/bin/capacitor-assets');
     run(process.execPath, [assetTool, 'generate', '--android', '--assetPath', 'mobile/assets',
         '--iconBackgroundColor', '#ffffff', '--iconBackgroundColorDark', '#ffffff',
@@ -51,15 +58,20 @@ if (['assets', 'build', 'bundle'].includes(command)) {
 }
 run(process.execPath, [capacitor, 'sync', 'android']);
 if (command === 'open' || command === 'run') run(process.execPath, [capacitor, command, 'android']);
-if (command === 'build' || command === 'bundle') {
+if (['build', 'bundle', 'release'].includes(command)) {
     const gradle = join(nativeDir, process.platform === 'win32' ? 'gradlew.bat' : 'gradlew');
-    run(gradle, [command === 'build' ? 'assembleDebug' : 'bundleRelease', '--no-daemon'], nativeDir);
+    const tasks = command === 'build' ? ['assembleDebug'] : command === 'bundle' ? ['bundleRelease'] : ['verifyReleaseSigning', 'testReleaseUnitTest', 'assembleRelease', 'bundleRelease'];
+    run(gradle, [...tasks, '--no-daemon'], nativeDir);
     const outputDir = join(root, 'output/android');
     await mkdir(outputDir, { recursive: true });
-    const source = command === 'build' ? 'app/build/outputs/apk/debug/app-debug.apk' : 'app/build/outputs/bundle/release/app-release.aab';
-    const fileName = command === 'build' ? 'the-makeup-store-hrm-debug.apk' : 'the-makeup-store-hrm-unsigned.aab';
-    await copyFile(join(nativeDir, source), join(outputDir, fileName));
-    const digest = createHash('sha256').update(await readFile(join(outputDir, fileName))).digest('hex');
-    await writeFile(join(outputDir, `${fileName}.sha256`), `${digest}  ${fileName}\n`);
-    console.log(`Android package: ${join(outputDir, fileName)}`);
+    const artifacts = command === 'build'
+        ? [['app/build/outputs/apk/debug/app-debug.apk', 'the-makeup-store-hrm-debug.apk']]
+        : [['app/build/outputs/bundle/release/app-release.aab', 'the-makeup-store-hrm-release.aab'],
+            ...(command === 'release' ? [['app/build/outputs/apk/release/app-release.apk', 'the-makeup-store-hrm-release.apk']] : [])];
+    for (const [source, fileName] of artifacts) {
+        await copyFile(join(nativeDir, source), join(outputDir, fileName));
+        const digest = createHash('sha256').update(await readFile(join(outputDir, fileName))).digest('hex');
+        await writeFile(join(outputDir, `${fileName}.sha256`), `${digest}  ${fileName}\n`);
+        console.log(`Android package: ${join(outputDir, fileName)}`);
+    }
 }

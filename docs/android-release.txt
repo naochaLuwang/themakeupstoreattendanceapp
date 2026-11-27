@@ -1,0 +1,73 @@
+THE MAKEUP STORE HRM — GOOGLE PLAY RELEASE
+
+Build: npm run android:release
+Bundle only: npm run android:bundle
+Debug APK: npm run android:build
+
+The release command generates approved artwork, synchronizes Capacitor, runs
+release JVM tests, and creates both a signed Android App Bundle for Google Play
+and an installable release APK. Release packaging refuses missing signing
+credentials. Release builds are not debuggable. Capacitor loggingBehavior=debug
+emits logs only in debug builds. API/compile SDK 36 and minimum SDK 24 apply.
+Firebase Android configuration must contain this app's application ID.
+
+Application ID: in.themakeupstore.hrm
+Version: 1.3.4 / versionCode 8
+Hosted workspace: https://hrm.themakeupstorewangkhei.com
+
+PRIVATE SIGNING MATERIAL — BACK UP BOTH FILES
+android/keystore/hrm-upload.keystore
+android/keystore.properties
+
+The user confirmed this is the first Google Play release. A new RSA-3072 upload
+key, alias hrm-upload, was generated locally in a PKCS12 keystore with a random
+password and owner-only file permissions. The properties file holds that password
+and the key location. Both files are ignored by Git and must stay private. Store
+an encrypted backup outside this workspace before depending on this key for
+future uploads. The password was not printed in build logs or chat. The exported
+upload certificate is public; the keystore is private.
+
+For another machine, restore those two private files. For CI, supply:
+HRM_ANDROID_KEYSTORE (absolute path or path relative to android/)
+HRM_ANDROID_STORE_PASSWORD
+HRM_ANDROID_KEY_ALIAS
+HRM_ANDROID_KEY_PASSWORD
+
+An example properties file is in android/keystore.properties.example. Do not
+replace the upload key for later releases; use the registered key or follow
+Google Play's upload-key reset process. Increment versionCode for every upload.
+
+OUTPUTS
+output/android/the-makeup-store-hrm-release.aab — upload this to Google Play
+output/android/the-makeup-store-hrm-release.apk — direct-install release APK
+output/android/*.sha256 — artifact checksums
+output/android/hrm-upload-certificate.pem — public upload certificate
+output/android/release-verification.json — package and signature verification
+
+Use Google Play App Signing for the first release. Google signs distributed
+APKs with the app signing key; the local key signs uploads. The direct-install
+APK uses the local upload key and may therefore have a different certificate
+from the Play-distributed app. Existing debug APK installations also use a
+different certificate; Android cannot install this release as an update over
+them. Uninstall the debug app or use a separate test device.
+
+The app is an online Capacitor wrapper. Next.js and Supabase continue running
+on the hosted server; this Android build does not patch server dependencies,
+install SQL migrations, configure cron/Vault, or prove real FCM delivery. The
+production-readiness report's unresolved hosted/security findings still apply.
+This build does not constitute Play approval or a production rollout.
+
+PLAY CONSOLE HANDOFF
+Create the app listing using the existing application ID, enable Play App
+Signing, and upload the signed .aab to an internal testing track first. Complete
+the store listing, privacy policy, Data safety declaration, app access/reviewer
+instructions and any testing requirements shown for the developer account.
+Declare actual location, camera/photo and notification behavior accurately.
+Validate check-in/out, uploads, downloads, push, sign-out and account switching
+on a physical device before production rollout. No Play Console upload or
+publication was performed by this build task.
+
+Official references:
+https://developer.android.com/studio/publish/app-signing
+https://developer.android.com/guide/app-bundle
+https://support.google.com/googleplay/android-developer/answer/11926878

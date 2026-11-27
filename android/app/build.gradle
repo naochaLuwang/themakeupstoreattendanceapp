@@ -1,5 +1,18 @@
 apply plugin: 'com.android.application'
 
+// Private local properties or CI environment variables; never commit signing keys.
+def releaseProperties = new Properties()
+def releasePropertiesFile = rootProject.file('keystore.properties')
+if (releasePropertiesFile.exists()) {
+    releasePropertiesFile.withInputStream { releaseProperties.load(it) }
+}
+def signingValue = { name, variable -> System.getenv(variable) ?: releaseProperties.getProperty(name) }
+def signingPath = signingValue('storeFile', 'HRM_ANDROID_KEYSTORE')
+def signingStorePassword = signingValue('storePassword', 'HRM_ANDROID_STORE_PASSWORD')
+def signingAlias = signingValue('keyAlias', 'HRM_ANDROID_KEY_ALIAS')
+def signingKeyPassword = signingValue('keyPassword', 'HRM_ANDROID_KEY_PASSWORD')
+def releaseSigningReady = signingPath && signingStorePassword && signingAlias && signingKeyPassword
+
 android {
     namespace = "in.themakeupstore.hrm"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,8 +20,8 @@ android {
         applicationId "in.themakeupstore.hrm"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 7
-        versionName "1.3.3"
+        versionCode 8
+        versionName "1.3.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,12 +29,36 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        if (releaseSigningReady) {
+            release {
+                storeFile rootProject.file(signingPath)
+                storePassword signingStorePassword
+                keyAlias signingAlias
+                keyPassword signingKeyPassword
+            }
+        }
+    }
     buildTypes {
         release {
+            debuggable false
+            jniDebuggable false
+            if (releaseSigningReady) signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+}
+
+tasks.register('verifyReleaseSigning') {
+    doLast {
+        if (!releaseSigningReady || !rootProject.file(signingPath).isFile()) {
+            throw new GradleException('Release signing is missing. Configure android/keystore.properties or the HRM_ANDROID signing environment variables. See docs/android-release.txt.')
+        }
+    }
+}
+tasks.matching { it.name in ['assembleRelease', 'bundleRelease'] }.configureEach {
+    dependsOn tasks.named('verifyReleaseSigning')
 }
 
 repositories {

@@ -62,7 +62,7 @@ npm run android:open    # Open the native project in Android Studio
 npm run android:run     # Run on an attached Android device or emulator
 ```
 
-The APK and SHA-256 checksum are written to `output/android/`. The APK uses the local Android debug certificate and is intended for internal testing. `npm run android:bundle` builds an unsigned release bundle; public distribution requires a release signing key. Signing keys and generated build assets are ignored by Git.
+The debug APK and SHA-256 checksum are written to `output/android/`. For Google Play, configure the private upload key and run `npm run android:release` to produce a signed release APK and signed `.aab`; `npm run android:bundle` produces only the signed bundle. Release packaging refuses missing signing credentials. Signing keys and generated build assets are ignored by Git. See [release and signing instructions](docs/android-release.txt), including backup requirements and the distinction between upload and Play app-signing certificates.
 
 Change the host in `mobile/app.json`, or set `CAPACITOR_SERVER_URL` to another trusted HTTPS origin before syncing/building. `npm run android:assets` regenerates Android artwork from `public/branding/the-makeup-store-hrm.png`. Only Android is included in this phase. Android **1.3/code 4** includes the native push plugin and notification icon. The supplied FCM-ready build remains unconfigured because no Firebase project exists yet. Follow [Firebase/worker setup](docs/smart-attendance/firebase-setup.md) before rebuilding and testing native delivery.
 
