@@ -280,8 +280,8 @@
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/app/(dashboard)/employee/store-operations/layout.tsx": {
-    "mtime": 1795613386.545137,
-    "ast_hash": "1f127f690531def69bf54e08a1357104",
+    "mtime": 1795766382.6852162,
+    "ast_hash": "58ab223613f13e5a279891e1591dc255",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/app/(dashboard)/employee/store-operations/error.tsx": {
@@ -305,8 +305,8 @@
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/app/(dashboard)/employee/store-operations/daily-checklist/page.tsx": {
-    "mtime": 1795614708.9550552,
-    "ast_hash": "b6357d7a71ce15b5c149f4edd18fe9f8",
+    "mtime": 1795766567.2641835,
+    "ast_hash": "43248c2670ad9f9a4c6c411ad710aa26",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/app/(dashboard)/employee/store-operations/testers/page.tsx": {
@@ -435,18 +435,18 @@
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/tasks/TaskCard.tsx": {
-    "mtime": 1795613917.4371305,
-    "ast_hash": "6693df44ed6006a6bdc2fec841f4dc7b",
+    "mtime": 1795766516.1175833,
+    "ast_hash": "739f56f4b57fcdda3047f099fc968131",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/tasks/TaskList.tsx": {
-    "mtime": 1795614708.943095,
-    "ast_hash": "57d4e3720ff3dacb79465c3d516ff75f",
+    "mtime": 1795766630.990751,
+    "ast_hash": "fb50eea99e6d8a219d1a6be855959a5d",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/tasks/TaskDetail.tsx": {
-    "mtime": 1795669656.7380614,
-    "ast_hash": "a9bba66c566186f3fca59f451c55a4ee",
+    "mtime": 1795766516.1191146,
+    "ast_hash": "9fa22d907195f5021c5276f726537df7",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/tasks/TaskForm.tsx": {
@@ -460,8 +460,8 @@
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/daily-checklist/DailyChecklistView.tsx": {
-    "mtime": 1795669766.580619,
-    "ast_hash": "9d7086e889bda58c3174aa740d4a6302",
+    "mtime": 1795766516.1203501,
+    "ast_hash": "abc03159a2032b33faf7c50b0d469981",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/daily-checklist/DailyChecklistHistory.tsx": {
@@ -495,13 +495,13 @@
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/testers/TesterList.tsx": {
-    "mtime": 1795614708.943958,
-    "ast_hash": "61817954f9011863e91b2c4038fd57c3",
+    "mtime": 1795766567.2635357,
+    "ast_hash": "6ac97b6d494ab24a59284a2f4a70ec1e",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/testers/TesterCard.tsx": {
-    "mtime": 1795613917.438613,
-    "ast_hash": "d56dfccc4ff08d87bcf62462de9ff0d0",
+    "mtime": 1795766516.1180642,
+    "ast_hash": "0e48179d17e1aae127b975524854f3df",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/testers/TesterForm.tsx": {
@@ -510,38 +510,38 @@
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/testers/TesterDetail.tsx": {
-    "mtime": 1795669656.6715488,
-    "ast_hash": "52ac4390aa97eb9ab681d7a4474ca891",
+    "mtime": 1795766516.1197648,
+    "ast_hash": "08511b045b6bb9ee7345dfd9fafdd1c9",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/restocking/RestockList.tsx": {
-    "mtime": 1795614708.9442956,
-    "ast_hash": "8c3c3b780deb43ccd9503ca66e0af8aa",
+    "mtime": 1795766567.2637906,
+    "ast_hash": "38574a24f79da92ebd262e56927978d7",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/restocking/RestockDetail.tsx": {
-    "mtime": 1795669656.6613035,
-    "ast_hash": "5f00ef2ef6e971dda77bfe28a3f98756",
+    "mtime": 1795766516.1201224,
+    "ast_hash": "4ae3be822105693045bf50b82acd99dd",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/restocking/RestockCard.tsx": {
-    "mtime": 1795613917.4400234,
-    "ast_hash": "d7549bf8a74322dae14f8660839c0033",
+    "mtime": 1795766516.1181898,
+    "ast_hash": "bcb812d4bea76cb51c7585b6d51bb0b9",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/restocking/RestockForm.tsx": {
-    "mtime": 1795668910.5553586,
-    "ast_hash": "8fe6769951b2592ec3a5e1537670d17d",
+    "mtime": 1795766516.1188638,
+    "ast_hash": "9f21da39ee46733a161aa78b42672ea5",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/damage-reports/DamageReportForm.tsx": {
-    "mtime": 1795668910.555625,
-    "ast_hash": "cdb8b885edf30b3ef9834f12da1e0e66",
+    "mtime": 1795766516.1186802,
+    "ast_hash": "efbffd2013ddd204497e2f662be24cad",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/damage-reports/DamageReportDetail.tsx": {
-    "mtime": 1795669777.8992493,
-    "ast_hash": "ec481d994b274f1ad5301431f6bff94e",
+    "mtime": 1795766516.1195128,
+    "ast_hash": "3854750bbbbde682ceb1b4d906bd68da",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/damage-reports/ReturnList.tsx": {
@@ -550,13 +550,13 @@
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/damage-reports/DamageReportList.tsx": {
-    "mtime": 1795614708.9449604,
-    "ast_hash": "824a637a9d85aff2e9cbe2b154152df6",
+    "mtime": 1795766567.2634118,
+    "ast_hash": "b6c6a016db00f6d5a6477c3ca6fb611e",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/damage-reports/DamageReportCard.tsx": {
-    "mtime": 1795613443.6697032,
-    "ast_hash": "0085f30ca49b5480088e51ac15320cd6",
+    "mtime": 1795766516.117974,
+    "ast_hash": "2ce1bfdc161847bb7575082a802e613a",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/notifications/NotificationPanel.tsx": {
@@ -570,38 +570,38 @@
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/incidents/IncidentForm.tsx": {
-    "mtime": 1795668910.5560303,
-    "ast_hash": "9fcc1f922169897f29a1e8657d6e5109",
+    "mtime": 1795766516.1187654,
+    "ast_hash": "bfa2926e41c531905f8ff2599724ae99",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/incidents/IncidentDetail.tsx": {
-    "mtime": 1795669777.9305403,
-    "ast_hash": "cce3a466a148ecacb3eed71bdd5efdd9",
+    "mtime": 1795766516.1198742,
+    "ast_hash": "a0a215a9fafb207aa64086019452ec0c",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/incidents/IncidentList.tsx": {
-    "mtime": 1795614708.9453156,
-    "ast_hash": "976e0c3dc0dbd549f39562e24cea0802",
+    "mtime": 1795766567.2636633,
+    "ast_hash": "891930c9183fa4b89565bb56dd6c1ef9",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/incidents/IncidentCard.tsx": {
-    "mtime": 1795613917.4395916,
-    "ast_hash": "7a9842fc5fe36644660e3867d2991df6",
+    "mtime": 1795766516.11813,
+    "ast_hash": "cc024795a63290b4168c4d9e2d298a99",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/shelf-inspection/ShelfInspectionCard.tsx": {
-    "mtime": 1795613481.5473564,
-    "ast_hash": "c9ad370b3cfdc802bc131b74508dca80",
+    "mtime": 1795766516.117789,
+    "ast_hash": "8f323a56aaa8001004b01751769fb1f7",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/shelf-inspection/ShelfInspectionDetail.tsx": {
-    "mtime": 1795669656.664122,
-    "ast_hash": "7d071ba1491fb388f10688314afbd348",
+    "mtime": 1795766516.119326,
+    "ast_hash": "40d3aaa6096af916f3c34c1d765a2d28",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/shelf-inspection/ShelfInspectionList.tsx": {
-    "mtime": 1795613481.5474794,
-    "ast_hash": "90a101279763d15b0511102ad4391060",
+    "mtime": 1795766567.2632804,
+    "ast_hash": "6e21a1119ca7e1b62fc88a068497ea5f",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/shelf-inspection/SectionSettings.tsx": {
@@ -610,8 +610,8 @@
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/components/store-ops/shelf-inspection/ShelfInspectionForm.tsx": {
-    "mtime": 1795668910.5564604,
-    "ast_hash": "07630dcb3fb062b8566a5f5cc6b4205f",
+    "mtime": 1795766516.118377,
+    "ast_hash": "a2e67afa8bcd9732bffcc48d5a5c3eb0",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/lib/admin-client.ts": {
@@ -812,6 +812,16 @@
   "/Users/somojitarambam/Desktop/attendance-app/lib/attendance/smart-scan/progress.ts": {
     "mtime": 1795765304.4536705,
     "ast_hash": "69e1adc10224a6272c0d9a4d2dd19a93",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/app/(dashboard)/employee/store-operations/page.tsx": {
+    "mtime": 1795769412.3008084,
+    "ast_hash": "4e84959831fde926a286b4d6fe1a56ad",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/lib/store-ops/employee-navigation.ts": {
+    "mtime": 1795766382.6398213,
+    "ast_hash": "a74c240090e331b8009a023bab1df029",
     "semantic_hash": ""
   }
 }

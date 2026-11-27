@@ -287,3 +287,39 @@ The debug APK was rebuilt and its version, signature, hash and foreground-push
 configuration were checked. Screenshots and browser evidence are under
 output/verification/employee-notifications/. Physical-device FCM delivery and
 Hostinger deployment are not claimed by these local tests.
+
+Employee workspace and compact typography (27 November 2026)
+
+/employee/store-operations now provides a protected overview of the eight
+employee modules. The horizontal tab strip is replaced with a current-module
+picker on phones/tablets and a vertical sidebar on desktop. The native dialog
+shows every module in a two-column sheet, contains keyboard focus, closes on
+Escape/backdrop/selection/desktop resize, and restores page scrolling. Detail
+and creation routes retain their parent module selection. On the overview,
+mobile users navigate directly through the module cards without a redundant
+picker. Home quick actions reuse the same module catalogue.
+
+Lists, record cards, filters, forms and details use employee-scoped presentation
+classes. All employee records use responsive cards; the existing admin tables
+and permissions remain. Search and filter controls have accessible labels and
+matching field IDs. Employee task filters omit the redundant assignee control.
+Opening/closing checklist controls expose their selected state. Existing
+queries, drafts, validation, uploads, Realtime and submission actions remain.
+No database schema, migration, dependency or Android permission changed.
+
+The sizing pass uses 26–28px page titles, 15px record titles and 12–13px secondary
+text, with less card and panel padding. Mobile input text stays at 16px to avoid
+browser zoom; desktop inputs use 14px. Action targets stay at least 44px, and the
+module selector is 52px tall. Strongly scoped control rules override the old
+52px input minimum. Old vertical stack margins are cleared inside record grids
+so rows align and the new grid gap is not doubled. Typography and controls are
+scoped to employee Store Operations rather than the whole application.
+
+Validation: TypeScript, production build, changed-source ESLint, 124 Node tests
+and 27 fictional-data browser scenarios. Browser checks cover all eight module
+pages plus overview, four create forms, six detail pages, filtering, nested-route
+selection, dialog focus/closing, 320/390/768/1024/1440px light/dark layouts,
+computed heading/record sizes, 44px search controls, aligned cards and absence
+of horizontal overflow. Evidence is in
+output/verification/employee-operations-redesign/. No live records were changed.
+This is a hosted web update; no additional APK build is required.

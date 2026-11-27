@@ -57,7 +57,7 @@ export default function EmployeeStoreOpsNav({ variant = 'workspace' }: { variant
         {employeeOperationsModules.map(module => <Link key={module.path} href={`${employeeOperationsRoot}/${module.path}`} aria-current={current?.path === module.path ? 'page' : undefined} onClick={() => setOpenedOn(null)} className="ops-navigation-link"><EmployeeOperationIcon name={module.path} /><span>{module.label}</span></Link>)}
     </>;
 
-    return <aside className="ops-navigation">
+    return <aside className="ops-navigation" data-overview={pathname === employeeOperationsRoot}>
         <div className="ops-mobile-navigation">
             <Link className="ops-workspace-label" href={employeeOperationsRoot}>Store operations</Link>
             <button ref={trigger} type="button" className="ops-module-trigger" aria-label={`Switch module, current: ${current?.label || 'Overview'}`} aria-haspopup="dialog" aria-expanded={open} aria-controls={`${id}-picker`} onClick={() => setOpenedOn(pathname)}>

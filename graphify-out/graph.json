@@ -9,7 +9,7 @@
       "source_file": "app/actions/store-ops/damage-reports.ts",
       "source_location": "L1",
       "id": "app_actions_store_ops_damage_reports_ts",
-      "community": 9,
+      "community": 0,
       "norm_label": "damage-reports.ts"
     },
     {
@@ -18,7 +18,7 @@
       "source_file": "app/actions/store-ops/damage-reports.ts",
       "source_location": "L6",
       "id": "store_ops_damage_reports_report",
-      "community": 9,
+      "community": 0,
       "norm_label": "report"
     },
     {
@@ -27,7 +27,7 @@
       "source_file": "app/actions/store-ops/damage-reports.ts",
       "source_location": "L8",
       "id": "store_ops_damage_reports_savereport",
-      "community": 9,
+      "community": 0,
       "norm_label": "savereport()"
     },
     {
@@ -36,7 +36,7 @@
       "source_file": "app/actions/store-ops/damage-reports.ts",
       "source_location": "L22",
       "id": "store_ops_damage_reports_createdamagereport",
-      "community": 9,
+      "community": 0,
       "norm_label": "createdamagereport()"
     },
     {
@@ -45,7 +45,7 @@
       "source_file": "app/actions/store-ops/damage-reports.ts",
       "source_location": "L23",
       "id": "store_ops_damage_reports_updatedamagereport",
-      "community": 9,
+      "community": 0,
       "norm_label": "updatedamagereport()"
     },
     {
@@ -54,7 +54,7 @@
       "source_file": "app/actions/store-ops/damage-reports.ts",
       "source_location": "L25",
       "id": "store_ops_damage_reports_review",
-      "community": 9,
+      "community": 0,
       "norm_label": "review()"
     },
     {
@@ -63,7 +63,7 @@
       "source_file": "app/actions/store-ops/damage-reports.ts",
       "source_location": "L36",
       "id": "store_ops_damage_reports_approvedamagereport",
-      "community": 9,
+      "community": 0,
       "norm_label": "approvedamagereport()"
     },
     {
@@ -72,7 +72,7 @@
       "source_file": "app/actions/store-ops/damage-reports.ts",
       "source_location": "L37",
       "id": "store_ops_damage_reports_rejectdamagereport",
-      "community": 9,
+      "community": 0,
       "norm_label": "rejectdamagereport()"
     },
     {
@@ -81,7 +81,7 @@
       "source_file": "app/actions/store-ops/damage-reports.ts",
       "source_location": "L38",
       "id": "store_ops_damage_reports_archivedamagereport",
-      "community": 9,
+      "community": 0,
       "norm_label": "archivedamagereport()"
     },
     {
@@ -90,7 +90,7 @@
       "source_file": "app/actions/store-ops/damage-reports.ts",
       "source_location": "L39",
       "id": "store_ops_damage_reports_uploaddamageimage",
-      "community": 9,
+      "community": 0,
       "norm_label": "uploaddamageimage()"
     },
     {
@@ -108,7 +108,7 @@
       "source_file": "app/actions/store-ops/damage-reports.ts",
       "source_location": "L52",
       "id": "store_ops_damage_reports_adddamagecomment",
-      "community": 2,
+      "community": 0,
       "norm_label": "adddamagecomment()"
     },
     {
@@ -135,7 +135,7 @@
       "source_file": "app/actions/store-ops/daily-checklist.ts",
       "source_location": "L1",
       "id": "app_actions_store_ops_daily_checklist_ts",
-      "community": 22,
+      "community": 0,
       "norm_label": "daily-checklist.ts"
     },
     {
@@ -144,7 +144,7 @@
       "source_file": "app/actions/store-ops/daily-checklist.ts",
       "source_location": "L9",
       "id": "store_ops_daily_checklist_templateschema",
-      "community": 22,
+      "community": 0,
       "norm_label": "templateschema"
     },
     {
@@ -153,7 +153,7 @@
       "source_file": "app/actions/store-ops/daily-checklist.ts",
       "source_location": "L10",
       "id": "store_ops_daily_checklist_savetemplate",
-      "community": 22,
+      "community": 0,
       "norm_label": "savetemplate()"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "app/actions/store-ops/daily-checklist.ts",
       "source_location": "L19",
       "id": "store_ops_daily_checklist_createtemplate",
-      "community": 22,
+      "community": 15,
       "norm_label": "createtemplate()"
     },
     {
@@ -171,7 +171,7 @@
       "source_file": "app/actions/store-ops/daily-checklist.ts",
       "source_location": "L20",
       "id": "store_ops_daily_checklist_updatetemplate",
-      "community": 22,
+      "community": 0,
       "norm_label": "updatetemplate()"
     },
     {
@@ -180,7 +180,7 @@
       "source_file": "app/actions/store-ops/daily-checklist.ts",
       "source_location": "L34",
       "id": "store_ops_daily_checklist_deletetemplate",
-      "community": 25,
+      "community": 0,
       "norm_label": "deletetemplate()"
     },
     {
@@ -189,7 +189,7 @@
       "source_file": "app/actions/store-ops/daily-checklist.ts",
       "source_location": "L41",
       "id": "store_ops_daily_checklist_startdailychecklist",
-      "community": 22,
+      "community": 0,
       "norm_label": "startdailychecklist()"
     },
     {
@@ -198,7 +198,7 @@
       "source_file": "app/actions/store-ops/daily-checklist.ts",
       "source_location": "L49",
       "id": "store_ops_daily_checklist_completechecklistitem",
-      "community": 22,
+      "community": 0,
       "norm_label": "completechecklistitem()"
     },
     {
@@ -207,7 +207,7 @@
       "source_file": "app/actions/store-ops/daily-checklist.ts",
       "source_location": "L57",
       "id": "store_ops_daily_checklist_uploadchecklistphoto",
-      "community": 22,
+      "community": 0,
       "norm_label": "uploadchecklistphoto()"
     },
     {
@@ -216,7 +216,7 @@
       "source_file": "app/actions/store-ops/daily-checklist.ts",
       "source_location": "L58",
       "id": "store_ops_daily_checklist_completedailychecklist",
-      "community": 22,
+      "community": 0,
       "norm_label": "completedailychecklist()"
     },
     {
@@ -225,7 +225,7 @@
       "source_file": "app/actions/store-ops/daily-checklist.ts",
       "source_location": "L64",
       "id": "store_ops_daily_checklist_gettodaychecklist",
-      "community": 22,
+      "community": 0,
       "norm_label": "gettodaychecklist()"
     },
     {
@@ -234,7 +234,7 @@
       "source_file": "app/actions/store-ops/daily-checklist.ts",
       "source_location": "L71",
       "id": "store_ops_daily_checklist_gettemplates",
-      "community": 22,
+      "community": 0,
       "norm_label": "gettemplates()"
     },
     {
@@ -243,7 +243,7 @@
       "source_file": "app/actions/store-ops/daily-checklist.ts",
       "source_location": "L75",
       "id": "store_ops_daily_checklist_gettemplatewithitems",
-      "community": 22,
+      "community": 0,
       "norm_label": "gettemplatewithitems()"
     },
     {
@@ -252,7 +252,7 @@
       "source_file": "app/actions/store-ops/daily-checklist.ts",
       "source_location": "L81",
       "id": "store_ops_daily_checklist_getchecklisthistory",
-      "community": 22,
+      "community": 0,
       "norm_label": "getchecklisthistory()"
     },
     {
@@ -270,7 +270,7 @@
       "source_file": "app/actions/store-ops/incidents.ts",
       "source_location": "L10",
       "id": "store_ops_incidents_uploadincidentvoice",
-      "community": 10,
+      "community": 0,
       "norm_label": "uploadincidentvoice()"
     },
     {
@@ -279,7 +279,7 @@
       "source_file": "app/actions/store-ops/incidents.ts",
       "source_location": "L27",
       "id": "store_ops_incidents_saveincident",
-      "community": 10,
+      "community": 0,
       "norm_label": "saveincident()"
     },
     {
@@ -342,7 +342,7 @@
       "source_file": "app/actions/store-ops/incidents.ts",
       "source_location": "L148",
       "id": "store_ops_incidents_uploadincidentimage",
-      "community": 9,
+      "community": 0,
       "norm_label": "uploadincidentimage()"
     },
     {
@@ -468,7 +468,7 @@
       "source_file": "app/actions/store-ops/notifications.ts",
       "source_location": "L4",
       "id": "store_ops_notifications_getnotifications",
-      "community": 6,
+      "community": 0,
       "norm_label": "getnotifications()"
     },
     {
@@ -495,7 +495,7 @@
       "source_file": "app/actions/store-ops/notifications.ts",
       "source_location": "L17",
       "id": "store_ops_notifications_getoperationsnotificationpreference",
-      "community": 6,
+      "community": 0,
       "norm_label": "getoperationsnotificationpreference()"
     },
     {
@@ -513,7 +513,7 @@
       "source_file": "app/actions/store-ops/settings.ts",
       "source_location": "L1",
       "id": "app_actions_store_ops_settings_ts",
-      "community": 23,
+      "community": 0,
       "norm_label": "settings.ts"
     },
     {
@@ -522,7 +522,7 @@
       "source_file": "app/actions/store-ops/settings.ts",
       "source_location": "L6",
       "id": "store_ops_settings_saveoperationssettings",
-      "community": 23,
+      "community": 0,
       "norm_label": "saveoperationssettings()"
     },
     {
@@ -531,7 +531,7 @@
       "source_file": "app/actions/store-ops/testers.ts",
       "source_location": "L1",
       "id": "app_actions_store_ops_testers_ts",
-      "community": 3,
+      "community": 4,
       "norm_label": "testers.ts"
     },
     {
@@ -540,7 +540,7 @@
       "source_file": "app/actions/store-ops/testers.ts",
       "source_location": "L7",
       "id": "store_ops_testers_createtester",
-      "community": 3,
+      "community": 4,
       "norm_label": "createtester()"
     },
     {
@@ -549,7 +549,7 @@
       "source_file": "app/actions/store-ops/testers.ts",
       "source_location": "L57",
       "id": "store_ops_testers_updatetester",
-      "community": 3,
+      "community": 4,
       "norm_label": "updatetester()"
     },
     {
@@ -576,7 +576,7 @@
       "source_file": "app/actions/store-ops/testers.ts",
       "source_location": "L153",
       "id": "store_ops_testers_markneedsreplacement",
-      "community": 3,
+      "community": 4,
       "norm_label": "markneedsreplacement()"
     },
     {
@@ -585,7 +585,7 @@
       "source_file": "app/actions/store-ops/testers.ts",
       "source_location": "L180",
       "id": "store_ops_testers_updatetestercondition",
-      "community": 3,
+      "community": 4,
       "norm_label": "updatetestercondition()"
     },
     {
@@ -594,7 +594,7 @@
       "source_file": "app/actions/store-ops/shelf-inspection.ts",
       "source_location": "L1",
       "id": "app_actions_store_ops_shelf_inspection_ts",
-      "community": 26,
+      "community": 0,
       "norm_label": "shelf-inspection.ts"
     },
     {
@@ -603,7 +603,7 @@
       "source_file": "app/actions/store-ops/shelf-inspection.ts",
       "source_location": "L9",
       "id": "store_ops_shelf_inspection_createstoresection",
-      "community": 26,
+      "community": 0,
       "norm_label": "createstoresection()"
     },
     {
@@ -612,7 +612,7 @@
       "source_file": "app/actions/store-ops/shelf-inspection.ts",
       "source_location": "L22",
       "id": "store_ops_shelf_inspection_getstoresections",
-      "community": 26,
+      "community": 0,
       "norm_label": "getstoresections()"
     },
     {
@@ -621,7 +621,7 @@
       "source_file": "app/actions/store-ops/shelf-inspection.ts",
       "source_location": "L31",
       "id": "store_ops_shelf_inspection_updatestoresection",
-      "community": 26,
+      "community": 0,
       "norm_label": "updatestoresection()"
     },
     {
@@ -630,7 +630,7 @@
       "source_file": "app/actions/store-ops/shelf-inspection.ts",
       "source_location": "L41",
       "id": "store_ops_shelf_inspection_deletestoresection",
-      "community": 26,
+      "community": 0,
       "norm_label": "deletestoresection()"
     },
     {
@@ -639,7 +639,7 @@
       "source_file": "app/actions/store-ops/shelf-inspection.ts",
       "source_location": "L51",
       "id": "store_ops_shelf_inspection_saveinspection",
-      "community": 26,
+      "community": 0,
       "norm_label": "saveinspection()"
     },
     {
@@ -648,7 +648,7 @@
       "source_file": "app/actions/store-ops/shelf-inspection.ts",
       "source_location": "L66",
       "id": "store_ops_shelf_inspection_createshelfinspection",
-      "community": 26,
+      "community": 0,
       "norm_label": "createshelfinspection()"
     },
     {
@@ -657,7 +657,7 @@
       "source_file": "app/actions/store-ops/shelf-inspection.ts",
       "source_location": "L67",
       "id": "store_ops_shelf_inspection_updateshelfinspection",
-      "community": 26,
+      "community": 0,
       "norm_label": "updateshelfinspection()"
     },
     {
@@ -675,7 +675,7 @@
       "source_file": "app/actions/store-ops/shelf-inspection.ts",
       "source_location": "L82",
       "id": "store_ops_shelf_inspection_approveshelfinspection",
-      "community": 26,
+      "community": 0,
       "norm_label": "approveshelfinspection()"
     },
     {
@@ -684,7 +684,7 @@
       "source_file": "app/actions/store-ops/shelf-inspection.ts",
       "source_location": "L92",
       "id": "store_ops_shelf_inspection_addinspectioncomment",
-      "community": 26,
+      "community": 0,
       "norm_label": "addinspectioncomment()"
     },
     {
@@ -693,7 +693,7 @@
       "source_file": "app/actions/store-ops/shelf-inspection.ts",
       "source_location": "L103",
       "id": "store_ops_shelf_inspection_uploadinspectionimage",
-      "community": 9,
+      "community": 0,
       "norm_label": "uploadinspectionimage()"
     },
     {
@@ -702,7 +702,7 @@
       "source_file": "app/actions/store-ops/shelf-inspection.ts",
       "source_location": "L105",
       "id": "store_ops_shelf_inspection_getshelfinspectionpage",
-      "community": 26,
+      "community": 0,
       "norm_label": "getshelfinspectionpage()"
     },
     {
@@ -711,7 +711,7 @@
       "source_file": "app/actions/store-ops/tasks.ts",
       "source_location": "L1",
       "id": "app_actions_store_ops_tasks_ts",
-      "community": 3,
+      "community": 9,
       "norm_label": "tasks.ts"
     },
     {
@@ -720,7 +720,7 @@
       "source_file": "app/actions/store-ops/tasks.ts",
       "source_location": "L9",
       "id": "store_ops_tasks_createtask",
-      "community": 12,
+      "community": 4,
       "norm_label": "createtask()"
     },
     {
@@ -738,7 +738,7 @@
       "source_file": "app/actions/store-ops/tasks.ts",
       "source_location": "L95",
       "id": "store_ops_tasks_deletetask",
-      "community": 0,
+      "community": 9,
       "norm_label": "deletetask()"
     },
     {
@@ -747,7 +747,7 @@
       "source_file": "app/actions/store-ops/tasks.ts",
       "source_location": "L122",
       "id": "store_ops_tasks_completetask",
-      "community": 3,
+      "community": 9,
       "norm_label": "completetask()"
     },
     {
@@ -756,7 +756,7 @@
       "source_file": "app/actions/store-ops/tasks.ts",
       "source_location": "L156",
       "id": "store_ops_tasks_canceltask",
-      "community": 3,
+      "community": 9,
       "norm_label": "canceltask()"
     },
     {
@@ -765,7 +765,7 @@
       "source_file": "app/actions/store-ops/tasks.ts",
       "source_location": "L180",
       "id": "store_ops_tasks_addtaskcomment",
-      "community": 3,
+      "community": 9,
       "norm_label": "addtaskcomment()"
     },
     {
@@ -774,7 +774,7 @@
       "source_file": "app/actions/store-ops/tasks.ts",
       "source_location": "L209",
       "id": "store_ops_tasks_uploadtaskattachment",
-      "community": 9,
+      "community": 0,
       "norm_label": "uploadtaskattachment()"
     },
     {
@@ -783,7 +783,7 @@
       "source_file": "app/actions/store-ops/tasks.ts",
       "source_location": "L211",
       "id": "store_ops_tasks_deletetaskattachment",
-      "community": 3,
+      "community": 9,
       "norm_label": "deletetaskattachment()"
     },
     {
@@ -792,7 +792,7 @@
       "source_file": "app/actions/store-ops/tasks.ts",
       "source_location": "L234",
       "id": "store_ops_tasks_gettasks",
-      "community": 3,
+      "community": 9,
       "norm_label": "gettasks()"
     },
     {
@@ -801,7 +801,7 @@
       "source_file": "app/actions/store-ops/tasks.ts",
       "source_location": "L279",
       "id": "store_ops_tasks_gettaskbyid",
-      "community": 3,
+      "community": 9,
       "norm_label": "gettaskbyid()"
     },
     {
@@ -819,7 +819,7 @@
       "source_file": "app/actions/store-ops/tasks.ts",
       "source_location": "L311",
       "id": "store_ops_tasks_savetaskattachment",
-      "community": 3,
+      "community": 9,
       "norm_label": "savetaskattachment()"
     },
     {
@@ -828,7 +828,7 @@
       "source_file": "app/actions/store-ops/media.ts",
       "source_location": "L1",
       "id": "app_actions_store_ops_media_ts",
-      "community": 27,
+      "community": 0,
       "norm_label": "media.ts"
     },
     {
@@ -837,7 +837,7 @@
       "source_file": "app/actions/store-ops/media.ts",
       "source_location": "L5",
       "id": "store_ops_media_removedraftimage",
-      "community": 27,
+      "community": 0,
       "norm_label": "removedraftimage()"
     },
     {
@@ -846,7 +846,7 @@
       "source_file": "app/actions/store-ops/audits.ts",
       "source_location": "L1",
       "id": "app_actions_store_ops_audits_ts",
-      "community": 25,
+      "community": 0,
       "norm_label": "audits.ts"
     },
     {
@@ -855,7 +855,7 @@
       "source_file": "app/actions/store-ops/audits.ts",
       "source_location": "L10",
       "id": "store_ops_audits_createaudittemplate",
-      "community": 8,
+      "community": 0,
       "norm_label": "createaudittemplate()"
     },
     {
@@ -873,7 +873,7 @@
       "source_file": "app/actions/store-ops/audits.ts",
       "source_location": "L42",
       "id": "store_ops_audits_startaudit",
-      "community": 25,
+      "community": 0,
       "norm_label": "startaudit()"
     },
     {
@@ -882,7 +882,7 @@
       "source_file": "app/actions/store-ops/audits.ts",
       "source_location": "L50",
       "id": "store_ops_audits_submitauditanswer",
-      "community": 25,
+      "community": 0,
       "norm_label": "submitauditanswer()"
     },
     {
@@ -891,7 +891,7 @@
       "source_file": "app/actions/store-ops/audits.ts",
       "source_location": "L74",
       "id": "store_ops_audits_completeaudit",
-      "community": 25,
+      "community": 0,
       "norm_label": "completeaudit()"
     },
     {
@@ -900,7 +900,7 @@
       "source_file": "app/actions/store-ops/audits.ts",
       "source_location": "L81",
       "id": "store_ops_audits_uploadauditimage",
-      "community": 25,
+      "community": 0,
       "norm_label": "uploadauditimage()"
     },
     {
@@ -918,7 +918,7 @@
       "source_file": "app/api/store-ops/media/route.ts",
       "source_location": "L1",
       "id": "app_api_store_ops_media_route_ts",
-      "community": 0,
+      "community": 10,
       "norm_label": "route.ts"
     },
     {
@@ -927,7 +927,7 @@
       "source_file": "app/api/store-ops/media/route.ts",
       "source_location": "L5",
       "id": "media_route_get",
-      "community": 0,
+      "community": 10,
       "norm_label": "get()"
     },
     {
@@ -1026,7 +1026,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_admin_store_operations_page_tsx",
-      "community": 10,
+      "community": 6,
       "norm_label": "page.tsx"
     },
     {
@@ -1035,7 +1035,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/page.tsx",
       "source_location": "L8",
       "id": "store_operations_page_dashboardcard",
-      "community": 10,
+      "community": 6,
       "norm_label": "dashboardcard"
     },
     {
@@ -1044,7 +1044,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/page.tsx",
       "source_location": "L14",
       "id": "store_operations_page_storeopsdashboard",
-      "community": 10,
+      "community": 6,
       "norm_label": "storeopsdashboard()"
     },
     {
@@ -1197,7 +1197,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/audits/TemplatesSection.tsx",
       "source_location": "L1",
       "id": "app_dashboard_admin_store_operations_audits_templatessection_tsx",
-      "community": 25,
+      "community": 2,
       "norm_label": "templatessection.tsx"
     },
     {
@@ -1206,7 +1206,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/audits/TemplatesSection.tsx",
       "source_location": "L11",
       "id": "audits_templatessection_templatessectionprops",
-      "community": 25,
+      "community": 2,
       "norm_label": "templatessectionprops"
     },
     {
@@ -1215,7 +1215,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/audits/TemplatesSection.tsx",
       "source_location": "L18",
       "id": "audits_templatessection_templatessection",
-      "community": 25,
+      "community": 2,
       "norm_label": "templatessection()"
     },
     {
@@ -1224,7 +1224,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/audits/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_admin_store_operations_audits_page_tsx",
-      "community": 25,
+      "community": 22,
       "norm_label": "page.tsx"
     },
     {
@@ -1233,7 +1233,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/audits/page.tsx",
       "source_location": "L6",
       "id": "audits_page_auditspage",
-      "community": 25,
+      "community": 22,
       "norm_label": "auditspage()"
     },
     {
@@ -1377,7 +1377,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/testers/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_admin_store_operations_testers_page_tsx",
-      "community": 13,
+      "community": 4,
       "norm_label": "page.tsx"
     },
     {
@@ -1386,7 +1386,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/testers/page.tsx",
       "source_location": "L7",
       "id": "testers_page_testerspage",
-      "community": 13,
+      "community": 4,
       "norm_label": "testerspage()"
     },
     {
@@ -1413,7 +1413,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/testers/[id]/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_admin_store_operations_testers_id_page_tsx",
-      "community": 13,
+      "community": 3,
       "norm_label": "page.tsx"
     },
     {
@@ -1422,7 +1422,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/testers/[id]/page.tsx",
       "source_location": "L7",
       "id": "app_dashboard_admin_store_operations_testers_id_page_tsx_id_page_testerdetailpage",
-      "community": 13,
+      "community": 3,
       "norm_label": "testerdetailpage()"
     },
     {
@@ -1521,7 +1521,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/damage-reports/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_admin_store_operations_damage_reports_page_tsx",
-      "community": 4,
+      "community": 11,
       "norm_label": "page.tsx"
     },
     {
@@ -1530,7 +1530,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/damage-reports/page.tsx",
       "source_location": "L8",
       "id": "damage_reports_page_damagereportspage",
-      "community": 4,
+      "community": 11,
       "norm_label": "damagereportspage()"
     },
     {
@@ -1557,7 +1557,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/damage-reports/[id]/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_admin_store_operations_damage_reports_id_page_tsx",
-      "community": 2,
+      "community": 11,
       "norm_label": "page.tsx"
     },
     {
@@ -1566,7 +1566,7 @@
       "source_file": "app/(dashboard)/admin/store-operations/damage-reports/[id]/page.tsx",
       "source_location": "L6",
       "id": "id_page_damagereportdetailpage",
-      "community": 2,
+      "community": 11,
       "norm_label": "damagereportdetailpage()"
     },
     {
@@ -1771,7 +1771,7 @@
       "label": "StoreOperationsLayout()",
       "file_type": "code",
       "source_file": "app/(dashboard)/employee/store-operations/layout.tsx",
-      "source_location": "L3",
+      "source_location": "L4",
       "id": "app_dashboard_employee_store_operations_layout_tsx_store_operations_layout_storeoperationslayout",
       "community": 36,
       "norm_label": "storeoperationslayout()"
@@ -1793,6 +1793,33 @@
       "id": "app_dashboard_employee_store_operations_loading_tsx",
       "community": 30,
       "norm_label": "loading.tsx"
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "app/(dashboard)/employee/store-operations/page.tsx",
+      "source_location": "L1",
+      "id": "app_dashboard_employee_store_operations_page_tsx",
+      "community": 13,
+      "norm_label": "page.tsx"
+    },
+    {
+      "label": "metadata",
+      "file_type": "code",
+      "source_file": "app/(dashboard)/employee/store-operations/page.tsx",
+      "source_location": "L5",
+      "id": "store_operations_page_metadata",
+      "community": 13,
+      "norm_label": "metadata"
+    },
+    {
+      "label": "EmployeeStoreOperationsPage()",
+      "file_type": "code",
+      "source_file": "app/(dashboard)/employee/store-operations/page.tsx",
+      "source_location": "L7",
+      "id": "store_operations_page_employeestoreoperationspage",
+      "community": 13,
+      "norm_label": "employeestoreoperationspage()"
     },
     {
       "label": "page.tsx",
@@ -1854,7 +1881,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/testers/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_employee_store_operations_testers_page_tsx",
-      "community": 13,
+      "community": 4,
       "norm_label": "page.tsx"
     },
     {
@@ -1863,7 +1890,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/testers/page.tsx",
       "source_location": "L7",
       "id": "testers_page_employeetesterspage",
-      "community": 13,
+      "community": 4,
       "norm_label": "employeetesterspage()"
     },
     {
@@ -1872,7 +1899,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/testers/[id]/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_employee_store_operations_testers_id_page_tsx",
-      "community": 13,
+      "community": 3,
       "norm_label": "page.tsx"
     },
     {
@@ -1881,7 +1908,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/testers/[id]/page.tsx",
       "source_location": "L7",
       "id": "app_dashboard_employee_store_operations_testers_id_page_tsx_id_page_testerdetailpage",
-      "community": 13,
+      "community": 3,
       "norm_label": "testerdetailpage()"
     },
     {
@@ -1944,7 +1971,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/damage-reports/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_employee_store_operations_damage_reports_page_tsx",
-      "community": 4,
+      "community": 11,
       "norm_label": "page.tsx"
     },
     {
@@ -1953,7 +1980,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/damage-reports/page.tsx",
       "source_location": "L7",
       "id": "damage_reports_page_employeedamagereportspage",
-      "community": 4,
+      "community": 11,
       "norm_label": "employeedamagereportspage()"
     },
     {
@@ -1980,7 +2007,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/damage-reports/[id]/page.tsx",
       "source_location": "L1",
       "id": "app_dashboard_employee_store_operations_damage_reports_id_page_tsx",
-      "community": 2,
+      "community": 11,
       "norm_label": "page.tsx"
     },
     {
@@ -1989,7 +2016,7 @@
       "source_file": "app/(dashboard)/employee/store-operations/damage-reports/[id]/page.tsx",
       "source_location": "L6",
       "id": "id_page_employeedamagereportdetailpage",
-      "community": 2,
+      "community": 11,
       "norm_label": "employeedamagereportdetailpage()"
     },
     {
@@ -2205,7 +2232,7 @@
       "source_file": "components/store-ops/ImageUpload.tsx",
       "source_location": "L1",
       "id": "components_store_ops_imageupload_tsx",
-      "community": 27,
+      "community": 25,
       "norm_label": "imageupload.tsx"
     },
     {
@@ -2214,7 +2241,7 @@
       "source_file": "components/store-ops/ImageUpload.tsx",
       "source_location": "L9",
       "id": "store_ops_imageupload_imageuploadprops",
-      "community": 27,
+      "community": 25,
       "norm_label": "imageuploadprops"
     },
     {
@@ -2223,7 +2250,7 @@
       "source_file": "components/store-ops/ImageUpload.tsx",
       "source_location": "L16",
       "id": "store_ops_imageupload_imageupload",
-      "community": 27,
+      "community": 25,
       "norm_label": "imageupload()"
     },
     {
@@ -2250,7 +2277,7 @@
       "source_file": "components/store-ops/OperationsTimingSettings.tsx",
       "source_location": "L1",
       "id": "components_store_ops_operationstimingsettings_tsx",
-      "community": 23,
+      "community": 0,
       "norm_label": "operationstimingsettings.tsx"
     },
     {
@@ -2259,7 +2286,7 @@
       "source_file": "components/store-ops/OperationsTimingSettings.tsx",
       "source_location": "L7",
       "id": "store_ops_operationstimingsettings_operationstimingsettings",
-      "community": 23,
+      "community": 0,
       "norm_label": "operationstimingsettings()"
     },
     {
@@ -2412,7 +2439,7 @@
       "source_file": "components/store-ops/tasks/TaskDetail.tsx",
       "source_location": "L1",
       "id": "components_store_ops_tasks_taskdetail_tsx",
-      "community": 3,
+      "community": 9,
       "norm_label": "taskdetail.tsx"
     },
     {
@@ -2421,7 +2448,7 @@
       "source_file": "components/store-ops/tasks/TaskDetail.tsx",
       "source_location": "L23",
       "id": "tasks_taskdetail_taskdetailprops",
-      "community": 3,
+      "community": 9,
       "norm_label": "taskdetailprops"
     },
     {
@@ -2430,7 +2457,7 @@
       "source_file": "components/store-ops/tasks/TaskDetail.tsx",
       "source_location": "L29",
       "id": "tasks_taskdetail_prioritystyles",
-      "community": 3,
+      "community": 9,
       "norm_label": "prioritystyles"
     },
     {
@@ -2439,7 +2466,7 @@
       "source_file": "components/store-ops/tasks/TaskDetail.tsx",
       "source_location": "L36",
       "id": "tasks_taskdetail_statusstyles",
-      "community": 3,
+      "community": 9,
       "norm_label": "statusstyles"
     },
     {
@@ -2457,7 +2484,7 @@
       "source_file": "components/store-ops/tasks/TaskDetail.tsx",
       "source_location": "L434",
       "id": "tasks_taskdetail_detailitem",
-      "community": 3,
+      "community": 9,
       "norm_label": "detailitem()"
     },
     {
@@ -2466,7 +2493,7 @@
       "source_file": "components/store-ops/tasks/TaskDetail.tsx",
       "source_location": "L446",
       "id": "tasks_taskdetail_timelineitem",
-      "community": 3,
+      "community": 9,
       "norm_label": "timelineitem()"
     },
     {
@@ -2475,7 +2502,7 @@
       "source_file": "components/store-ops/tasks/TaskDetail.tsx",
       "source_location": "L461",
       "id": "tasks_taskdetail_statrow",
-      "community": 3,
+      "community": 9,
       "norm_label": "statrow()"
     },
     {
@@ -2511,7 +2538,7 @@
       "source_file": "components/store-ops/daily-checklist/ChecklistTemplateList.tsx",
       "source_location": "L1",
       "id": "components_store_ops_daily_checklist_checklisttemplatelist_tsx",
-      "community": 25,
+      "community": 3,
       "norm_label": "checklisttemplatelist.tsx"
     },
     {
@@ -2520,7 +2547,7 @@
       "source_file": "components/store-ops/daily-checklist/ChecklistTemplateList.tsx",
       "source_location": "L9",
       "id": "daily_checklist_checklisttemplatelist_templatelistprops",
-      "community": 25,
+      "community": 3,
       "norm_label": "templatelistprops"
     },
     {
@@ -2529,7 +2556,7 @@
       "source_file": "components/store-ops/daily-checklist/ChecklistTemplateList.tsx",
       "source_location": "L19",
       "id": "daily_checklist_checklisttemplatelist_checklisttemplatelist",
-      "community": 25,
+      "community": 3,
       "norm_label": "checklisttemplatelist()"
     },
     {
@@ -2538,7 +2565,7 @@
       "source_file": "components/store-ops/daily-checklist/ChecklistTemplateList.tsx",
       "source_location": "L63",
       "id": "daily_checklist_checklisttemplatelist_templategroup",
-      "community": 25,
+      "community": 3,
       "norm_label": "templategroup()"
     },
     {
@@ -2547,7 +2574,7 @@
       "source_file": "components/store-ops/daily-checklist/DailyChecklistView.tsx",
       "source_location": "L1",
       "id": "components_store_ops_daily_checklist_dailychecklistview_tsx",
-      "community": 22,
+      "community": 0,
       "norm_label": "dailychecklistview.tsx"
     },
     {
@@ -2556,7 +2583,7 @@
       "source_file": "components/store-ops/daily-checklist/DailyChecklistView.tsx",
       "source_location": "L17",
       "id": "daily_checklist_dailychecklistview_template",
-      "community": 22,
+      "community": 0,
       "norm_label": "template"
     },
     {
@@ -2565,7 +2592,7 @@
       "source_file": "components/store-ops/daily-checklist/DailyChecklistView.tsx",
       "source_location": "L23",
       "id": "daily_checklist_dailychecklistview_checklistitem",
-      "community": 22,
+      "community": 0,
       "norm_label": "checklistitem"
     },
     {
@@ -2574,7 +2601,7 @@
       "source_file": "components/store-ops/daily-checklist/DailyChecklistView.tsx",
       "source_location": "L34",
       "id": "daily_checklist_dailychecklistview_checklist",
-      "community": 22,
+      "community": 0,
       "norm_label": "checklist"
     },
     {
@@ -2583,7 +2610,7 @@
       "source_file": "components/store-ops/daily-checklist/DailyChecklistView.tsx",
       "source_location": "L47",
       "id": "daily_checklist_dailychecklistview_dailychecklistview",
-      "community": 22,
+      "community": 0,
       "norm_label": "dailychecklistview()"
     },
     {
@@ -2592,7 +2619,7 @@
       "source_file": "components/store-ops/daily-checklist/DailyChecklistHistory.tsx",
       "source_location": "L1",
       "id": "components_store_ops_daily_checklist_dailychecklisthistory_tsx",
-      "community": 22,
+      "community": 0,
       "norm_label": "dailychecklisthistory.tsx"
     },
     {
@@ -2601,7 +2628,7 @@
       "source_file": "components/store-ops/daily-checklist/DailyChecklistHistory.tsx",
       "source_location": "L7",
       "id": "daily_checklist_dailychecklisthistory_historyitem",
-      "community": 22,
+      "community": 0,
       "norm_label": "historyitem"
     },
     {
@@ -2610,7 +2637,7 @@
       "source_file": "components/store-ops/daily-checklist/DailyChecklistHistory.tsx",
       "source_location": "L21",
       "id": "daily_checklist_dailychecklisthistory_dailychecklisthistory",
-      "community": 22,
+      "community": 0,
       "norm_label": "dailychecklisthistory()"
     },
     {
@@ -2619,7 +2646,7 @@
       "source_file": "components/store-ops/daily-checklist/ChecklistTemplateForm.tsx",
       "source_location": "L1",
       "id": "components_store_ops_daily_checklist_checklisttemplateform_tsx",
-      "community": 8,
+      "community": 15,
       "norm_label": "checklisttemplateform.tsx"
     },
     {
@@ -2628,7 +2655,7 @@
       "source_file": "components/store-ops/daily-checklist/ChecklistTemplateForm.tsx",
       "source_location": "L12",
       "id": "daily_checklist_checklisttemplateform_checklisttemplateformprops",
-      "community": 8,
+      "community": 15,
       "norm_label": "checklisttemplateformprops"
     },
     {
@@ -2788,7 +2815,7 @@
       "label": "condStyles",
       "file_type": "code",
       "source_file": "components/store-ops/testers/TesterList.tsx",
-      "source_location": "L363",
+      "source_location": "L370",
       "id": "testers_testerlist_condstyles",
       "community": 24,
       "norm_label": "condstyles"
@@ -2844,7 +2871,7 @@
       "source_file": "components/store-ops/testers/TesterForm.tsx",
       "source_location": "L1",
       "id": "components_store_ops_testers_testerform_tsx",
-      "community": 3,
+      "community": 8,
       "norm_label": "testerform.tsx"
     },
     {
@@ -2853,7 +2880,7 @@
       "source_file": "components/store-ops/testers/TesterForm.tsx",
       "source_location": "L12",
       "id": "testers_testerform_testerformprops",
-      "community": 3,
+      "community": 8,
       "norm_label": "testerformprops"
     },
     {
@@ -2934,7 +2961,7 @@
       "source_file": "components/store-ops/restocking/RestockList.tsx",
       "source_location": "L1",
       "id": "components_store_ops_restocking_restocklist_tsx",
-      "community": 19,
+      "community": 21,
       "norm_label": "restocklist.tsx"
     },
     {
@@ -2943,7 +2970,7 @@
       "source_file": "components/store-ops/restocking/RestockList.tsx",
       "source_location": "L11",
       "id": "restocking_restocklist_restocklistprops",
-      "community": 19,
+      "community": 21,
       "norm_label": "restocklistprops"
     },
     {
@@ -2952,7 +2979,7 @@
       "source_file": "components/store-ops/restocking/RestockList.tsx",
       "source_location": "L20",
       "id": "restocking_restocklist_statusstyles",
-      "community": 19,
+      "community": 21,
       "norm_label": "statusstyles"
     },
     {
@@ -2961,7 +2988,7 @@
       "source_file": "components/store-ops/restocking/RestockList.tsx",
       "source_location": "L27",
       "id": "restocking_restocklist_restocklist",
-      "community": 19,
+      "community": 21,
       "norm_label": "restocklist()"
     },
     {
@@ -3060,7 +3087,7 @@
       "source_file": "components/store-ops/restocking/RestockForm.tsx",
       "source_location": "L1",
       "id": "components_store_ops_restocking_restockform_tsx",
-      "community": 5,
+      "community": 8,
       "norm_label": "restockform.tsx"
     },
     {
@@ -3069,7 +3096,7 @@
       "source_file": "components/store-ops/restocking/RestockForm.tsx",
       "source_location": "L12",
       "id": "restocking_restockform_restockitemform",
-      "community": 5,
+      "community": 8,
       "norm_label": "restockitemform"
     },
     {
@@ -3078,7 +3105,7 @@
       "source_file": "components/store-ops/restocking/RestockForm.tsx",
       "source_location": "L20",
       "id": "restocking_restockform_restockform",
-      "community": 5,
+      "community": 8,
       "norm_label": "restockform()"
     },
     {
@@ -3087,7 +3114,7 @@
       "source_file": "components/store-ops/damage-reports/DamageReportForm.tsx",
       "source_location": "L1",
       "id": "components_store_ops_damage_reports_damagereportform_tsx",
-      "community": 9,
+      "community": 8,
       "norm_label": "damagereportform.tsx"
     },
     {
@@ -3096,7 +3123,7 @@
       "source_file": "components/store-ops/damage-reports/DamageReportForm.tsx",
       "source_location": "L14",
       "id": "damage_reports_damagereportform_damagereportformprops",
-      "community": 9,
+      "community": 8,
       "norm_label": "damagereportformprops"
     },
     {
@@ -3114,7 +3141,7 @@
       "source_file": "components/store-ops/damage-reports/DamageReportDetail.tsx",
       "source_location": "L1",
       "id": "components_store_ops_damage_reports_damagereportdetail_tsx",
-      "community": 2,
+      "community": 3,
       "norm_label": "damagereportdetail.tsx"
     },
     {
@@ -3123,7 +3150,7 @@
       "source_file": "components/store-ops/damage-reports/DamageReportDetail.tsx",
       "source_location": "L21",
       "id": "damage_reports_damagereportdetail_damagereportdetailprops",
-      "community": 2,
+      "community": 3,
       "norm_label": "damagereportdetailprops"
     },
     {
@@ -3132,7 +3159,7 @@
       "source_file": "components/store-ops/damage-reports/DamageReportDetail.tsx",
       "source_location": "L27",
       "id": "damage_reports_damagereportdetail_statusstyles",
-      "community": 2,
+      "community": 3,
       "norm_label": "statusstyles"
     },
     {
@@ -3150,7 +3177,7 @@
       "source_file": "components/store-ops/damage-reports/DamageReportDetail.tsx",
       "source_location": "L351",
       "id": "damage_reports_damagereportdetail_detailitem",
-      "community": 2,
+      "community": 3,
       "norm_label": "detailitem()"
     },
     {
@@ -3159,7 +3186,7 @@
       "source_file": "components/store-ops/damage-reports/DamageReportDetail.tsx",
       "source_location": "L363",
       "id": "damage_reports_damagereportdetail_timelineitem",
-      "community": 2,
+      "community": 3,
       "norm_label": "timelineitem()"
     },
     {
@@ -3168,7 +3195,7 @@
       "source_file": "components/store-ops/damage-reports/DamageReportDetail.tsx",
       "source_location": "L378",
       "id": "damage_reports_damagereportdetail_statrow",
-      "community": 2,
+      "community": 3,
       "norm_label": "statrow()"
     },
     {
@@ -3195,7 +3222,7 @@
       "source_file": "components/store-ops/damage-reports/DamageReportList.tsx",
       "source_location": "L1",
       "id": "components_store_ops_damage_reports_damagereportlist_tsx",
-      "community": 15,
+      "community": 26,
       "norm_label": "damagereportlist.tsx"
     },
     {
@@ -3204,7 +3231,7 @@
       "source_file": "components/store-ops/damage-reports/DamageReportList.tsx",
       "source_location": "L13",
       "id": "damage_reports_damagereportlist_damagereportlistprops",
-      "community": 15,
+      "community": 26,
       "norm_label": "damagereportlistprops"
     },
     {
@@ -3213,7 +3240,7 @@
       "source_file": "components/store-ops/damage-reports/DamageReportList.tsx",
       "source_location": "L22",
       "id": "damage_reports_damagereportlist_statusstyles",
-      "community": 15,
+      "community": 26,
       "norm_label": "statusstyles"
     },
     {
@@ -3222,7 +3249,7 @@
       "source_file": "components/store-ops/damage-reports/DamageReportList.tsx",
       "source_location": "L29",
       "id": "damage_reports_damagereportlist_damagereportlist",
-      "community": 15,
+      "community": 26,
       "norm_label": "damagereportlist()"
     },
     {
@@ -3366,7 +3393,7 @@
       "source_file": "components/store-ops/incidents/IncidentForm.tsx",
       "source_location": "L1",
       "id": "components_store_ops_incidents_incidentform_tsx",
-      "community": 11,
+      "community": 10,
       "norm_label": "incidentform.tsx"
     },
     {
@@ -3375,7 +3402,7 @@
       "source_file": "components/store-ops/incidents/IncidentForm.tsx",
       "source_location": "L14",
       "id": "incidents_incidentform_incidentformprops",
-      "community": 11,
+      "community": 10,
       "norm_label": "incidentformprops"
     },
     {
@@ -3384,7 +3411,7 @@
       "source_file": "components/store-ops/incidents/IncidentForm.tsx",
       "source_location": "L26",
       "id": "incidents_incidentform_typelabels",
-      "community": 11,
+      "community": 10,
       "norm_label": "typelabels"
     },
     {
@@ -3393,7 +3420,7 @@
       "source_file": "components/store-ops/incidents/IncidentForm.tsx",
       "source_location": "L37",
       "id": "incidents_incidentform_incidentform",
-      "community": 11,
+      "community": 10,
       "norm_label": "incidentform()"
     },
     {
@@ -3474,7 +3501,7 @@
       "source_file": "components/store-ops/incidents/IncidentList.tsx",
       "source_location": "L1",
       "id": "components_store_ops_incidents_incidentlist_tsx",
-      "community": 11,
+      "community": 10,
       "norm_label": "incidentlist.tsx"
     },
     {
@@ -3483,7 +3510,7 @@
       "source_file": "components/store-ops/incidents/IncidentList.tsx",
       "source_location": "L13",
       "id": "incidents_incidentlist_incidentlistprops",
-      "community": 11,
+      "community": 10,
       "norm_label": "incidentlistprops"
     },
     {
@@ -3492,7 +3519,7 @@
       "source_file": "components/store-ops/incidents/IncidentList.tsx",
       "source_location": "L22",
       "id": "incidents_incidentlist_statusstyles",
-      "community": 11,
+      "community": 10,
       "norm_label": "statusstyles"
     },
     {
@@ -3501,7 +3528,7 @@
       "source_file": "components/store-ops/incidents/IncidentList.tsx",
       "source_location": "L29",
       "id": "incidents_incidentlist_typelabels",
-      "community": 11,
+      "community": 10,
       "norm_label": "typelabels"
     },
     {
@@ -3510,7 +3537,7 @@
       "source_file": "components/store-ops/incidents/IncidentList.tsx",
       "source_location": "L40",
       "id": "incidents_incidentlist_incidentlist",
-      "community": 11,
+      "community": 10,
       "norm_label": "incidentlist()"
     },
     {
@@ -3672,7 +3699,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionList.tsx",
       "source_location": "L1",
       "id": "components_store_ops_shelf_inspection_shelfinspectionlist_tsx",
-      "community": 10,
+      "community": 23,
       "norm_label": "shelfinspectionlist.tsx"
     },
     {
@@ -3681,7 +3708,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionList.tsx",
       "source_location": "L14",
       "id": "shelf_inspection_shelfinspectionlist_shelfinspectionlistprops",
-      "community": 10,
+      "community": 23,
       "norm_label": "shelfinspectionlistprops"
     },
     {
@@ -3690,7 +3717,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionList.tsx",
       "source_location": "L24",
       "id": "shelf_inspection_shelfinspectionlist_statusstyles",
-      "community": 10,
+      "community": 23,
       "norm_label": "statusstyles"
     },
     {
@@ -3699,7 +3726,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionList.tsx",
       "source_location": "L34",
       "id": "shelf_inspection_shelfinspectionlist_statuslabels",
-      "community": 10,
+      "community": 23,
       "norm_label": "statuslabels"
     },
     {
@@ -3708,7 +3735,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionList.tsx",
       "source_location": "L44",
       "id": "shelf_inspection_shelfinspectionlist_shelfinspectionlist",
-      "community": 10,
+      "community": 23,
       "norm_label": "shelfinspectionlist()"
     },
     {
@@ -3717,7 +3744,7 @@
       "source_file": "components/store-ops/shelf-inspection/SectionSettings.tsx",
       "source_location": "L1",
       "id": "components_store_ops_shelf_inspection_sectionsettings_tsx",
-      "community": 26,
+      "community": 0,
       "norm_label": "sectionsettings.tsx"
     },
     {
@@ -3726,7 +3753,7 @@
       "source_file": "components/store-ops/shelf-inspection/SectionSettings.tsx",
       "source_location": "L6",
       "id": "shelf_inspection_sectionsettings_sectionsettings",
-      "community": 26,
+      "community": 0,
       "norm_label": "sectionsettings()"
     },
     {
@@ -3735,7 +3762,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionForm.tsx",
       "source_location": "L1",
       "id": "components_store_ops_shelf_inspection_shelfinspectionform_tsx",
-      "community": 23,
+      "community": 0,
       "norm_label": "shelfinspectionform.tsx"
     },
     {
@@ -3744,7 +3771,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionForm.tsx",
       "source_location": "L16",
       "id": "shelf_inspection_shelfinspectionform_props",
-      "community": 23,
+      "community": 0,
       "norm_label": "props"
     },
     {
@@ -3753,7 +3780,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionForm.tsx",
       "source_location": "L17",
       "id": "shelf_inspection_shelfinspectionform_values",
-      "community": 23,
+      "community": 0,
       "norm_label": "values"
     },
     {
@@ -3762,7 +3789,7 @@
       "source_file": "components/store-ops/shelf-inspection/ShelfInspectionForm.tsx",
       "source_location": "L19",
       "id": "shelf_inspection_shelfinspectionform_shelfinspectionform",
-      "community": 23,
+      "community": 0,
       "norm_label": "shelfinspectionform()"
     },
     {
@@ -3915,7 +3942,7 @@
       "source_file": "lib/store-ops/client-action.ts",
       "source_location": "L1",
       "id": "lib_store_ops_client_action_ts",
-      "community": 25,
+      "community": 3,
       "norm_label": "client-action.ts"
     },
     {
@@ -3924,7 +3951,7 @@
       "source_file": "lib/store-ops/client-action.ts",
       "source_location": "L4",
       "id": "store_ops_client_action_runoperation",
-      "community": 25,
+      "community": 3,
       "norm_label": "runoperation()"
     },
     {
@@ -3960,7 +3987,7 @@
       "source_file": "lib/store-ops/validation.ts",
       "source_location": "L1",
       "id": "lib_store_ops_validation_ts",
-      "community": 23,
+      "community": 10,
       "norm_label": "validation.ts"
     },
     {
@@ -3969,7 +3996,7 @@
       "source_file": "lib/store-ops/validation.ts",
       "source_location": "L5",
       "id": "store_ops_validation_uuid",
-      "community": 23,
+      "community": 0,
       "norm_label": "uuid"
     },
     {
@@ -3978,7 +4005,7 @@
       "source_file": "lib/store-ops/validation.ts",
       "source_location": "L6",
       "id": "store_ops_validation_optionaltext",
-      "community": 23,
+      "community": 10,
       "norm_label": "optionaltext"
     },
     {
@@ -3987,7 +4014,7 @@
       "source_file": "lib/store-ops/validation.ts",
       "source_location": "L7",
       "id": "store_ops_validation_imageurls",
-      "community": 23,
+      "community": 10,
       "norm_label": "imageurls"
     },
     {
@@ -3996,7 +4023,7 @@
       "source_file": "lib/store-ops/validation.ts",
       "source_location": "L8",
       "id": "store_ops_validation_shelfschema",
-      "community": 23,
+      "community": 0,
       "norm_label": "shelfschema"
     },
     {
@@ -4005,7 +4032,7 @@
       "source_file": "lib/store-ops/validation.ts",
       "source_location": "L9",
       "id": "store_ops_validation_damageschema",
-      "community": 23,
+      "community": 10,
       "norm_label": "damageschema"
     },
     {
@@ -4014,7 +4041,7 @@
       "source_file": "lib/store-ops/validation.ts",
       "source_location": "L10",
       "id": "store_ops_validation_taskschema",
-      "community": 23,
+      "community": 10,
       "norm_label": "taskschema"
     },
     {
@@ -4023,7 +4050,7 @@
       "source_file": "lib/store-ops/validation.ts",
       "source_location": "L11",
       "id": "store_ops_validation_incidentschema",
-      "community": 23,
+      "community": 10,
       "norm_label": "incidentschema"
     },
     {
@@ -4032,7 +4059,7 @@
       "source_file": "lib/store-ops/validation.ts",
       "source_location": "L12",
       "id": "store_ops_validation_testerschema",
-      "community": 23,
+      "community": 10,
       "norm_label": "testerschema"
     },
     {
@@ -4041,7 +4068,7 @@
       "source_file": "lib/store-ops/validation.ts",
       "source_location": "L14",
       "id": "store_ops_validation_validationmessage",
-      "community": 3,
+      "community": 4,
       "norm_label": "validationmessage()"
     },
     {
@@ -4059,7 +4086,7 @@
       "source_file": "lib/store-ops/use-form-draft.ts",
       "source_location": "L6",
       "id": "store_ops_use_form_draft_useformdraft",
-      "community": 23,
+      "community": 0,
       "norm_label": "useformdraft()"
     },
     {
@@ -4122,7 +4149,7 @@
       "source_file": "lib/store-ops/uploads.ts",
       "source_location": "L5",
       "id": "store_ops_uploads_validimage",
-      "community": 9,
+      "community": 0,
       "norm_label": "validimage()"
     },
     {
@@ -4131,7 +4158,7 @@
       "source_file": "lib/store-ops/uploads.ts",
       "source_location": "L15",
       "id": "store_ops_uploads_uploadoperationsimage",
-      "community": 9,
+      "community": 0,
       "norm_label": "uploadoperationsimage()"
     },
     {
@@ -4293,7 +4320,7 @@
       "source_file": "lib/store-ops/context.ts",
       "source_location": "L16",
       "id": "store_ops_context_operationerror",
-      "community": 26,
+      "community": 0,
       "norm_label": "operationerror()"
     },
     {
@@ -4338,7 +4365,7 @@
       "source_file": "lib/store-ops/types.ts",
       "source_location": "L8",
       "id": "store_ops_types_damagereportwithrelations",
-      "community": 2,
+      "community": 11,
       "norm_label": "damagereportwithrelations"
     },
     {
@@ -4356,7 +4383,7 @@
       "source_file": "lib/store-ops/types.ts",
       "source_location": "L21",
       "id": "store_ops_types_shelfinspectionfilters",
-      "community": 26,
+      "community": 2,
       "norm_label": "shelfinspectionfilters"
     },
     {
@@ -4374,7 +4401,7 @@
       "source_file": "lib/store-ops/types.ts",
       "source_location": "L40",
       "id": "store_ops_types_testerwithrelations",
-      "community": 13,
+      "community": 3,
       "norm_label": "testerwithrelations"
     },
     {
@@ -4392,7 +4419,7 @@
       "source_file": "lib/store-ops/types.ts",
       "source_location": "L55",
       "id": "store_ops_types_audittemplatewithquestions",
-      "community": 25,
+      "community": 2,
       "norm_label": "audittemplatewithquestions"
     },
     {
@@ -4410,7 +4437,7 @@
       "source_file": "lib/store-ops/types.ts",
       "source_location": "L66",
       "id": "store_ops_types_auditfilters",
-      "community": 25,
+      "community": 2,
       "norm_label": "auditfilters"
     },
     {
@@ -4518,7 +4545,7 @@
       "source_file": "lib/store-ops/constants.ts",
       "source_location": "L1",
       "id": "store_ops_constants_damage_types",
-      "community": 15,
+      "community": 8,
       "norm_label": "damage_types"
     },
     {
@@ -4527,7 +4554,7 @@
       "source_file": "lib/store-ops/constants.ts",
       "source_location": "L6",
       "id": "store_ops_constants_damage_report_statuses",
-      "community": 15,
+      "community": 26,
       "norm_label": "damage_report_statuses"
     },
     {
@@ -4572,7 +4599,7 @@
       "source_file": "lib/store-ops/constants.ts",
       "source_location": "L37",
       "id": "store_ops_constants_inspection_statuses",
-      "community": 10,
+      "community": 23,
       "norm_label": "inspection_statuses"
     },
     {
@@ -4581,7 +4608,7 @@
       "source_file": "lib/store-ops/constants.ts",
       "source_location": "L39",
       "id": "store_ops_constants_tester_conditions",
-      "community": 24,
+      "community": 8,
       "norm_label": "tester_conditions"
     },
     {
@@ -4617,7 +4644,7 @@
       "source_file": "lib/store-ops/constants.ts",
       "source_location": "L45",
       "id": "store_ops_constants_audit_categories",
-      "community": 8,
+      "community": 14,
       "norm_label": "audit_categories"
     },
     {
@@ -4635,7 +4662,7 @@
       "source_file": "lib/store-ops/constants.ts",
       "source_location": "L48",
       "id": "store_ops_constants_incident_types",
-      "community": 11,
+      "community": 10,
       "norm_label": "incident_types"
     },
     {
@@ -4644,7 +4671,7 @@
       "source_file": "lib/store-ops/constants.ts",
       "source_location": "L49",
       "id": "store_ops_constants_incident_priorities",
-      "community": 11,
+      "community": 10,
       "norm_label": "incident_priorities"
     },
     {
@@ -4653,7 +4680,7 @@
       "source_file": "lib/store-ops/constants.ts",
       "source_location": "L50",
       "id": "store_ops_constants_incident_statuses",
-      "community": 11,
+      "community": 10,
       "norm_label": "incident_statuses"
     },
     {
@@ -4662,7 +4689,7 @@
       "source_file": "lib/store-ops/constants.ts",
       "source_location": "L52",
       "id": "store_ops_constants_restock_statuses",
-      "community": 19,
+      "community": 21,
       "norm_label": "restock_statuses"
     },
     {
@@ -4851,7 +4878,7 @@
       "source_file": "lib/store-ops/image-compression.ts",
       "source_location": "L1",
       "id": "lib_store_ops_image_compression_ts",
-      "community": 27,
+      "community": 25,
       "norm_label": "image-compression.ts"
     },
     {
@@ -4860,7 +4887,7 @@
       "source_file": "lib/store-ops/image-compression.ts",
       "source_location": "L3",
       "id": "store_ops_image_compression_encode",
-      "community": 27,
+      "community": 25,
       "norm_label": "encode()"
     },
     {
@@ -4869,7 +4896,7 @@
       "source_file": "lib/store-ops/image-compression.ts",
       "source_location": "L7",
       "id": "store_ops_image_compression_prepareimage",
-      "community": 27,
+      "community": 25,
       "norm_label": "prepareimage()"
     },
     {
@@ -4878,7 +4905,7 @@
       "source_file": "lib/store-ops/media.ts",
       "source_location": "L1",
       "id": "lib_store_ops_media_ts",
-      "community": 0,
+      "community": 10,
       "norm_label": "media.ts"
     },
     {
@@ -4887,7 +4914,7 @@
       "source_file": "lib/store-ops/media.ts",
       "source_location": "L4",
       "id": "store_ops_media_mediapath",
-      "community": 0,
+      "community": 10,
       "norm_label": "mediapath()"
     },
     {
@@ -4905,7 +4932,7 @@
       "source_file": "lib/store-ops/audits.ts",
       "source_location": "L1",
       "id": "lib_store_ops_audits_ts",
-      "community": 25,
+      "community": 22,
       "norm_label": "audits.ts"
     },
     {
@@ -4914,7 +4941,7 @@
       "source_file": "lib/store-ops/audits.ts",
       "source_location": "L4",
       "id": "store_ops_audits_getaudittemplates",
-      "community": 25,
+      "community": 22,
       "norm_label": "getaudittemplates()"
     },
     {
@@ -4923,7 +4950,7 @@
       "source_file": "lib/store-ops/audits.ts",
       "source_location": "L20",
       "id": "store_ops_audits_getaudittemplatewithquestions",
-      "community": 25,
+      "community": 22,
       "norm_label": "getaudittemplatewithquestions()"
     },
     {
@@ -4932,7 +4959,7 @@
       "source_file": "lib/store-ops/audits.ts",
       "source_location": "L37",
       "id": "store_ops_audits_getaudits",
-      "community": 25,
+      "community": 22,
       "norm_label": "getaudits()"
     },
     {
@@ -4945,12 +4972,48 @@
       "norm_label": "getauditbyid()"
     },
     {
+      "label": "employee-navigation.ts",
+      "file_type": "code",
+      "source_file": "lib/store-ops/employee-navigation.ts",
+      "source_location": "L1",
+      "id": "lib_store_ops_employee_navigation_ts",
+      "community": 13,
+      "norm_label": "employee-navigation.ts"
+    },
+    {
+      "label": "employeeOperationsModules",
+      "file_type": "code",
+      "source_file": "lib/store-ops/employee-navigation.ts",
+      "source_location": "L3",
+      "id": "store_ops_employee_navigation_employeeoperationsmodules",
+      "community": 13,
+      "norm_label": "employeeoperationsmodules"
+    },
+    {
+      "label": "EmployeeOperationPath",
+      "file_type": "code",
+      "source_file": "lib/store-ops/employee-navigation.ts",
+      "source_location": "L14",
+      "id": "store_ops_employee_navigation_employeeoperationpath",
+      "community": 13,
+      "norm_label": "employeeoperationpath"
+    },
+    {
+      "label": "activeEmployeeOperation()",
+      "file_type": "code",
+      "source_file": "lib/store-ops/employee-navigation.ts",
+      "source_location": "L16",
+      "id": "store_ops_employee_navigation_activeemployeeoperation",
+      "community": 13,
+      "norm_label": "activeemployeeoperation()"
+    },
+    {
       "label": "schema.types.ts",
       "file_type": "code",
       "source_file": "lib/store-ops/schema.types.ts",
       "source_location": "L1",
       "id": "lib_store_ops_schema_types_ts",
-      "community": 2,
+      "community": 1,
       "norm_label": "schema.types.ts"
     },
     {
@@ -4959,7 +5022,7 @@
       "source_file": "lib/store-ops/schema.types.ts",
       "source_location": "L1",
       "id": "store_ops_schema_types_templateitem",
-      "community": 2,
+      "community": 1,
       "norm_label": "templateitem"
     },
     {
@@ -4968,7 +5031,7 @@
       "source_file": "lib/store-ops/schema.types.ts",
       "source_location": "L2",
       "id": "store_ops_schema_types_table",
-      "community": 2,
+      "community": 1,
       "norm_label": "table"
     },
     {
@@ -4977,7 +5040,7 @@
       "source_file": "lib/store-ops/schema.types.ts",
       "source_location": "L3",
       "id": "store_ops_schema_types_metadata",
-      "community": 2,
+      "community": 1,
       "norm_label": "metadata"
     },
     {
@@ -4986,7 +5049,7 @@
       "source_file": "lib/store-ops/schema.types.ts",
       "source_location": "L4",
       "id": "store_ops_schema_types_operationstables",
-      "community": 2,
+      "community": 1,
       "norm_label": "operationstables"
     },
     {
@@ -5013,7 +5076,7 @@
       "source_file": "lib/supabase/database.types.ts",
       "source_location": "L1",
       "id": "lib_supabase_database_types_ts",
-      "community": 2,
+      "community": 1,
       "norm_label": "database.types.ts"
     },
     {
@@ -5031,7 +5094,7 @@
       "source_file": "lib/supabase/database.types.ts",
       "source_location": "L6",
       "id": "supabase_database_types_database",
-      "community": 2,
+      "community": 1,
       "norm_label": "database"
     },
     {
@@ -13377,6 +13440,48 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "app/(dashboard)/employee/store-operations/page.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "app_dashboard_employee_store_operations_page_tsx",
+      "target": "lib_store_ops_employee_navigation_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(dashboard)/employee/store-operations/page.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "app_dashboard_employee_store_operations_page_tsx",
+      "target": "store_operations_page_employeestoreoperationspage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(dashboard)/employee/store-operations/page.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "app_dashboard_employee_store_operations_page_tsx",
+      "target": "store_operations_page_metadata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(dashboard)/employee/store-operations/page.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "app_dashboard_employee_store_operations_page_tsx",
+      "target": "store_ops_employee_navigation_employeeoperationsmodules",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "app/(dashboard)/employee/store-operations/tasks/page.tsx",
       "source_location": "L4",
       "weight": 1.0,
@@ -19152,9 +19257,9 @@
       "source_file": "lib/attendance/smart-scan/progress.ts",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_attendance_smart_scan_progress_ts",
-      "target": "smart_scan_progress_scanprogress",
-      "confidence_score": 1.0
+      "target": "smart_scan_progress_scanprogress"
     },
     {
       "relation": "contains",
@@ -19162,9 +19267,9 @@
       "source_file": "lib/attendance/smart-scan/progress.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_attendance_smart_scan_progress_ts",
-      "target": "smart_scan_progress_scanstep",
-      "confidence_score": 1.0
+      "target": "smart_scan_progress_scanstep"
     },
     {
       "relation": "contains",
@@ -19172,9 +19277,9 @@
       "source_file": "lib/attendance/smart-scan/progress.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "lib_attendance_smart_scan_progress_ts",
-      "target": "smart_scan_progress_scanstepstate",
-      "confidence_score": 1.0
+      "target": "smart_scan_progress_scanstepstate"
     },
     {
       "relation": "imports_from",
@@ -21121,6 +21226,36 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "lib/store-ops/employee-navigation.ts",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "lib_store_ops_employee_navigation_ts",
+      "target": "store_ops_employee_navigation_activeemployeeoperation",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/store-ops/employee-navigation.ts",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "lib_store_ops_employee_navigation_ts",
+      "target": "store_ops_employee_navigation_employeeoperationpath",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/store-ops/employee-navigation.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "lib_store_ops_employee_navigation_ts",
+      "target": "store_ops_employee_navigation_employeeoperationsmodules",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "lib/store-ops/schema.types.ts",
       "source_location": "L3",
       "weight": 1.0,
@@ -22863,5 +22998,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "50e95f5bc666bdaf8f78ed92b64f93c93707ca4f"
+  "built_at_commit": "7034b5f2a625c1d77afe9cceb7e9cc6504ebe364"
 }
