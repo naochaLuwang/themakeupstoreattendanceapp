@@ -1,0 +1,112 @@
+[
+  {
+    "path": "/privacy",
+    "width": 320,
+    "theme": "light",
+    "status": "pass"
+  },
+  {
+    "path": "/support",
+    "width": 320,
+    "theme": "light",
+    "status": "pass"
+  },
+  {
+    "path": "/account-deletion",
+    "width": 320,
+    "theme": "light",
+    "status": "pass"
+  },
+  {
+    "path": "/terms",
+    "width": 320,
+    "theme": "light",
+    "status": "pass"
+  },
+  {
+    "path": "/login",
+    "width": 320,
+    "theme": "light",
+    "status": "pass"
+  },
+  {
+    "path": "/privacy",
+    "width": 390,
+    "theme": "dark",
+    "status": "pass"
+  },
+  {
+    "path": "/support",
+    "width": 390,
+    "theme": "dark",
+    "status": "pass"
+  },
+  {
+    "path": "/account-deletion",
+    "width": 390,
+    "theme": "dark",
+    "status": "pass"
+  },
+  {
+    "path": "/terms",
+    "width": 390,
+    "theme": "dark",
+    "status": "pass"
+  },
+  {
+    "path": "/login",
+    "width": 390,
+    "theme": "dark",
+    "status": "pass"
+  },
+  {
+    "path": "/privacy",
+    "width": 1024,
+    "theme": "light",
+    "status": "pass"
+  },
+  {
+    "path": "/support",
+    "width": 1024,
+    "theme": "light",
+    "status": "pass"
+  },
+  {
+    "path": "/account-deletion",
+    "width": 1024,
+    "theme": "light",
+    "status": "pass"
+  },
+  {
+    "path": "/terms",
+    "width": 1024,
+    "theme": "light",
+    "status": "pass"
+  },
+  {
+    "path": "/login",
+    "width": 1024,
+    "theme": "light",
+    "status": "pass"
+  },
+  {
+    "path": "/employee",
+    "check": "authentication remains required",
+    "status": "pass"
+  },
+  {
+    "path": "/admin",
+    "check": "authentication remains required",
+    "status": "pass"
+  },
+  {
+    "path": "/privacy-extra",
+    "check": "authentication remains required",
+    "status": "pass"
+  },
+  {
+    "path": "/support/admin",
+    "check": "authentication remains required",
+    "status": "pass"
+  }
+]

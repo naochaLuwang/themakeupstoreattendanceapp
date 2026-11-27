@@ -1,9 +1,11 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import type { Database } from '@/lib/supabase/database.types'
+import { isPublicInformationPath } from '@/lib/public-information-routes'
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  if (isPublicInformationPath(pathname)) return NextResponse.next();
 
   // This page exposes only the display UI. Its API requires a separately paired
   // station credential, so the store display never needs an admin login cookie.

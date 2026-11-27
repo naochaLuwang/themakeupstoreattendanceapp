@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { User, LogOut, ChevronRight, ShieldCheck, FileText, Bell } from 'lucide-react';
 import { PersonalDataForm, SecurityForm } from '@/components/employee/ProfileForm';
+import AppInformationLinks from '@/components/AppInformationLinks';
 
 export default async function ProfileWrapper() {
     const supabase = await createClient();
@@ -94,7 +95,7 @@ export default async function ProfileWrapper() {
                     </button>
                 </form>
             </div>
-
+            <AppInformationLinks />
         </div>
     );
 }

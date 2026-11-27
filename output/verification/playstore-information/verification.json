@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-27",
+  "build": "passed",
+  "typescript": "passed in production build",
+  "changedFilesEslint": "passed",
+  "nodeTestsPassed": 128,
+  "browserChecksPassed": 19,
+  "publicPaths": [
+    "/privacy",
+    "/support",
+    "/account-deletion",
+    "/terms"
+  ],
+  "supportEmail": "luwangtech0@gmail.com",
+  "staffRoutesRemainProtected": true,
+  "publicPagesStartNotificationLifecycle": false,
+  "schemaChanges": false,
+  "nativeRebuildRequired": false,
+  "mailActuallySent": false,
+  "consoleSubmitted": false
+}

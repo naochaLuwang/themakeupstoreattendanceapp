@@ -7,13 +7,14 @@ import { createClient } from '@/lib/supabase/client';
 import { nativePushConfiguration, nativePushRegistrationActive, postNotification } from '@/lib/notifications/client';
 import { notificationPath } from '@/lib/notifications/links';
 import type { NotificationReply, NotificationUserData } from '@/lib/notifications/types';
+import { isPublicInformationPath } from '@/lib/public-information-routes';
 
 /** Silent lifecycle integration. Permission requests happen only in settings. */
 export default function NotificationBridge() {
     const pathname = usePathname(); const router = useRouter();
     const state = useRef<NotificationUserData | null>(null);
     useEffect(() => {
-        if (pathname === '/attendance-station') return;
+        if (pathname === '/attendance-station' || isPublicInformationPath(pathname)) return;
         let alive = true; let generation = 0; let userId: string | null = null;
         const handles: PluginListenerHandle[] = []; const timers = new Set<ReturnType<typeof setTimeout>>();
         const client = createClient();

@@ -828,5 +828,45 @@
     "mtime": 1795778430.9612994,
     "ast_hash": "9d0150dbfc57f4c2bd03fe70e9453fd2",
     "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/app/(public-information)/layout.tsx": {
+    "mtime": 1795781028.6862025,
+    "ast_hash": "bac88cff141bfe9cf4c9ac7ca4871a9d",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/app/(public-information)/privacy/page.tsx": {
+    "mtime": 1795781200.0666661,
+    "ast_hash": "1eff4260db1f7cec3912dd731f913f0b",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/app/(public-information)/terms/page.tsx": {
+    "mtime": 1795781028.8903267,
+    "ast_hash": "b1d43fefa3af6f50c6e3c44f7f5b07cd",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/app/(public-information)/account-deletion/page.tsx": {
+    "mtime": 1795781028.84378,
+    "ast_hash": "1e0649c99520ef11dff21a8a881122a8",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/app/(public-information)/support/page.tsx": {
+    "mtime": 1795781028.797109,
+    "ast_hash": "0bcb25ea3ed56a4e853084590526dcbc",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/components/AppInformationLinks.tsx": {
+    "mtime": 1795796004.0736969,
+    "ast_hash": "b95008189c4e8b62fecf1aa94c2f4d73",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/lib/public-information-routes.ts": {
+    "mtime": 1795796003.9970927,
+    "ast_hash": "adbcec6920c4b28bb62e9d03568909ed",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/lib/app-information.ts": {
+    "mtime": 1795796004.019225,
+    "ast_hash": "e0dd513c6d5728a67c53e81b6d3f0a18",
+    "semantic_hash": ""
   }
 }

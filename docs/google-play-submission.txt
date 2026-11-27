@@ -1,0 +1,157 @@
+THE MAKEUP STORE HRM — GOOGLE PLAY SUBMISSION HANDOFF
+Prepared 27 November 2026
+
+CONFIRMED DISTRIBUTION
+Employees use their personal Android phones and store-issued login accounts.
+This is a regular Play listing with authenticated employee access, not a Managed
+Google Play permanently private app. Calling it an internal employee app does
+not automatically exempt the listing from Play declarations. Only issued staff
+accounts can access work records; installing the app does not grant an account.
+The user approved luwangtech0@gmail.com as the public support/privacy inbox.
+
+PUBLIC WEB RESOURCES
+Privacy policy: https://hrm.themakeupstorewangkhei.com/privacy
+Support website: https://hrm.themakeupstorewangkhei.com/support
+Account/data requests: https://hrm.themakeupstorewangkhei.com/account-deletion
+Terms: https://hrm.themakeupstorewangkhei.com/terms
+Support/privacy email: luwangtech0@gmail.com
+
+All four pages are exact, unauthenticated public routes. They work for signed-in
+visitors as well. Links appear on sign-in and employee Profile. Public information
+pages do not initialize the account notification lifecycle. Work routes retain
+authentication. Policy pages are normal HTML, not PDFs or login-protected files.
+The request page opens an email draft; it is a real contact-based request path,
+not an automated deletion service. No email is sent by opening a page or button.
+Requests must be monitored and handled by the operator, including identity
+verification, actual deletion where appropriate, and documented retention reasons.
+No passwords, identity documents or payroll files should be requested by email.
+
+STORE LISTING COPY
+App name: THE MAKEUP STORE HRM
+Category: Business
+Short description (under 80 characters):
+Attendance, shifts and daily work for THE MAKEUP STORE Wangkhei staff.
+
+Full description:
+THE MAKEUP STORE HRM is the staff workspace for THE MAKEUP STORE, Wangkhei.
+It is intended for authorized employees, managers and administrators. A
+store-issued account and an internet connection are required; there is no
+public employee sign-up.
+
+Employees can review shifts, record attendance, view payslips and leave records,
+complete assigned tasks and daily checklists, and submit store reports with
+supporting photos or selected incident audio files. Managers and administrators
+review store work and attendance according to their account permissions.
+
+Smart Scan reads the store attendance QR code using the camera. Foreground
+location is used for attendance verification when requested. The app does not
+continuously track location in the background. Work notifications are optional
+and require Android notification permission and device registration.
+
+Need access or help? Contact your store administrator or luwangtech0@gmail.com.
+
+CONSOLE DECLARATIONS TO COMPLETE
+- App access/sign-in details: restricted employee access. Provide a dedicated
+  reviewer account and complete access instructions in the Console only, not
+  on public pages or in source control. Do not supply real employee passwords.
+- Ads: the current app has no advertising SDK, ads or in-app purchases.
+- Audience/content rating: workforce use; answer the audience and IARC content
+  questions accurately. Do not classify it as a child-directed app. Do not
+  assume all staff are over 18 without confirming actual employment practices.
+- Data safety: complete the draft assessment below against the final release,
+  SDK configuration and actual operator practices. It is not a submitted form.
+- Account deletion: explain administrator-provisioned staff accounts accurately.
+  Employee self-sign-up is absent, but do not claim a permanently-private-app
+  exemption for this distribution. In-app and public request links are supplied
+  regardless. Deactivation is not a substitute for requested data deletion.
+- Developer identity/contact verification and any developer-account testing
+  gates must be completed directly in the Console.
+
+DATA SAFETY ASSESSMENT — REVIEW BEFORE SUBMITTING
+Information transmitted off the device for app functionality includes:
+- Personal information: employee/account names, account email or username and
+  account/user IDs. Distinguish administrative email aliases from personal
+  email addresses according to the actual deployed account setup.
+- Location: precise coordinates and quality/time metadata for requested
+  attendance verification. Required for the relevant on-site attendance flow,
+  not continuous background collection. Check whether approximate-only data
+  is accepted/transmitted before selecting that separate data type.
+- Financial information: salary/payroll, worked hours, advances and payslips
+  where these features are used; assess the Other financial information type.
+  The app does not collect payment-card data or process consumer purchases.
+- Photos: optional user-selected evidence uploaded for store reports.
+- Audio: optional incident voice-note files selected from the device.
+- Other user-generated content/app activity: report text, comments, tasks,
+  checklist results, audit/incident entries and attendance activity.
+- Device or other IDs: Firebase installation IDs, FCM tokens and the app's
+  notification installation/device registration identifiers for opted-in push.
+  Account for Firebase SDK behavior as well as custom application collection.
+- Technical service logs: assess IP/delivery/security/diagnostic information
+  processed by the hosting, authentication and messaging services. No Google
+  Analytics or Crashlytics integration is claimed by this build.
+
+Main purposes: app functionality, account management, support and security/
+fraud prevention. Distinguish optional uploads/push from features that require
+attendance or employment data. Do not declare that the app collects no data.
+QR camera frames are decoded locally and are not uploaded as scan videos.
+Photos explicitly attached to reports are uploaded, including before the final
+report submission. PDF exports are downloads; do not label them as uploaded
+documents unless a production feature actually uploads such documents.
+
+Supabase, Hostinger and Firebase are operational processors. Check Google's
+service-provider/user-initiated-transfer definitions and the actual agreements
+before answering the third-party sharing questions; the presence of a provider
+alone does not determine that answer. The app uses HTTPS in transit. Do not
+claim end-to-end encryption, zero retention or automatic deletion deadlines.
+The operator must establish and follow appropriate retention periods for
+employment, payroll, audit and backup records and explain retained data when
+handling individual requests. No blanket retention period was invented here.
+
+REVIEWER ACCESS — IMPORTANT FOR THIS APP
+Reviewers cannot be expected to visit the Wangkhei shop or satisfy its real GPS
+boundary. Provide a controlled review environment or approved reviewer workflow
+with fictional staff records and a way to assess attendance/QR without creating
+live payroll events. Do not disable the production geofence, publish bypass
+codes or expose real staff data to solve review access. Creating a reviewer
+account by itself does not solve a location-restricted attendance flow.
+Reviewer credentials and that safe remote review workflow still need arranging.
+
+LISTING ASSETS AND ACCOUNT TASKS STILL REQUIRED
+- Upload the signed .aab, not the direct-install .apk, to a testing track first.
+- Store icon: export the approved logo as a 512x512, 32-bit PNG meeting Play's
+  current icon requirements. The existing source logo is 1254x1254, not the
+  required listing-size export. Do not upload signing keys or password files.
+- Feature graphic: supply a 1024x500 PNG/JPEG. Phone screenshots must show the
+  real app and meet current Console requirements; use fictional data and avoid
+  private employee, location and payroll details. No fabricated screenshots or
+  physical-device screenshots were created by this web-policy task.
+- New personal developer accounts created after 13 November 2023 generally
+  need a closed test with 12 continuously opted-in testers for 14 days before
+  applying for production access. Check the requirements shown for your actual
+  account. An internal testing track alone is not a public production release.
+
+DEPLOYMENT AND LIMITS
+These are hosted web changes. The existing signed Android wrapper loads the
+new policy links after web deployment; no native permission change or rebuild
+is required. Confirm the four HTTPS URLs return 200 without login on the live
+host before entering them in the Console. Public pages do not expose work data.
+The earlier dependency-security, lint, hosted scheduler and physical push
+readiness findings are separate from the store policy pages and remain until
+resolved and reverified. No Console declarations, listing upload, reviewer
+account, live account deletion or app publication are performed by this change.
+
+OFFICIAL REFERENCES
+Privacy, restricted access, ratings and ads:
+https://support.google.com/googleplay/android-developer/answer/9859455
+User data, privacy contents and retention:
+https://support.google.com/googleplay/android-developer/answer/10144311
+Account/data deletion:
+https://support.google.com/googleplay/android-developer/answer/13327111
+Data safety:
+https://support.google.com/googleplay/android-developer/answer/10787469
+Firebase SDK disclosures:
+https://firebase.google.com/docs/android/play-data-disclosure
+Managed private distribution (not selected):
+https://support.google.com/googleplay/work/answer/6145139
+Developer-account testing:
+https://support.google.com/googleplay/android-developer/answer/14151465

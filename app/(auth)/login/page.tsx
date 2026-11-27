@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import LoginForm from '@/components/LoginForm';
 import ThemeToggle from '@/components/ThemeToggle';
 import AppBrand from '@/components/AppBrand';
+import AppInformationLinks from '@/components/AppInformationLinks';
 import { WORKSPACE_NAME } from '@/lib/branding';
 import styles from '@/components/auth/login.module.css';
 
@@ -57,6 +58,7 @@ export default function LoginPage() {
                         Need access or a password reset?<br />
                         Your manager can help.
                     </p>
+                    <AppInformationLinks />
                 </section>
             </div>
         </div>
