@@ -193,3 +193,38 @@ test('Smart Scan stays discoverable for disabled branches, days off, completed s
     const html = renderToStaticMarkup(Card({ today: '2026-11-26', status: 'idle', day: { active: true }, smartQrEnabled: false }));
     assert.match(html, /Swipe attendance/);
 });
+
+const progress = loader()(resolve('lib/attendance/smart-scan/progress.ts'));
+test('scan capture and GPS acquisition never mark attendance saved before a server response', () => {
+    for (const [stage, phase, expected] of [
+        ['scanning', 'scan', ['current','waiting','waiting']],
+        ['locating', 'location', ['complete','current','waiting']],
+        ['submitting', 'attendance', ['complete','complete','current']],
+    ]) {
+        const steps = progress.scanProgress(stage, phase, null);
+        assert.deepEqual(Array.from(steps, step => step.state), expected);
+        assert.notEqual(steps[2].state, 'complete');
+    }
+});
+test('clock-out confirmation stays pending and rechecks location when confirmed', () => {
+    const confirmation = { success: true, state: 'confirmation_required', data: saved };
+    const waiting = progress.scanProgress('confirming', 'attendance', confirmation);
+    assert.equal(waiting[2].state, 'confirm');
+    assert.equal(waiting[2].label, 'Confirm clock out');
+    const checking = progress.scanProgress('locating', 'location', confirmation);
+    assert.equal(checking[1].state, 'current'); assert.equal(checking[2].state, 'waiting');
+    assert.equal(progress.scanProgress('confirming', 'attendance', confirmation, true)[2].state, 'error');
+});
+test('a failed location or interrupted save preserves the last completed step', () => {
+    const locationFailure = progress.scanProgress('error', 'location', null);
+    assert.deepEqual(Array.from(locationFailure, step => step.state), ['complete','error','waiting']);
+    const interruptedSave = progress.scanProgress('error', 'attendance', null);
+    assert.deepEqual(Array.from(interruptedSave, step => step.state), ['complete','complete','error']);
+});
+test('only confirmed attendance completes the tracker, including an exact retry receipt', () => {
+    for (const outcome of [{ success:true,state:'clocked_in',data:saved },{ success:true,state:'completed',data:saved,replayed:true }]) {
+        const steps = progress.scanProgress('success', 'attendance', outcome);
+        assert.ok(steps.every(step => step.state === 'complete'));
+        assert.equal(steps[2].label, outcome.replayed ? 'Attendance on record' : 'Attendance saved');
+    }
+});

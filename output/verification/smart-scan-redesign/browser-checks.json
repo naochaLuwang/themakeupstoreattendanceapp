@@ -1,0 +1,26 @@
+{
+  "fixtureOnly": true,
+  "realDecoder": true,
+  "checks": [
+    "camera, pause/resume and layout 320 light",
+    "camera, pause/resume and layout 390 light",
+    "camera, pause/resume and layout 768 light",
+    "camera, pause/resume and layout 1440 light",
+    "camera, pause/resume and layout 320 dark",
+    "camera, pause/resume and layout 390 dark",
+    "camera, pause/resume and layout 768 dark",
+    "camera, pause/resume and layout 1440 dark",
+    "real QR decoder → GPS milestone → server save → receipt",
+    "clock out requires explicit confirmation and a second GPS check",
+    "expired confirmation cannot finish a shift and refresh returns to scanning",
+    "denied GPS stops the location step without posting attendance",
+    "expired QR server rejection preserves earlier steps without showing success",
+    "interrupted response retries the same operation and GPS body",
+    "clock-out action stays visible at 320×640 light",
+    "clock-out action stays visible at 320×640 dark",
+    "disabled attendance never opens the camera",
+    "review attendance never opens the camera",
+    "completed attendance never opens the camera",
+    "camera permission recovery retains the scanner and manual fallback"
+  ]
+}

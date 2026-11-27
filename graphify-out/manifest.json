@@ -808,5 +808,10 @@
     "mtime": 1795758853.8247082,
     "ast_hash": "e630c824f4825264f31f03b2f7cdbc21",
     "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/lib/attendance/smart-scan/progress.ts": {
+    "mtime": 1795765304.4536705,
+    "ast_hash": "69e1adc10224a6272c0d9a4d2dd19a93",
+    "semantic_hash": ""
   }
 }

@@ -1,16 +1,16 @@
 # Graph Report - attendance-app  (2026-11-27)
 
 ## Corpus Check
-- 162 files · ~55,558 words
+- 163 files · ~55,819 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 623 nodes · 1604 edges · 33 communities (32 shown, 1 thin omitted)
+- 627 nodes · 1607 edges · 37 communities (34 shown, 3 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `dd714020`
+- Built from commit: `50e95f5b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -38,8 +38,12 @@
 - [[_COMMUNITY_Incident Navigation|Incident Navigation]]
 - [[_COMMUNITY_Restock Lists and Cards|Restock Lists and Cards]]
 - [[_COMMUNITY_Damage Approval Workflow|Damage Approval Workflow]]
+- [[_COMMUNITY_Community 23|Community 23]]
 - [[_COMMUNITY_Checklist and Damage Presentation|Checklist and Damage Presentation]]
 - [[_COMMUNITY_Audit Queries and Routes|Audit Queries and Routes]]
+- [[_COMMUNITY_Community 26|Community 26]]
+- [[_COMMUNITY_Community 27|Community 27]]
+- [[_COMMUNITY_Community 28|Community 28]]
 - [[_COMMUNITY_Task Priority Cards|Task Priority Cards]]
 - [[_COMMUNITY_Operations Navigation|Operations Navigation]]
 
@@ -67,55 +71,55 @@
 - `RestockingPage()` --calls--> `can()`  [EXTRACTED]
   app/(dashboard)/admin/store-operations/restocking/page.tsx → lib/store-ops/permissions.ts
 
-## Communities (33 total, 1 thin omitted)
+## Communities (37 total, 3 thin omitted)
 
 ### Community 0 - "Checklists and Shared Uploads"
-Cohesion: 0.06
-Nodes (70): HistoryItem, Checklist, ChecklistItem, Template, EditDamage(), EditIncident(), EditInspection(), EditRestock() (+62 more)
+Cohesion: 0.13
+Nodes (17): EditDamage(), EditIncident(), EditInspection(), EditRestock(), EditTask(), GET(), Notifications(), OperationsSettings() (+9 more)
 
 ### Community 1 - "Push Notification Infrastructure"
 Cohesion: 0.07
-Nodes (52): createServiceClient(), getAdminClient(), notificationProviders(), headers, notificationRequest(), notificationPath(), createNotificationDispatcher(), Delivery (+44 more)
+Nodes (48): createServiceClient(), getAdminClient(), notificationProviders(), headers, notificationRequest(), notificationPath(), createNotificationDispatcher(), Delivery (+40 more)
 
 ### Community 2 - "Shared Operations Types"
-Cohesion: 0.05
-Nodes (39): AuditRunnerProps, TemplatesSectionProps, TemplateListProps, AuditDetailViewProps, AuditDetailPage(), Props, deleteAuditTemplate(), getAuditById() (+31 more)
+Cohesion: 0.06
+Nodes (35): DamageReportDetailProps, statusStyles, addDamageComment(), Audit, AuditAnswer, AuditQuestion, AuditTemplate, Incident (+27 more)
 
 ### Community 3 - "Detail Actions and Transport"
-Cohesion: 0.09
-Nodes (19): DamageReportDetail(), DamageReportDetailProps, statusStyles, IncidentDetail(), RestockDetail(), ShelfInspectionDetail(), ShelfInspectionDetailProps, statusStyles (+11 more)
+Cohesion: 0.07
+Nodes (28): DamageReportDetail(), IncidentDetail(), RestockDetail(), ShelfInspectionDetail(), ShelfInspectionDetailProps, statusStyles, canDelete(), canManageApprovals() (+20 more)
 
 ### Community 4 - "Management Permissions and Creation"
-Cohesion: 0.11
-Nodes (20): EditTesterPage(), EmployeeIncidentsPage(), EmployeeNewDamageReportPage(), EmployeeNewIncidentPage(), EmployeeNewRestockRequestPage(), EmployeeNewShelfInspectionPage(), NewDamageReportPage(), NewIncidentPage() (+12 more)
+Cohesion: 0.13
+Nodes (16): DamageReportsPage(), EmployeeDamageReportsPage(), EditTesterPage(), EmployeeNewDamageReportPage(), EmployeeNewIncidentPage(), EmployeeNewRestockRequestPage(), EmployeeNewShelfInspectionPage(), NewDamageReportPage() (+8 more)
 
 ### Community 5 - "Restock Approval Workflow"
 Cohesion: 0.13
 Nodes (18): RestockDetailProps, statusStyles, RestockForm(), RestockItemForm, cameraError(), CameraSession, requestCamera(), startAttendanceCamera() (+10 more)
 
 ### Community 6 - "Audit Execution and Templates"
-Cohesion: 0.12
-Nodes (16): enableNativeNotifications(), postNotification(), enableEmployeePush(), loadNotificationFeed(), NotificationItem, NotificationScope, NotificationSnapshot, Feed (+8 more)
+Cohesion: 0.13
+Nodes (18): enableNativeNotifications(), postNotification(), enableEmployeePush(), loadNotificationFeed(), NotificationItem, NotificationScope, NotificationSnapshot, Feed (+10 more)
 
 ### Community 7 - "Reports and Exports"
-Cohesion: 0.17
-Nodes (10): Reports(), csvText(), downloadCsv(), ExportCell, Charts, metricLabels, OperationsReport, reportRange() (+2 more)
+Cohesion: 0.16
+Nodes (11): Reports(), getDamageReturnList(), csvText(), downloadCsv(), ExportCell, Charts, metricLabels, OperationsReport (+3 more)
 
 ### Community 8 - "Form Draft Recovery"
-Cohesion: 0.21
-Nodes (10): AuditForm(), ChecklistTemplateForm(), DamageReportForm(), DamageReportFormProps, DAMAGE_TYPES, createTester(), updateTester(), useOperationsDraft() (+2 more)
+Cohesion: 0.25
+Nodes (8): AuditForm(), ChecklistTemplateForm(), ChecklistTemplateFormProps, DamageReportForm(), createAuditTemplate(), AUDIT_CATEGORIES, useOperationsDraft(), TesterForm()
 
 ### Community 9 - "Task Completion and Attachments"
-Cohesion: 0.17
-Nodes (10): addTaskComment(), cancelTask(), completeTask(), deleteTask(), deleteTaskAttachment(), saveTaskAttachment(), uploadTaskAttachment(), priorityStyles (+2 more)
+Cohesion: 0.18
+Nodes (15): DamageReportFormProps, approveDamageReport(), archiveDamageReport(), createDamageReport(), rejectDamageReport(), Report, review(), saveReport() (+7 more)
 
 ### Community 10 - "Incidents and Private Media"
 Cohesion: 0.06
-Nodes (30): DamageReportCardProps, statusStyles, IncidentCardProps, priorityStyles, statusStyles, typeLabels, GET(), ShelfInspectionCardProps (+22 more)
+Nodes (28): DamageReportCardProps, statusStyles, IncidentCardProps, priorityStyles, statusStyles, typeLabels, IncidentDetailProps, statusStyles (+20 more)
 
 ### Community 11 - "Incident Lists and Filters"
-Cohesion: 0.14
-Nodes (12): IncidentForm(), IncidentFormProps, typeLabels, IncidentListProps, statusStyles, typeLabels, INCIDENT_PRIORITIES, INCIDENT_STATUSES (+4 more)
+Cohesion: 0.18
+Nodes (9): IncidentForm(), IncidentFormProps, typeLabels, IncidentListProps, statusStyles, typeLabels, INCIDENT_PRIORITIES, INCIDENT_STATUSES (+1 more)
 
 ### Community 12 - "Task Assignment and Lists"
 Cohesion: 0.15
@@ -126,12 +130,12 @@ Cohesion: 0.22
 Nodes (4): TesterDetailPage(), TesterWithRelations, EmployeeTestersPage(), TestersPage()
 
 ### Community 14 - "Audit Lists and Cards"
-Cohesion: 0.20
-Nodes (6): AuditCardProps, statusStyles, AuditListProps, statusStyles, AUDIT_CATEGORIES, AUDIT_STATUSES
+Cohesion: 0.25
+Nodes (4): AuditCardProps, statusStyles, statusStyles, AUDIT_STATUSES
 
 ### Community 15 - "Server Form Validation"
-Cohesion: 0.43
-Nodes (5): ChecklistTemplateFormProps, CHECKLIST_STATUSES, CHECKLIST_TYPES, DEFAULT_CLOSING_ITEMS, DEFAULT_OPENING_ITEMS
+Cohesion: 0.22
+Nodes (8): DamageReportListProps, statusStyles, CHECKLIST_STATUSES, CHECKLIST_TYPES, DAMAGE_REPORT_STATUSES, DAMAGE_TYPES, DEFAULT_CLOSING_ITEMS, DEFAULT_OPENING_ITEMS
 
 ### Community 16 - "Tester Status Cards"
 Cohesion: 0.50
@@ -146,52 +150,60 @@ Cohesion: 0.11
 Nodes (5): SmartScanBranchSettings, SmartScanSettingsCommand, TaskWithRelations, createClient(), TasksPage()
 
 ### Community 19 - "Restock Navigation"
-Cohesion: 0.22
-Nodes (3): EmployeeRestockingPage(), RestockingPage(), RestockRequestWithRelations
+Cohesion: 0.18
+Nodes (6): EmployeeRestockingPage(), RestockingPage(), RestockListProps, statusStyles, RESTOCK_STATUSES, RestockRequestWithRelations
 
 ### Community 20 - "Incident Navigation"
-Cohesion: 0.16
-Nodes (6): IncidentDetailProps, statusStyles, typeLabels, IncidentsPage(), deleteIncidentImage(), IncidentWithRelations
-
-### Community 21 - "Restock Lists and Cards"
 Cohesion: 0.22
-Nodes (5): RestockCardProps, statusStyles, RestockListProps, statusStyles, RESTOCK_STATUSES
+Nodes (3): EmployeeIncidentsPage(), IncidentsPage(), IncidentWithRelations
 
 ### Community 22 - "Damage Approval Workflow"
-Cohesion: 0.22
-Nodes (3): DamageReportsPage(), EmployeeDamageReportsPage(), DamageReportWithRelations
+Cohesion: 0.14
+Nodes (16): HistoryItem, Checklist, ChecklistItem, Template, completeChecklistItem(), completeDailyChecklist(), createTemplate(), getChecklistHistory() (+8 more)
+
+### Community 23 - "Community 23"
+Cohesion: 0.14
+Nodes (13): Props, ShelfInspectionForm(), Values, saveOperationsSettings(), useFormDraft(), damageSchema, imageUrls, incidentSchema (+5 more)
 
 ### Community 24 - "Checklist and Damage Presentation"
-Cohesion: 0.18
-Nodes (7): DamageReportListProps, statusStyles, DAMAGE_REPORT_STATUSES, TESTER_CONDITIONS, createClient(), condStyles, TesterListProps
+Cohesion: 0.27
+Nodes (4): TESTER_CONDITIONS, createClient(), condStyles, TesterListProps
 
 ### Community 25 - "Audit Queries and Routes"
-Cohesion: 0.60
-Nodes (3): AuditsPage(), getAudits(), getAuditTemplates()
+Cohesion: 0.09
+Nodes (21): AuditListProps, AuditRunnerProps, AuditsPage(), TemplatesSectionProps, TemplateListProps, AuditDetailViewProps, AuditDetailPage(), Props (+13 more)
+
+### Community 26 - "Community 26"
+Cohesion: 0.26
+Nodes (12): operationError(), addInspectionComment(), approveShelfInspection(), createShelfInspection(), createStoreSection(), deleteStoreSection(), getShelfInspectionPage(), getStoreSections() (+4 more)
+
+### Community 27 - "Community 27"
+Cohesion: 0.36
+Nodes (4): encode(), prepareImage(), ImageUploadProps, removeDraftImage()
 
 ### Community 29 - "Task Priority Cards"
 Cohesion: 0.40
 Nodes (3): priorityStyles, statusStyles, TaskCardProps
 
 ## Knowledge Gaps
-- **91 isolated node(s):** `Report`, `templateSchema`, `itemsSchema`, `StoreOpsNavProps`, `modules` (+86 more)
+- **93 isolated node(s):** `Report`, `templateSchema`, `itemsSchema`, `StoreOpsNavProps`, `modules` (+88 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **1 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `operationsContext()` connect `Checklists and Shared Uploads` to `Management Permissions and Creation`, `Restock Approval Workflow`, `Audit Execution and Templates`, `Reports and Exports`, `Incidents and Private Media`?**
-  _High betweenness centrality (0.107) - this node is a cross-community bridge._
-- **Why does `createClient()` connect `Operations Routes and Access` to `Checklists and Shared Uploads`, `Push Notification Infrastructure`, `Shared Operations Types`, `Detail Actions and Transport`, `Management Permissions and Creation`, `Audit Execution and Templates`, `Task Completion and Attachments`, `Tester Navigation`, `Shelf Inspection Navigation`, `Restock Navigation`, `Incident Navigation`, `Damage Approval Workflow`, `Audit Queries and Routes`?**
-  _High betweenness centrality (0.082) - this node is a cross-community bridge._
-- **Why does `can()` connect `Management Permissions and Creation` to `Checklists and Shared Uploads`, `Detail Actions and Transport`, `Form Draft Recovery`, `Task Completion and Attachments`, `Task Assignment and Lists`, `Tester Navigation`, `Shelf Inspection Navigation`, `Operations Routes and Access`, `Restock Navigation`, `Incident Navigation`, `Damage Approval Workflow`?**
-  _High betweenness centrality (0.073) - this node is a cross-community bridge._
+- **Why does `operationsContext()` connect `Checklists and Shared Uploads` to `Shared Operations Types`, `Management Permissions and Creation`, `Restock Approval Workflow`, `Audit Execution and Templates`, `Reports and Exports`, `Form Draft Recovery`, `Task Completion and Attachments`, `Incidents and Private Media`, `Damage Approval Workflow`, `Community 23`, `Audit Queries and Routes`, `Community 26`?**
+  _High betweenness centrality (0.105) - this node is a cross-community bridge._
+- **Why does `createClient()` connect `Operations Routes and Access` to `Checklists and Shared Uploads`, `Push Notification Infrastructure`, `Shared Operations Types`, `Detail Actions and Transport`, `Management Permissions and Creation`, `Incidents and Private Media`, `Tester Navigation`, `Shelf Inspection Navigation`, `Restock Navigation`, `Incident Navigation`, `Audit Queries and Routes`?**
+  _High betweenness centrality (0.081) - this node is a cross-community bridge._
+- **Why does `can()` connect `Management Permissions and Creation` to `Checklists and Shared Uploads`, `Detail Actions and Transport`, `Incidents and Private Media`, `Task Assignment and Lists`, `Tester Navigation`, `Shelf Inspection Navigation`, `Operations Routes and Access`, `Restock Navigation`, `Incident Navigation`?**
+  _High betweenness centrality (0.072) - this node is a cross-community bridge._
 - **What connects `Report`, `templateSchema`, `itemsSchema` to the rest of the system?**
-  _91 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _93 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Checklists and Shared Uploads` be split into smaller, more focused modules?**
-  _Cohesion score 0.055822466254861584 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.1330049261083744 - nodes in this community are weakly interconnected._
 - **Should `Push Notification Infrastructure` be split into smaller, more focused modules?**
-  _Cohesion score 0.06603346901854365 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.073224043715847 - nodes in this community are weakly interconnected._
 - **Should `Shared Operations Types` be split into smaller, more focused modules?**
-  _Cohesion score 0.05493863237872589 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.059506531204644414 - nodes in this community are weakly interconnected._

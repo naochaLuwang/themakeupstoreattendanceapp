@@ -1,5 +1,13 @@
 # Employee Smart Scan — module 4
 
+## Smart Scan interface update — 27 November 2026
+
+`/employee/smart-scan` now uses a focused camera card and a live three-step tracker: scan, location and attendance. After capture, the tracker expands to show the actual current check and retains completed steps if verification fails. It returns to a compact summary for explicit clock-out confirmation and the saved-time receipt. Copy is limited to the current action, essential timing and actionable errors. Camera controls support pause/resume, permission recovery and an available torch; the manual fallback remains available while a scan needs attention.
+
+Progress is driven by real controller events, not elapsed-time estimates. Capturing a QR does not mark attendance saved. The controller retains the failed phase for recovery, distinguishes a read-only refresh from a save, and preserves the original operation UUID/location for exact retries. Clock-out still requires explicit confirmation, fresh location and its original server deadline. An expired confirmation announces the error and offers a fresh scan. Disabled, completed and review-required attendance do not open the camera. The confirmation/receipt summary keeps the main action visible on small phones, and motion respects reduced-motion preferences.
+
+No database schema, attendance rules, API contract, dependency or native permission changed. This is a web deployment; the existing Android wrapper loads the new screen without another APK update. Validation: production build, TypeScript, changed-source ESLint, all 123 Node tests, and 20 browser scenarios using the actual QR decoder with fictional video/location/API responses. Coverage includes 320/390/768/1440px light/dark layouts, fresh GPS on clock-out, expiry, permission recovery, server rejection, track release, precise retry identity and small-phone button placement. Visual evidence is under `output/verification/smart-scan-redesign/`. These checks did not read or mutate live attendance and do not constitute a physical-device camera test.
+
 ## Live configuration update — 26 November 2026
 
 Main Branch had no `attendance_policies` row, so both the employee Home action and scanner defaulted to disabled despite existing stations and a hosted scanner API. An authorized configuration update created its policy with `smart_qr_enabled=true` and `enforce_engine=true`. Read-back verified both flags, the existing location/radius, and unchanged manual strictness defaults. This session applied no migrations and deployed no web code. The historical local implementation notes below describe the original module checkpoint.

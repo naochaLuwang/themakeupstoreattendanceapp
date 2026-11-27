@@ -1,6 +1,8 @@
 import type { AttendanceRecord, AttendanceResult } from '../engine';
 
 export type SmartLocation = { lat: number; lng: number; accuracy: number; capturedAt: string };
+export type SmartScanStage = 'scanning' | 'disabled' | 'locating' | 'submitting' | 'refreshing' | 'confirming' | 'success' | 'error';
+export type SmartScanPhase = 'scan' | 'location' | 'attendance';
 export type SmartCommand = { action: 'scan'; token: string; location: SmartLocation } | { action: 'confirm'; confirmationId: string; location: SmartLocation };
 export type SmartFailure = { success: false; error: string; code: string; status: number };
 export type SmartOutcome = {
