@@ -1,0 +1,45 @@
+{
+  "appId": "in.themakeupstore.hrm",
+  "versionName": "1.3.4",
+  "versionCode": 8,
+  "minSdk": 24,
+  "targetSdk": 36,
+  "debuggable": false,
+  "serverUrl": "https://hrm.themakeupstorewangkhei.com",
+  "cleartextTraffic": false,
+  "uploadCertificateSha256": "fbe070531bd1acd52598abd155c5735ab861e847db6d2e94b2dff7efd883f740",
+  "uploadKeyAlgorithm": "RSA-3072",
+  "apkSignatureVerified": true,
+  "bundleJarSignatureVerified": true,
+  "bundletoolVersion": "1.18.3",
+  "bundletoolValidationPassed": true,
+  "nativeSharedLibraries16KBAligned": true,
+  "apkZip16KBAligned": true,
+  "firebaseAndroidResourcesPresent": true,
+  "privateSigningMaterialPackaged": false,
+  "unitTests": {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0
+  },
+  "buildCommit": "5e84f82864797255f3f3c70af4362082b04338d3",
+  "artifacts": [
+    {
+      "file": "the-makeup-store-hrm-release.aab",
+      "bytes": 6887569,
+      "sha256": "893874f6e09496b1538470f12b78459d4a451a46198839447d75c3e8cc003c28"
+    },
+    {
+      "file": "the-makeup-store-hrm-release.apk",
+      "bytes": 7780975,
+      "sha256": "2fb9d96eab3bbec354a02012c4d22f168372779c3d3ad5c91ca8fdf9b75aac46"
+    }
+  ],
+  "physicalDeviceTested": false,
+  "playConsoleUploaded": false,
+  "hostedProductionReadinessIssuesResolvedByThisBuild": false,
+  "bundleVerificationNotes": [
+    "Self-signed upload certificate and absence of a timestamp are reported by jarsigner.",
+    "JDK jarsigner reports AGP manifest ZIP ordering/JarInputStream warnings; JarFile signature verification and official bundletool validation passed."
+  ]
+}
