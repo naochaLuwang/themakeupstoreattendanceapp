@@ -1,5 +1,5 @@
 // app/(dashboard)/admin/layout.tsx
-import { createClient } from '@/lib/supabase/server';
+import { getStaffAccess } from '@/lib/admin-client';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import AdminNav from '@/components/admin/AdminNav';
@@ -9,41 +9,25 @@ import '@/components/workspace.css';
 import './admin.css';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+    const access = await getStaffAccess();
+    if (!access) redirect('/login');
+    const role = access.profile?.role;
+    if (role !== 'admin' && role !== 'manager') redirect('/employee');
+
     return (
         <div className="admin-shell store-ui">
             <a href="#admin-content" className="admin-skip-link">Skip to content</a>
             {/* Sidebar remains visible while content loads */}
-            <AdminNav />
+            <AdminNav canAddEmployee={role === 'admin'} />
 
             <div id="admin-content" tabIndex={-1} className="admin-content">
                 <div className="admin-content-inner">
                     <div className="admin-brand-mobile"><AppBrand subtitle="Administration" /></div>
                     <Suspense fallback={<AdminPageSkeleton />}>
-                        <AuthGuard>
-                            {children}
-                        </AuthGuard>
+                        {children}
                     </Suspense>
                 </div>
             </div>
         </div>
     );
-}
-
-async function AuthGuard({ children }: { children: React.ReactNode }) {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) redirect('/login');
-
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-    if (profile?.role !== 'admin' && profile?.role !== 'manager') {
-        redirect('/employee');
-    }
-
-    return <>{children}</>;
 }

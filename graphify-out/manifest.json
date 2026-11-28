@@ -615,8 +615,8 @@
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/lib/admin-client.ts": {
-    "mtime": 1795514446.0586689,
-    "ast_hash": "96220282e3562084f1294f8bbacb13c8",
+    "mtime": 1795847514.9477096,
+    "ast_hash": "bd0c6b13ca70c6d93c3a885ebba15a68",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/lib/attendance/smart-scan/camera.ts": {
@@ -867,6 +867,16 @@
   "/Users/somojitarambam/Desktop/attendance-app/lib/app-information.ts": {
     "mtime": 1795796004.019225,
     "ast_hash": "e0dd513c6d5728a67c53e81b6d3f0a18",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/app/(dashboard)/admin/employees/new/AddEmployeeForm.tsx": {
+    "mtime": 1795847534.0798662,
+    "ast_hash": "89f6807ffb121ec7bf4dd89f95ac93fb",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/app/(dashboard)/admin/employees/new/page.tsx": {
+    "mtime": 1795847514.9569974,
+    "ast_hash": "d981b072e4b720329dc3e0eb564a2c3e",
     "semantic_hash": ""
   }
 }

@@ -1,5 +1,6 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { createClient as createServerClient } from '@/lib/supabase/server'
+import { cache } from 'react'
 import type { Database } from '@/lib/supabase/database.types'
 
 /** Server-only maintenance credential. Call only after a verified role or worker secret. */
@@ -10,21 +11,12 @@ export function createServiceClient() {
     return createSupabaseClient<Database>(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 }
 
-export async function getAdminClient() {
-    const supabase = await createServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
+export const getStaffAccess = cache(async () => {
+    const client = await createServerClient();
+    const { data: { user } } = await client.auth.getUser();
+    if (!user) return null;
 
-    if (!user) throw new Error("Unauthorized");
-
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-    if (profile?.role !== 'admin') {
-        throw new Error("Forbidden: Admin access only");
-    }
-
-    return createServiceClient();
-}
+    const { data: profile } = await client.from('profiles')
+        .select('role, store_id').eq('id', user.id).single();
+    return { client, profile };
+});
