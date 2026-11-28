@@ -18,7 +18,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="admin-shell store-ui">
             <a href="#admin-content" className="admin-skip-link">Skip to content</a>
             {/* Sidebar remains visible while content loads */}
-            <AdminNav canAddEmployee={role === 'admin'} />
+            <AdminNav canManageEmployees={role === 'admin'} />
 
             <div id="admin-content" tabIndex={-1} className="admin-content">
                 <div className="admin-content-inner">

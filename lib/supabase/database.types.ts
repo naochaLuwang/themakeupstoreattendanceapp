@@ -1533,6 +1533,7 @@ export type Database = {
     }
     Views: Record<string, never>
     Functions: {
+      set_employee_role: { Args: { p_employee: string; p_expected: string; p_role: string }; Returns: undefined }
       store_ops_report: { Args: { p_from: string; p_to: string; p_store?: string | null }; Returns: Json }
       store_ops_worker: { Args: { p_command: Json }; Returns: Json }
       store_ops_incident_save: { Args: { p_id: string | null; p_data: Json }; Returns: Json }

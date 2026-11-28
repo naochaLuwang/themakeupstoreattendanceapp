@@ -8,7 +8,7 @@ import AppBrand from '@/components/AppBrand';
 import { WORKSPACE_NAME } from '@/lib/branding';
 import {
     Activity, Calendar, Palmtree, LogOut, Search, RefreshCcw,
-    CreditCard, BarChart3, QrCode, Bell, ShieldCheck, MoreHorizontal, X, MapPin, Store, UserPlus,
+    CreditCard, BarChart3, QrCode, Bell, ShieldCheck, MoreHorizontal, X, MapPin, Store, Users,
 } from 'lucide-react';
 
 const links = [
@@ -16,7 +16,7 @@ const links = [
     { href: '/admin/logs', label: 'Attendance', mobileLabel: 'Attendance', icon: Search },
     { href: '/admin/schedule', label: 'Shift planner', mobileLabel: 'Planner', icon: Calendar },
     { href: '/admin/store-operations', label: 'Store operations', mobileLabel: 'Store', icon: Store },
-    { href: '/admin/employees/new', label: 'Add employee', icon: UserPlus, adminOnly: true },
+    { href: '/admin/employees', label: 'Employees', icon: Users, adminOnly: true },
     { href: '/admin/attendance-stations', label: 'Attendance stations', icon: QrCode },
     { href: '/admin/attendance-notifications', label: 'Attendance notifications', icon: Bell },
     { href: '/admin/weekoff-request', label: 'Swap requests', icon: RefreshCcw },
@@ -35,8 +35,8 @@ function isCurrentPath(pathname: string, href: string) {
     return pathname === href || (href !== '/admin' && pathname.startsWith(`${href}/`));
 }
 
-export default function AdminNav({ canAddEmployee }: { canAddEmployee: boolean }) {
-    const visibleLinks = links.filter(link => !link.adminOnly || canAddEmployee);
+export default function AdminNav({ canManageEmployees }: { canManageEmployees: boolean }) {
+    const visibleLinks = links.filter(link => !link.adminOnly || canManageEmployees);
     const secondaryLinks = visibleLinks.slice(4);
     const pathname = usePathname();
     const [isMenuOpen, setIsMenuOpen] = useState(false);

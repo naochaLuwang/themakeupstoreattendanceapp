@@ -18,5 +18,5 @@ export const getStaffAccess = cache(async () => {
 
     const { data: profile } = await client.from('profiles')
         .select('role, store_id').eq('id', user.id).single();
-    return { client, profile };
+    return { client, profile, userId: user.id };
 });

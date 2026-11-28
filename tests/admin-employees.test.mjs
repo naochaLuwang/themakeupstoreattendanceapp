@@ -68,6 +68,7 @@ function fixture({ role = 'admin', failProfile = false } = {}) {
         },
     };
     const { createNewUser } = load('app/actions/admin.ts', {
+        'next/cache': { revalidatePath() {} },
         '@/lib/admin-client': {
             getStaffAccess: () => ({ client, profile: { role, store_id: storeId } }),
             createServiceClient: () => client,
@@ -114,4 +115,29 @@ test('invalid input, duplicate credentials and failed profile creation leave exi
     const failed = fixture({ failProfile: true });
     assert.ok((await failed.createNewUser(form())).error);
     assert.equal(failed.accounts.size, 0);
+});
+
+test('admin role action accepts only the offered roles and refreshes the directory after a successful change', async () => {
+    const calls = [];
+    const refreshed = [];
+    const { changeEmployeeRole } = load('app/(dashboard)/admin/employees/actions.ts', {
+        '@/lib/admin-client': { getStaffAccess: () => ({
+            profile: { role: 'admin' },
+            client: { rpc: (name, args) => { calls.push({ name, args }); return { error: null }; } },
+        }) },
+        'next/cache': { revalidatePath: path => refreshed.push(path) },
+    });
+    const input = { id: '4ca9f893-3839-4799-9365-355e10426786', expected: 'manager', role: 'admin' };
+    assert.ok((await changeEmployeeRole({ ...input, role: 'manager' })).error);
+    assert.deepEqual(await changeEmployeeRole(input), { success: true });
+    assert.deepEqual(calls, [{ name: 'set_employee_role', args: { p_employee: input.id, p_expected: 'manager', p_role: 'admin' } }]);
+    assert.deepEqual(refreshed, ['/admin/employees']);
+});
+
+test('a manager cannot call the role action directly', async () => {
+    const { changeEmployeeRole } = load('app/(dashboard)/admin/employees/actions.ts', {
+        '@/lib/admin-client': { getStaffAccess: () => ({ profile: { role: 'manager' } }) },
+        'next/cache': {},
+    });
+    assert.equal((await changeEmployeeRole({})).error, 'Administrator access required.');
 });

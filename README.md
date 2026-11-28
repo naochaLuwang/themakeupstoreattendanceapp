@@ -78,6 +78,12 @@ Use the sun/moon icon on the sign-in page or in the workspace navigation to swit
 
 The app follows the device theme until a selection is made. The selection is saved in this browser and synced across open tabs. The shared provider in `components/ThemeProvider.tsx` uses the existing `next-themes` dependency; workspace colors remain in `components/workspace.css`. No database changes are required.
 
+## Employee accounts
+
+Admins can use **Employees** in the sidebar or mobile **More** menu to search staff by name, add an employee, or save an Admin or Employee role. A branch admin manages staff at their assigned store. Another authorized admin must change your own role.
+
+Apply the [employee roles migration](supabase/migrations/20261128064059_employee_roles.sql) in the app’s Supabase project to enable saving roles. It adds the `set_employee_role` database function and a profile trigger that routes signed-in role updates through the function. The function checks the caller, branch and previously displayed role before updating the existing profile.
+
 ## Swipe attendance
 
 Worked-shift protection is implemented in migration `005_shift_attendance_lock.sql` and the shared scheduling actions. It locks ordinary schedule changes after attendance starts, preserves the lock after checkout, and applies exchanges/publications atomically. Apply the migration before deploying these web changes. See [shift-locking documentation](docs/shift-locking.txt) for schema details, compatibility, validation and deployment order.

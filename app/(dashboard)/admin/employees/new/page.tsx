@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getStaffAccess } from '@/lib/admin-client';
 import AddEmployeeForm from './AddEmployeeForm';
@@ -13,6 +14,7 @@ export default async function NewEmployeePage() {
 
     return (
         <section className="max-w-xl space-y-5">
+            <Link className="inline-block text-sm underline" href="/admin/employees">Back to employees</Link>
             <h1>Add employee</h1>
             {error ? <p role="alert">Couldn’t load stores. Refresh to try again.</p>
                 : stores?.length ? <AddEmployeeForm stores={stores} />

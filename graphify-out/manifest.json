@@ -615,8 +615,8 @@
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/lib/admin-client.ts": {
-    "mtime": 1795847514.9477096,
-    "ast_hash": "bd0c6b13ca70c6d93c3a885ebba15a68",
+    "mtime": 1795848085.5997088,
+    "ast_hash": "e667b00be24f875bda92b2993e611a21",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/lib/attendance/smart-scan/camera.ts": {
@@ -720,8 +720,8 @@
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/lib/supabase/database.types.ts": {
-    "mtime": 1795614590.2700884,
-    "ast_hash": "ca6ad8345668ecf6dd2897f4d986e0e2",
+    "mtime": 1795848085.6001942,
+    "ast_hash": "2aa74b017c76f6b9b9f26cede83c0f60",
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/lib/supabase/client.ts": {
@@ -875,8 +875,23 @@
     "semantic_hash": ""
   },
   "/Users/somojitarambam/Desktop/attendance-app/app/(dashboard)/admin/employees/new/page.tsx": {
-    "mtime": 1795847514.9569974,
-    "ast_hash": "d981b072e4b720329dc3e0eb564a2c3e",
+    "mtime": 1795848085.6009824,
+    "ast_hash": "2665562436e19ecc8d56e24d40502c05",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/app/(dashboard)/admin/employees/actions.ts": {
+    "mtime": 1795848085.6065629,
+    "ast_hash": "53af4171e122bc30606f86606fefd6c8",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/app/(dashboard)/admin/employees/page.tsx": {
+    "mtime": 1795848144.6960714,
+    "ast_hash": "da4556ff792238e8f6a98d84af0eb669",
+    "semantic_hash": ""
+  },
+  "/Users/somojitarambam/Desktop/attendance-app/app/(dashboard)/admin/employees/EmployeeRoleEditor.tsx": {
+    "mtime": 1795848144.6962638,
+    "ast_hash": "03e5379d962bd1c6a18171f1ba40c872",
     "semantic_hash": ""
   }
 }

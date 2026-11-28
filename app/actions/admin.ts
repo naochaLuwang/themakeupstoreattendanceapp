@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { createServiceClient, getStaffAccess } from '@/lib/admin-client';
 
@@ -39,7 +40,10 @@ export async function createNewUser(formData: FormData) {
     // Verify the exact lookup used at sign-in, including on installations without a unique username index.
     if (!profileError) {
         const { data: login } = await admin.from('profiles').select('id').eq('username', username).single();
-        if (login?.id === id) return { success: true, username };
+        if (login?.id === id) {
+            revalidatePath('/admin/employees');
+            return { success: true, username };
+        }
     }
     const { error: cleanupError } = await admin.auth.admin.deleteUser(id);
     if (cleanupError) return { error: 'Account setup is incomplete. Check this email in Supabase Authentication before retrying.' };
