@@ -68,6 +68,18 @@ Change the host in `mobile/app.json`, or set `CAPACITOR_SERVER_URL` to another t
 
 Capacitor documents [`server.url`](https://capacitorjs.com/docs/config) for live reload. This package deliberately uses a single HTTPS host as an internal web wrapper; review that architecture and release signing before public store distribution. See the official [Android workflow](https://capacitorjs.com/docs/android) and [asset generation guide](https://capacitorjs.com/docs/guides/splash-screens-and-icons).
 
+## iOS app (Capacitor)
+
+The iOS wrapper uses the same hosted HTTPS workspace and app ID as Android. On macOS with Xcode installed:
+
+```bash
+npm run ios:sync
+npm run ios:open
+npm run ios:run
+```
+
+Set the signing team, bundle identifier, capabilities, and App Store provisioning profile in Xcode. Enable Push Notifications after the Apple notification key and production push setup are configured. iOS simulator, device, archive, and App Store builds require macOS and Xcode.
+
 ## PWA removal
 
 PWA support has been removed. Existing installations are retired through a cleanup-only replacement at the old worker URLs and a client cleanup on workspace load. These remove the app's old caches/subscriptions without clearing sessions or drafts or reloading forms. No worker is newly registered. The Capacitor logo/splash, haptics, camera, location, downloads and native connection screen remain. Firebase setup is deferred. See [removal details](docs/pwa-removal.md).

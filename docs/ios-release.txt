@@ -1,0 +1,12 @@
+iOS build notes
+
+The repository now includes a Capacitor iOS project at ios/App. It is an online wrapper for https://hrm.themakeupstorewangkhei.com, matching the Android app. The bundle identifier is in.themakeupstore.hrm, marketing version 1.3.4, build 8.
+
+On macOS with Xcode installed:
+
+  npm run ios:sync
+  npm run ios:open
+
+In Xcode, select the App target and set the Apple Developer Team, signing certificate, and provisioning profile. Confirm the bundle identifier, version, and build number before archiving. Add the Push Notifications capability and configure APNs credentials in the push provider before testing notification delivery.
+
+The app loads the hosted web workspace. Deploy web changes separately. A simulator or device build requires Xcode. An App Store archive requires Apple signing credentials and an App Store provisioning profile, which are intentionally not stored in this repository.

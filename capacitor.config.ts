@@ -3,7 +3,7 @@ import app from './mobile/app.json';
 
 const endpoint = new URL(process.env.CAPACITOR_SERVER_URL || app.serverUrl);
 if (endpoint.protocol !== 'https:' || endpoint.username || endpoint.password) {
-    throw new Error('The Android workspace must use an HTTPS URL without embedded credentials.');
+    throw new Error('The mobile workspace must use an HTTPS URL without embedded credentials.');
 }
 if (endpoint.pathname !== '/' || endpoint.search || endpoint.hash) {
     throw new Error('Set CAPACITOR_SERVER_URL to the workspace origin, without a path, query, or fragment.');
@@ -25,6 +25,12 @@ const config: CapacitorConfig = {
         allowMixedContent: false,
         appendUserAgent: ' MakeupStoreHRM/Android',
         backgroundColor: '#ffffff',
+    },
+    ios: {
+        contentInset: 'automatic',
+        backgroundColor: '#ffffff',
+        allowsLinkPreview: false,
+        handleApplicationNotifications: true,
     },
     plugins: {
         PushNotifications: {
