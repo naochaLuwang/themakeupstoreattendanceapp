@@ -21,6 +21,7 @@ export default function AdminRequestManager() {
     const [requests, setRequests] = useState<RequestRow[]>([]);
     const [activeTab, setActiveTab] = useState<'pending' | 'history'>('pending');
     const [loading, setLoading] = useState(true);
+    const [loadError, setLoadError] = useState(false);
     const [processingId, setProcessingId] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -29,6 +30,7 @@ export default function AdminRequestManager() {
             .from('swap_requests')
             .select(`*, requestor:profiles!requestor_id(full_name), receiver:profiles!receiver_id(full_name), shifts(*)`)
             .order('created_at', { ascending: false });
+        setLoadError(Boolean(error));
         if (!error) setRequests((data || []) as unknown as RequestRow[]);
         setLoading(false);
     }, [supabase]);
@@ -108,7 +110,9 @@ export default function AdminRequestManager() {
                     className="w-full bg-slate-50 border border-slate-100 rounded-xl py-4 pl-12 pr-4 text-sm font-medium outline-none focus:ring-2 focus:ring-slate-900/5" />
             </div>
 
-            {loading ? (
+            {loadError ? (
+                <div role="alert" className="rounded-xl border border-rose-200 p-4 text-sm">Couldn’t load shift requests. <button type="button" onClick={() => void fetchRequests()} className="underline">Retry</button></div>
+            ) : loading ? (
                 <div className="py-20 flex flex-col items-center gap-4 ">
                     <Loader2 className="animate-spin" size={24} />
                     <p className="text-sm font-medium tracking-normal">Loading requests...</p>

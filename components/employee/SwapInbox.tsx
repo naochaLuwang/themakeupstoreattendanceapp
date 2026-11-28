@@ -16,6 +16,7 @@ export default function SwapInbox({ userId }: { userId: string }) {
     const supabase = createClient();
     const [requests, setRequests] = useState<RequestRow[]>([]);
     const [loading, setLoading] = useState(true);
+    const [loadError, setLoadError] = useState(false);
 
     const fetchRequests = useCallback(async () => {
         setLoading(true);
@@ -31,6 +32,7 @@ export default function SwapInbox({ userId }: { userId: string }) {
             .eq('requestor_id', userId)
             .order('created_at', { ascending: false });
 
+        setLoadError(Boolean(error));
         if (!error) setRequests((data || []) as unknown as RequestRow[]);
         setLoading(false);
     }, [userId, supabase]);
@@ -51,7 +53,9 @@ export default function SwapInbox({ userId }: { userId: string }) {
             </header>
 
             <div className="employee-inbox-list space-y-4">
-                {loading ? (
+                {loadError ? (
+                    <p role="alert">Couldn’t load shift requests. <button type="button" onClick={() => void fetchRequests()} className="underline">Retry</button></p>
+                ) : loading ? (
                     <div className="flex justify-center py-20"><Loader2 className="animate-spin" /></div>
                 ) : requests.length > 0 ? (
                     <>

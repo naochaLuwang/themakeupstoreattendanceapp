@@ -74,7 +74,7 @@ export default function EmployeeShiftView({ userId, firstName = 'there' }: { use
     const showToast = (msg: string, type: 'error' | 'success' = 'error') => {
         setToast({ msg, type });
         nativeFeedback(type);
-        setTimeout(() => setToast(null), 3000);
+        setTimeout(() => setToast(current => current?.msg === msg ? null : current), type === 'error' ? 8000 : 3000);
     };
 
     const reportAttendanceError = (message: string) => {
